@@ -6,15 +6,20 @@ import {
   CloudDownload,
   Brain,
   Settings,
+  PieChart,
+  FileText,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const navItems = [
   { label: 'Tableau de bord', href: '/', icon: LayoutDashboard },
-  { label: 'Datasets', href: '/datasets', icon: Database },
-  { label: 'Analyse', href: '/analysis', icon: BarChart3 },
-  { label: 'Collecte', href: '/collection', icon: CloudDownload },
-  { label: 'Modèles ML', href: '/models', icon: Brain },
+  { label: 'Collecte & Formulaires', href: '/collection', icon: CloudDownload },
+  { label: 'Statistiques Descriptives', href: '/datasets', icon: Database },
+  { label: 'Régressions (Linéaires)', href: '/analysis?tab=regression', icon: BarChart3 },
+  { label: 'Réduction dimensions (ACP)', href: '/analysis?tab=pca', icon: PieChart },
+  { label: 'Classification Supervisée', href: '/analysis?tab=classification', icon: Brain },
+  { label: 'Classification Non-Supervisée', href: '/analysis?tab=clustering', icon: Brain },
+  { label: 'Formulaires & Imports', href: '/forms', icon: FileText },
   { label: 'Paramètres', href: '/settings', icon: Settings },
 ]
 

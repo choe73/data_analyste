@@ -1,0 +1,1201 @@
+region,annee,type_occupation,superficie_ha,perte_annuelle_ha,reboisement_ha
+Adamaoua,2000,Forêt dense,100000.0,0.0,100.0
+Adamaoua,2000,Forêt secondaire,50000.0,0.0,50.0
+Adamaoua,2000,Savane,80000.0,0.0,80.0
+Adamaoua,2000,Mangrove,5000.0,0.0,5.0
+Adamaoua,2000,Plantation,20000.0,0.0,20.0
+Adamaoua,2001,Forêt dense,98604.45,69.78,98.6
+Adamaoua,2001,Forêt secondaire,49448.82,27.56,49.45
+Adamaoua,2001,Savane,79338.34,33.08,79.34
+Adamaoua,2001,Mangrove,4930.56,3.47,4.93
+Adamaoua,2001,Plantation,19845.91,7.7,19.85
+Adamaoua,2002,Forêt dense,97735.42,113.23,97.74
+Adamaoua,2002,Forêt secondaire,49004.89,49.76,49.0
+Adamaoua,2002,Savane,78610.26,69.49,78.61
+Adamaoua,2002,Mangrove,4894.81,5.26,4.89
+Adamaoua,2002,Plantation,19748.79,12.56,19.75
+Adamaoua,2003,Forêt dense,96834.99,158.25,96.83
+Adamaoua,2003,Forêt secondaire,49160.1,42.0,49.16
+Adamaoua,2003,Savane,77128.34,143.58,77.13
+Adamaoua,2003,Mangrove,4914.55,4.27,4.91
+Adamaoua,2003,Plantation,19532.86,23.36,19.53
+Adamaoua,2004,Forêt dense,94041.73,297.91,94.04
+Adamaoua,2004,Forêt secondaire,47788.33,110.58,47.79
+Adamaoua,2004,Savane,78372.85,81.36,78.37
+Adamaoua,2004,Mangrove,4832.12,8.39,4.83
+Adamaoua,2004,Plantation,18954.27,52.29,18.95
+Adamaoua,2005,Forêt dense,94714.09,264.3,94.71
+Adamaoua,2005,Forêt secondaire,46413.28,179.34,46.41
+Adamaoua,2005,Savane,74442.17,277.89,74.44
+Adamaoua,2005,Mangrove,4810.31,9.48,4.81
+Adamaoua,2005,Plantation,19065.15,46.74,19.07
+Adamaoua,2006,Forêt dense,93204.28,339.79,93.2
+Adamaoua,2006,Forêt secondaire,47493.88,125.31,47.49
+Adamaoua,2006,Savane,73209.79,339.51,73.21
+Adamaoua,2006,Mangrove,4607.2,19.64,4.61
+Adamaoua,2006,Plantation,19337.7,33.12,19.34
+Adamaoua,2007,Forêt dense,94897.71,255.11,94.9
+Adamaoua,2007,Forêt secondaire,46009.57,199.52,46.01
+Adamaoua,2007,Savane,73083.96,345.8,73.08
+Adamaoua,2007,Mangrove,4687.71,15.61,4.69
+Adamaoua,2007,Plantation,18535.96,73.2,18.54
+Adamaoua,2008,Forêt dense,89277.36,536.13,89.28
+Adamaoua,2008,Forêt secondaire,45092.27,245.39,45.09
+Adamaoua,2008,Savane,75802.21,209.89,75.8
+Adamaoua,2008,Mangrove,4621.67,18.92,4.62
+Adamaoua,2008,Plantation,18016.73,99.16,18.02
+Adamaoua,2009,Forêt dense,93318.61,334.07,93.32
+Adamaoua,2009,Forêt secondaire,45213.36,239.33,45.21
+Adamaoua,2009,Savane,75499.26,225.04,75.5
+Adamaoua,2009,Mangrove,4694.65,15.27,4.69
+Adamaoua,2009,Plantation,18904.62,54.77,18.9
+Adamaoua,2010,Forêt dense,93363.68,331.82,93.36
+Adamaoua,2010,Forêt secondaire,47163.31,141.83,47.16
+Adamaoua,2010,Savane,74856.28,257.19,74.86
+Adamaoua,2010,Mangrove,4350.61,32.47,4.35
+Adamaoua,2010,Plantation,18128.21,93.59,18.13
+Adamaoua,2011,Forêt dense,90170.75,491.46,90.17
+Adamaoua,2011,Forêt secondaire,46453.22,177.34,46.45
+Adamaoua,2011,Savane,68620.47,568.98,68.62
+Adamaoua,2011,Mangrove,4278.84,36.06,4.28
+Adamaoua,2011,Plantation,16836.46,158.18,16.84
+Adamaoua,2012,Forêt dense,85734.93,713.25,85.73
+Adamaoua,2012,Forêt secondaire,46492.14,175.39,46.49
+Adamaoua,2012,Savane,72612.16,369.39,72.61
+Adamaoua,2012,Mangrove,4482.87,25.86,4.48
+Adamaoua,2012,Plantation,17215.65,139.22,17.22
+Adamaoua,2013,Forêt dense,84612.36,769.38,84.61
+Adamaoua,2013,Forêt secondaire,42237.84,388.11,42.24
+Adamaoua,2013,Savane,67579.1,621.05,67.58
+Adamaoua,2013,Mangrove,4151.12,42.44,4.15
+Adamaoua,2013,Plantation,16542.28,172.89,16.54
+Adamaoua,2014,Forêt dense,83497.97,825.1,83.5
+Adamaoua,2014,Forêt secondaire,45101.55,244.92,45.1
+Adamaoua,2014,Savane,71858.1,407.1,71.86
+Adamaoua,2014,Mangrove,4008.82,49.56,4.01
+Adamaoua,2014,Plantation,18039.24,98.04,18.04
+Adamaoua,2015,Forêt dense,83344.58,832.77,83.34
+Adamaoua,2015,Forêt secondaire,40796.95,460.15,40.8
+Adamaoua,2015,Savane,63660.86,816.96,63.66
+Adamaoua,2015,Mangrove,4007.56,49.62,4.01
+Adamaoua,2015,Plantation,16347.14,182.64,16.35
+Adamaoua,2016,Forêt dense,77072.91,1146.35,77.07
+Adamaoua,2016,Forêt secondaire,38455.15,577.24,38.46
+Adamaoua,2016,Savane,72442.09,377.9,72.44
+Adamaoua,2016,Mangrove,3963.44,51.83,3.96
+Adamaoua,2016,Plantation,15382.23,230.89,15.38
+Adamaoua,2017,Forêt dense,74819.31,1259.03,74.82
+Adamaoua,2017,Forêt secondaire,38677.58,566.12,38.68
+Adamaoua,2017,Savane,59638.09,1018.1,59.64
+Adamaoua,2017,Mangrove,3804.79,59.76,3.8
+Adamaoua,2017,Plantation,17500.73,124.96,17.5
+Adamaoua,2018,Forêt dense,89535.52,523.22,89.54
+Adamaoua,2018,Forêt secondaire,43643.84,317.81,43.64
+Adamaoua,2018,Savane,64772.21,761.39,64.77
+Adamaoua,2018,Mangrove,4227.41,38.63,4.23
+Adamaoua,2018,Plantation,17692.82,115.36,17.69
+Adamaoua,2019,Forêt dense,79204.08,1039.8,79.2
+Adamaoua,2019,Forêt secondaire,41357.67,432.12,41.36
+Adamaoua,2019,Savane,70177.01,491.15,70.18
+Adamaoua,2019,Mangrove,3601.86,69.91,3.6
+Adamaoua,2019,Plantation,17722.06,113.9,17.72
+Adamaoua,2020,Forêt dense,72964.9,1351.75,72.96
+Adamaoua,2020,Forêt secondaire,37763.4,611.83,37.76
+Adamaoua,2020,Savane,58746.19,1062.69,58.75
+Adamaoua,2020,Mangrove,3745.21,62.74,3.75
+Adamaoua,2020,Plantation,14482.87,275.86,14.48
+Adamaoua,2021,Forêt dense,73383.23,1330.84,73.38
+Adamaoua,2021,Forêt secondaire,41224.02,438.8,41.22
+Adamaoua,2021,Savane,60547.95,972.6,60.55
+Adamaoua,2021,Mangrove,3682.7,65.86,3.68
+Adamaoua,2021,Plantation,15038.15,248.09,15.04
+Adamaoua,2022,Forêt dense,68073.01,1596.35,68.07
+Adamaoua,2022,Forêt secondaire,42935.83,353.21,42.94
+Adamaoua,2022,Savane,67703.53,614.82,67.7
+Adamaoua,2022,Mangrove,4316.36,34.18,4.32
+Adamaoua,2022,Plantation,17450.14,127.49,17.45
+Adamaoua,2023,Forêt dense,76350.8,1182.46,76.35
+Adamaoua,2023,Forêt secondaire,37015.47,649.23,37.02
+Adamaoua,2023,Savane,56748.74,1162.56,56.75
+Adamaoua,2023,Mangrove,3611.79,69.41,3.61
+Adamaoua,2023,Plantation,16229.88,188.51,16.23
+Centre,2000,Forêt dense,100000.0,0.0,100.0
+Centre,2000,Forêt secondaire,50000.0,0.0,50.0
+Centre,2000,Savane,80000.0,0.0,80.0
+Centre,2000,Mangrove,5000.0,0.0,5.0
+Centre,2000,Plantation,20000.0,0.0,20.0
+Centre,2001,Forêt dense,98687.81,65.61,98.69
+Centre,2001,Forêt secondaire,49550.47,22.48,49.55
+Centre,2001,Savane,79572.49,21.38,79.57
+Centre,2001,Mangrove,4968.96,1.55,4.97
+Centre,2001,Plantation,19874.33,6.28,19.87
+Centre,2002,Forêt dense,97459.79,127.01,97.46
+Centre,2002,Forêt secondaire,48971.55,51.42,48.97
+Centre,2002,Savane,78158.52,92.07,78.16
+Centre,2002,Mangrove,4934.6,3.27,4.93
+Centre,2002,Plantation,19565.53,21.72,19.57
+Centre,2003,Forêt dense,95827.4,208.63,95.83
+Centre,2003,Forêt secondaire,48666.2,66.69,48.67
+Centre,2003,Savane,77722.1,113.9,77.72
+Centre,2003,Mangrove,4789.93,10.5,4.79
+Centre,2003,Plantation,19230.88,38.46,19.23
+Centre,2004,Forêt dense,95262.58,236.87,95.26
+Centre,2004,Forêt secondaire,48425.44,78.73,48.43
+Centre,2004,Savane,78395.11,80.24,78.4
+Centre,2004,Mangrove,4755.45,12.23,4.76
+Centre,2004,Plantation,19254.73,37.26,19.25
+Centre,2005,Forêt dense,95546.27,222.69,95.55
+Centre,2005,Forêt secondaire,47356.21,132.19,47.36
+Centre,2005,Savane,76762.61,161.87,76.76
+Centre,2005,Mangrove,4726.71,13.66,4.73
+Centre,2005,Plantation,19412.75,29.36,19.41
+Centre,2006,Forêt dense,93610.95,319.45,93.61
+Centre,2006,Forêt secondaire,47277.6,136.12,47.28
+Centre,2006,Savane,76084.42,195.78,76.08
+Centre,2006,Mangrove,4653.02,17.35,4.65
+Centre,2006,Plantation,19389.45,30.53,19.39
+Centre,2007,Forêt dense,92865.22,356.74,92.87
+Centre,2007,Forêt secondaire,46047.99,197.6,46.05
+Centre,2007,Savane,72731.46,363.43,72.73
+Centre,2007,Mangrove,4818.99,9.05,4.82
+Centre,2007,Plantation,18632.12,68.39,18.63
+Centre,2008,Forêt dense,89886.89,505.66,89.89
+Centre,2008,Forêt secondaire,44002.17,299.89,44.0
+Centre,2008,Savane,70570.71,471.46,70.57
+Centre,2008,Mangrove,4665.97,16.7,4.67
+Centre,2008,Plantation,19078.99,46.05,19.08
+Centre,2009,Forêt dense,87939.24,603.04,87.94
+Centre,2009,Forêt secondaire,46134.07,193.3,46.13
+Centre,2009,Savane,72823.66,358.82,72.82
+Centre,2009,Mangrove,4714.25,14.29,4.71
+Centre,2009,Plantation,17398.55,130.07,17.4
+Centre,2010,Forêt dense,90431.16,478.44,90.43
+Centre,2010,Forêt secondaire,45010.8,249.46,45.01
+Centre,2010,Savane,70656.82,467.16,70.66
+Centre,2010,Mangrove,4627.77,18.61,4.63
+Centre,2010,Plantation,17815.29,109.24,17.82
+Centre,2011,Forêt dense,88391.31,580.43,88.39
+Centre,2011,Forêt secondaire,46911.74,154.41,46.91
+Centre,2011,Savane,67985.91,600.7,67.99
+Centre,2011,Mangrove,4574.62,21.27,4.57
+Centre,2011,Plantation,18444.89,77.76,18.44
+Centre,2012,Forêt dense,88039.12,598.04,88.04
+Centre,2012,Forêt secondaire,42961.49,351.93,42.96
+Centre,2012,Savane,69569.04,521.55,69.57
+Centre,2012,Mangrove,4449.56,27.52,4.45
+Centre,2012,Plantation,16432.05,178.4,16.43
+Centre,2013,Forêt dense,88921.63,553.92,88.92
+Centre,2013,Forêt secondaire,43641.2,317.94,43.64
+Centre,2013,Savane,70748.5,462.57,70.75
+Centre,2013,Mangrove,4457.84,27.11,4.46
+Centre,2013,Plantation,17835.9,108.21,17.84
+Centre,2014,Forêt dense,80733.55,963.32,80.73
+Centre,2014,Forêt secondaire,39795.55,510.22,39.8
+Centre,2014,Savane,72035.57,398.22,72.04
+Centre,2014,Mangrove,4478.42,26.08,4.48
+Centre,2014,Plantation,16570.14,171.49,16.57
+Centre,2015,Forêt dense,79563.46,1021.83,79.56
+Centre,2015,Forêt secondaire,43556.81,322.16,43.56
+Centre,2015,Savane,68422.18,578.89,68.42
+Centre,2015,Mangrove,4490.39,25.48,4.49
+Centre,2015,Plantation,16717.78,164.11,16.72
+Centre,2016,Forêt dense,84262.3,786.89,84.26
+Centre,2016,Forêt secondaire,40714.1,464.29,40.71
+Centre,2016,Savane,69679.76,516.01,69.68
+Centre,2016,Mangrove,3937.05,53.15,3.94
+Centre,2016,Plantation,17000.89,149.96,17.0
+Centre,2017,Forêt dense,82013.24,899.34,82.01
+Centre,2017,Forêt secondaire,40145.02,492.75,40.15
+Centre,2017,Savane,63997.99,800.1,64.0
+Centre,2017,Mangrove,4001.26,49.94,4.0
+Centre,2017,Plantation,17135.12,143.24,17.14
+Centre,2018,Forêt dense,80540.1,972.99,80.54
+Centre,2018,Forêt secondaire,44023.71,298.81,44.02
+Centre,2018,Savane,72642.13,367.89,72.64
+Centre,2018,Mangrove,4535.66,23.22,4.54
+Centre,2018,Plantation,17012.56,149.37,17.01
+Centre,2019,Forêt dense,74331.8,1283.41,74.33
+Centre,2019,Forêt secondaire,43898.39,305.08,43.9
+Centre,2019,Savane,70956.26,452.19,70.96
+Centre,2019,Mangrove,3850.65,57.47,3.85
+Centre,2019,Plantation,17901.84,104.91,17.9
+Centre,2020,Forêt dense,89336.6,533.17,89.34
+Centre,2020,Forêt secondaire,37798.52,610.07,37.8
+Centre,2020,Savane,63013.3,849.33,63.01
+Centre,2020,Mangrove,3785.97,60.7,3.79
+Centre,2020,Plantation,15365.74,231.71,15.37
+Centre,2021,Forêt dense,87583.11,620.84,87.58
+Centre,2021,Forêt secondaire,35038.52,748.07,35.04
+Centre,2021,Savane,60586.19,970.69,60.59
+Centre,2021,Mangrove,3685.68,65.72,3.69
+Centre,2021,Plantation,15117.55,244.12,15.12
+Centre,2022,Forêt dense,77533.98,1123.3,77.53
+Centre,2022,Forêt secondaire,39143.76,542.81,39.14
+Centre,2022,Savane,54433.59,1278.32,54.43
+Centre,2022,Mangrove,4195.06,40.25,4.2
+Centre,2022,Plantation,16408.88,179.56,16.41
+Centre,2023,Forêt dense,84835.88,758.21,84.84
+Centre,2023,Forêt secondaire,33045.74,847.71,33.05
+Centre,2023,Savane,65633.33,718.33,65.63
+Centre,2023,Mangrove,3411.13,79.44,3.41
+Centre,2023,Plantation,14750.62,262.47,14.75
+Est,2000,Forêt dense,100000.0,0.0,100.0
+Est,2000,Forêt secondaire,50000.0,0.0,50.0
+Est,2000,Savane,80000.0,0.0,80.0
+Est,2000,Mangrove,5000.0,0.0,5.0
+Est,2000,Plantation,20000.0,0.0,20.0
+Est,2001,Forêt dense,98696.83,65.16,98.7
+Est,2001,Forêt secondaire,49705.52,14.72,49.71
+Est,2001,Savane,79023.4,48.83,79.02
+Est,2001,Mangrove,4941.25,2.94,4.94
+Est,2001,Plantation,19896.09,5.2,19.9
+Est,2002,Forêt dense,98769.7,61.51,98.77
+Est,2002,Forêt secondaire,48732.5,63.38,48.73
+Est,2002,Savane,77841.2,107.94,77.84
+Est,2002,Mangrove,4851.93,7.4,4.85
+Est,2002,Plantation,19584.76,20.76,19.58
+Est,2003,Forêt dense,97485.72,125.71,97.49
+Est,2003,Forêt secondaire,48618.08,69.1,48.62
+Est,2003,Savane,77754.12,112.29,77.75
+Est,2003,Mangrove,4868.54,6.57,4.87
+Est,2003,Plantation,19624.11,18.79,19.62
+Est,2004,Forêt dense,94926.76,253.66,94.93
+Est,2004,Forêt secondaire,48727.49,63.63,48.73
+Est,2004,Savane,76029.4,198.53,76.03
+Est,2004,Mangrove,4898.55,5.07,4.9
+Est,2004,Plantation,19239.81,38.01,19.24
+Est,2005,Forêt dense,93645.16,317.74,93.65
+Est,2005,Forêt secondaire,48649.76,67.51,48.65
+Est,2005,Savane,76328.48,183.58,76.33
+Est,2005,Mangrove,4786.17,10.69,4.79
+Est,2005,Plantation,19276.28,36.19,19.28
+Est,2006,Forêt dense,95464.69,226.77,95.46
+Est,2006,Forêt secondaire,47677.59,116.12,47.68
+Est,2006,Savane,75959.11,202.04,75.96
+Est,2006,Mangrove,4731.96,13.4,4.73
+Est,2006,Plantation,18708.22,64.59,18.71
+Est,2007,Forêt dense,90434.53,478.27,90.43
+Est,2007,Forêt secondaire,46508.32,174.58,46.51
+Est,2007,Savane,76461.19,176.94,76.46
+Est,2007,Mangrove,4514.34,24.28,4.51
+Est,2007,Plantation,18975.92,51.2,18.98
+Est,2008,Forêt dense,93018.62,349.07,93.02
+Est,2008,Forêt secondaire,47367.29,131.64,47.37
+Est,2008,Savane,75103.88,244.81,75.1
+Est,2008,Mangrove,4428.39,28.58,4.43
+Est,2008,Plantation,19180.83,40.96,19.18
+Est,2009,Forêt dense,94969.57,251.52,94.97
+Est,2009,Forêt secondaire,44031.2,298.44,44.03
+Est,2009,Savane,74212.89,289.36,74.21
+Est,2009,Mangrove,4466.08,26.7,4.47
+Est,2009,Plantation,18866.98,56.65,18.87
+Est,2010,Forêt dense,93317.98,334.1,93.32
+Est,2010,Forêt secondaire,42852.71,357.36,42.85
+Est,2010,Savane,73424.6,328.77,73.42
+Est,2010,Mangrove,4734.37,13.28,4.73
+Est,2010,Plantation,18826.48,58.68,18.83
+Est,2011,Forêt dense,86587.54,670.62,86.59
+Est,2011,Forêt secondaire,43676.39,316.18,43.68
+Est,2011,Savane,68967.36,551.63,68.97
+Est,2011,Mangrove,4693.83,15.31,4.69
+Est,2011,Plantation,17222.9,138.86,17.22
+Est,2012,Forêt dense,82554.48,872.28,82.55
+Est,2012,Forêt secondaire,42312.12,384.39,42.31
+Est,2012,Savane,74998.34,250.08,75.0
+Est,2012,Mangrove,4506.14,24.69,4.51
+Est,2012,Plantation,17276.91,136.15,17.28
+Est,2013,Forêt dense,82121.98,893.9,82.12
+Est,2013,Forêt secondaire,45908.2,204.59,45.91
+Est,2013,Savane,64630.58,768.47,64.63
+Est,2013,Mangrove,4446.2,27.69,4.45
+Est,2013,Plantation,16637.79,168.11,16.64
+Est,2014,Forêt dense,82117.52,894.12,82.12
+Est,2014,Forêt secondaire,44362.56,281.87,44.36
+Est,2014,Savane,71128.84,443.56,71.13
+Est,2014,Mangrove,4557.99,22.1,4.56
+Est,2014,Plantation,17992.52,100.37,17.99
+Est,2015,Forêt dense,88353.96,582.3,88.35
+Est,2015,Forêt secondaire,38840.59,557.97,38.84
+Est,2015,Savane,62667.7,866.62,62.67
+Est,2015,Mangrove,4558.08,22.1,4.56
+Est,2015,Plantation,18292.69,85.37,18.29
+Est,2016,Forêt dense,86594.17,670.29,86.59
+Est,2016,Forêt secondaire,41757.51,412.12,41.76
+Est,2016,Savane,72754.67,362.27,72.75
+Est,2016,Mangrove,4262.76,36.86,4.26
+Est,2016,Plantation,16065.39,196.73,16.07
+Est,2017,Forêt dense,75202.71,1239.86,75.2
+Est,2017,Forêt secondaire,40123.53,493.82,40.12
+Est,2017,Savane,63023.42,848.83,63.02
+Est,2017,Mangrove,4470.34,26.48,4.47
+Est,2017,Plantation,16158.5,192.07,16.16
+Est,2018,Forêt dense,76101.87,1194.91,76.1
+Est,2018,Forêt secondaire,36857.81,657.11,36.86
+Est,2018,Savane,65250.73,737.46,65.25
+Est,2018,Mangrove,3856.37,57.18,3.86
+Est,2018,Plantation,16182.21,190.89,16.18
+Est,2019,Forêt dense,78779.31,1061.03,78.78
+Est,2019,Forêt secondaire,40328.97,483.55,40.33
+Est,2019,Savane,66614.57,669.27,66.61
+Est,2019,Mangrove,4461.32,26.93,4.46
+Est,2019,Plantation,14953.31,252.33,14.95
+Est,2020,Forêt dense,83053.61,847.32,83.05
+Est,2020,Forêt secondaire,39075.46,546.23,39.08
+Est,2020,Savane,69600.45,519.98,69.6
+Est,2020,Mangrove,4212.86,39.36,4.21
+Est,2020,Plantation,16863.71,156.81,16.86
+Est,2021,Forêt dense,76050.18,1197.49,76.05
+Est,2021,Forêt secondaire,43301.45,334.93,43.3
+Est,2021,Savane,56137.03,1193.15,56.14
+Est,2021,Mangrove,4471.11,26.44,4.47
+Est,2021,Plantation,15538.69,223.07,15.54
+Est,2022,Forêt dense,71849.24,1407.54,71.85
+Est,2022,Forêt secondaire,40654.05,467.3,40.65
+Est,2022,Savane,56720.16,1163.99,56.72
+Est,2022,Mangrove,3829.11,58.54,3.83
+Est,2022,Plantation,15037.74,248.11,15.04
+Est,2023,Forêt dense,78604.96,1069.75,78.6
+Est,2023,Forêt secondaire,42712.86,364.36,42.71
+Est,2023,Savane,64711.52,764.42,64.71
+Est,2023,Mangrove,4048.16,47.59,4.05
+Est,2023,Plantation,14014.8,299.26,14.01
+Extrême-Nord,2000,Forêt dense,100000.0,0.0,100.0
+Extrême-Nord,2000,Forêt secondaire,50000.0,0.0,50.0
+Extrême-Nord,2000,Savane,80000.0,0.0,80.0
+Extrême-Nord,2000,Mangrove,5000.0,0.0,5.0
+Extrême-Nord,2000,Plantation,20000.0,0.0,20.0
+Extrême-Nord,2001,Forêt dense,98919.74,54.01,98.92
+Extrême-Nord,2001,Forêt secondaire,49748.42,12.58,49.75
+Extrême-Nord,2001,Savane,79186.81,40.66,79.19
+Extrême-Nord,2001,Mangrove,4934.32,3.28,4.93
+Extrême-Nord,2001,Plantation,19707.42,14.63,19.71
+Extrême-Nord,2002,Forêt dense,97056.61,147.17,97.06
+Extrême-Nord,2002,Forêt secondaire,49111.85,44.41,49.11
+Extrême-Nord,2002,Savane,77805.63,109.72,77.81
+Extrême-Nord,2002,Mangrove,4860.68,6.97,4.86
+Extrême-Nord,2002,Plantation,19693.59,15.32,19.69
+Extrême-Nord,2003,Forêt dense,97088.95,145.55,97.09
+Extrême-Nord,2003,Forêt secondaire,48522.83,73.86,48.52
+Extrême-Nord,2003,Savane,77144.08,142.8,77.14
+Extrême-Nord,2003,Mangrove,4827.43,8.63,4.83
+Extrême-Nord,2003,Plantation,19636.83,18.16,19.64
+Extrême-Nord,2004,Forêt dense,96540.42,172.98,96.54
+Extrême-Nord,2004,Forêt secondaire,48721.72,63.91,48.72
+Extrême-Nord,2004,Savane,75611.5,219.43,75.61
+Extrême-Nord,2004,Mangrove,4774.99,11.25,4.77
+Extrême-Nord,2004,Plantation,19435.27,28.24,19.44
+Extrême-Nord,2005,Forêt dense,97113.15,144.34,97.11
+Extrême-Nord,2005,Forêt secondaire,48487.28,75.64,48.49
+Extrême-Nord,2005,Savane,74509.87,274.51,74.51
+Extrême-Nord,2005,Mangrove,4663.25,16.84,4.66
+Extrême-Nord,2005,Plantation,18907.76,54.61,18.91
+Extrême-Nord,2006,Forêt dense,96371.41,181.43,96.37
+Extrême-Nord,2006,Forêt secondaire,47460.63,126.97,47.46
+Extrême-Nord,2006,Savane,73871.82,306.41,73.87
+Extrême-Nord,2006,Mangrove,4654.84,17.26,4.65
+Extrême-Nord,2006,Plantation,19305.27,34.74,19.31
+Extrême-Nord,2007,Forêt dense,92746.45,362.68,92.75
+Extrême-Nord,2007,Forêt secondaire,46461.67,176.92,46.46
+Extrême-Nord,2007,Savane,72955.23,352.24,72.96
+Extrême-Nord,2007,Mangrove,4809.58,9.52,4.81
+Extrême-Nord,2007,Plantation,19201.89,39.91,19.2
+Extrême-Nord,2008,Forêt dense,95513.95,224.3,95.51
+Extrême-Nord,2008,Forêt secondaire,44940.28,252.99,44.94
+Extrême-Nord,2008,Savane,72723.08,363.85,72.72
+Extrême-Nord,2008,Mangrove,4674.44,16.28,4.67
+Extrême-Nord,2008,Plantation,18038.31,98.08,18.04
+Extrême-Nord,2009,Forêt dense,92551.85,372.41,92.55
+Extrême-Nord,2009,Forêt secondaire,46268.55,186.57,46.27
+Extrême-Nord,2009,Savane,72287.05,385.65,72.29
+Extrême-Nord,2009,Mangrove,4512.55,24.37,4.51
+Extrême-Nord,2009,Plantation,18495.62,75.22,18.5
+Extrême-Nord,2010,Forêt dense,90928.43,453.58,90.93
+Extrême-Nord,2010,Forêt secondaire,42787.34,360.63,42.79
+Extrême-Nord,2010,Savane,69158.18,542.09,69.16
+Extrême-Nord,2010,Mangrove,4393.75,30.31,4.39
+Extrême-Nord,2010,Plantation,18653.98,67.3,18.65
+Extrême-Nord,2011,Forêt dense,93673.55,316.32,93.67
+Extrême-Nord,2011,Forêt secondaire,45390.42,230.48,45.39
+Extrême-Nord,2011,Savane,70591.09,470.45,70.59
+Extrême-Nord,2011,Mangrove,4200.03,40.0,4.2
+Extrême-Nord,2011,Plantation,18039.34,98.03,18.04
+Extrême-Nord,2012,Forêt dense,82295.5,885.22,82.3
+Extrême-Nord,2012,Forêt secondaire,43228.72,338.56,43.23
+Extrême-Nord,2012,Savane,70579.64,471.02,70.58
+Extrême-Nord,2012,Mangrove,4517.01,24.15,4.52
+Extrême-Nord,2012,Plantation,17091.99,145.4,17.09
+Extrême-Nord,2013,Forêt dense,87682.02,615.9,87.68
+Extrême-Nord,2013,Forêt secondaire,44038.11,298.09,44.04
+Extrême-Nord,2013,Savane,71214.84,439.26,71.21
+Extrême-Nord,2013,Mangrove,4123.55,43.82,4.12
+Extrême-Nord,2013,Plantation,16789.33,160.53,16.79
+Extrême-Nord,2014,Forêt dense,79629.75,1018.51,79.63
+Extrême-Nord,2014,Forêt secondaire,43058.45,347.08,43.06
+Extrême-Nord,2014,Savane,70056.56,497.17,70.06
+Extrême-Nord,2014,Mangrove,4417.83,29.11,4.42
+Extrême-Nord,2014,Plantation,15981.25,200.94,15.98
+Extrême-Nord,2015,Forêt dense,88421.65,578.92,88.42
+Extrême-Nord,2015,Forêt secondaire,38963.25,551.84,38.96
+Extrême-Nord,2015,Savane,66931.09,653.45,66.93
+Extrême-Nord,2015,Mangrove,4532.83,23.36,4.53
+Extrême-Nord,2015,Plantation,17246.46,137.68,17.25
+Extrême-Nord,2016,Forêt dense,83800.56,809.97,83.8
+Extrême-Nord,2016,Forêt secondaire,38336.73,583.16,38.34
+Extrême-Nord,2016,Savane,65445.97,727.7,65.45
+Extrême-Nord,2016,Mangrove,4546.15,22.69,4.55
+Extrême-Nord,2016,Plantation,17186.73,140.66,17.19
+Extrême-Nord,2017,Forêt dense,85944.61,702.77,85.94
+Extrême-Nord,2017,Forêt secondaire,42613.92,369.3,42.61
+Extrême-Nord,2017,Savane,66600.51,669.97,66.6
+Extrême-Nord,2017,Mangrove,3973.17,51.34,3.97
+Extrême-Nord,2017,Plantation,16912.44,154.38,16.91
+Extrême-Nord,2018,Forêt dense,81974.33,901.28,81.97
+Extrême-Nord,2018,Forêt secondaire,37131.38,643.43,37.13
+Extrême-Nord,2018,Savane,70148.29,492.59,70.15
+Extrême-Nord,2018,Mangrove,4451.86,27.41,4.45
+Extrême-Nord,2018,Plantation,16611.52,169.42,16.61
+Extrême-Nord,2019,Forêt dense,75474.63,1226.27,75.47
+Extrême-Nord,2019,Forêt secondaire,37241.83,637.91,37.24
+Extrême-Nord,2019,Savane,61315.15,934.24,61.32
+Extrême-Nord,2019,Mangrove,3581.22,70.94,3.58
+Extrême-Nord,2019,Plantation,16550.6,172.47,16.55
+Extrême-Nord,2020,Forêt dense,82855.6,857.22,82.86
+Extrême-Nord,2020,Forêt secondaire,38376.61,581.17,38.38
+Extrême-Nord,2020,Savane,62276.99,886.15,62.28
+Extrême-Nord,2020,Mangrove,3549.96,72.5,3.55
+Extrême-Nord,2020,Plantation,15718.72,214.06,15.72
+Extrême-Nord,2021,Forêt dense,88465.54,576.72,88.47
+Extrême-Nord,2021,Forêt secondaire,41122.98,443.85,41.12
+Extrême-Nord,2021,Savane,61911.85,904.41,61.91
+Extrême-Nord,2021,Mangrove,3538.96,73.05,3.54
+Extrême-Nord,2021,Plantation,15573.62,221.32,15.57
+Extrême-Nord,2022,Forêt dense,83393.54,830.32,83.39
+Extrême-Nord,2022,Forêt secondaire,35920.87,703.96,35.92
+Extrême-Nord,2022,Savane,59155.81,1042.21,59.16
+Extrême-Nord,2022,Mangrove,3581.64,70.92,3.58
+Extrême-Nord,2022,Plantation,16188.26,190.59,16.19
+Extrême-Nord,2023,Forêt dense,77442.17,1127.89,77.44
+Extrême-Nord,2023,Forêt secondaire,36016.84,699.16,36.02
+Extrême-Nord,2023,Savane,61275.33,936.23,61.28
+Extrême-Nord,2023,Mangrove,3391.21,80.44,3.39
+Extrême-Nord,2023,Plantation,14613.83,269.31,14.61
+Littoral,2000,Forêt dense,100000.0,0.0,100.0
+Littoral,2000,Forêt secondaire,50000.0,0.0,50.0
+Littoral,2000,Savane,80000.0,0.0,80.0
+Littoral,2000,Mangrove,5000.0,0.0,5.0
+Littoral,2000,Plantation,20000.0,0.0,20.0
+Littoral,2001,Forêt dense,99482.93,25.85,99.48
+Littoral,2001,Forêt secondaire,49436.91,28.15,49.44
+Littoral,2001,Savane,78834.94,58.25,78.83
+Littoral,2001,Mangrove,4936.54,3.17,4.94
+Littoral,2001,Plantation,19729.9,13.5,19.73
+Littoral,2002,Forêt dense,98842.59,57.87,98.84
+Littoral,2002,Forêt secondaire,48657.97,67.1,48.66
+Littoral,2002,Savane,78471.28,76.44,78.47
+Littoral,2002,Mangrove,4897.81,5.11,4.9
+Littoral,2002,Plantation,19599.78,20.01,19.6
+Littoral,2003,Forêt dense,97515.23,124.24,97.52
+Littoral,2003,Forêt secondaire,49131.57,43.42,49.13
+Littoral,2003,Savane,76718.16,164.09,76.72
+Littoral,2003,Mangrove,4783.67,10.82,4.78
+Littoral,2003,Plantation,19103.95,44.8,19.1
+Littoral,2004,Forêt dense,96603.39,169.83,96.6
+Littoral,2004,Forêt secondaire,47357.68,132.12,47.36
+Littoral,2004,Savane,76798.38,160.08,76.8
+Littoral,2004,Mangrove,4744.29,12.79,4.74
+Littoral,2004,Plantation,19421.85,28.91,19.42
+Littoral,2005,Forêt dense,93322.68,333.87,93.32
+Littoral,2005,Forêt secondaire,47085.2,145.74,47.09
+Littoral,2005,Savane,75963.99,201.8,75.96
+Littoral,2005,Mangrove,4836.0,8.2,4.84
+Littoral,2005,Plantation,19441.39,27.93,19.44
+Littoral,2006,Forêt dense,91934.94,403.25,91.93
+Littoral,2006,Forêt secondaire,47456.5,127.18,47.46
+Littoral,2006,Savane,73685.13,315.74,73.69
+Littoral,2006,Mangrove,4729.46,13.53,4.73
+Littoral,2006,Plantation,18880.92,55.95,18.88
+Littoral,2007,Forêt dense,90755.95,462.2,90.76
+Littoral,2007,Forêt secondaire,45433.96,228.3,45.43
+Littoral,2007,Savane,72564.86,371.76,72.56
+Littoral,2007,Mangrove,4788.91,10.55,4.79
+Littoral,2007,Plantation,18539.45,73.03,18.54
+Littoral,2008,Forêt dense,89339.64,533.02,89.34
+Littoral,2008,Forêt secondaire,45882.68,205.87,45.88
+Littoral,2008,Savane,71791.78,410.41,71.79
+Littoral,2008,Mangrove,4686.2,15.69,4.69
+Littoral,2008,Plantation,17776.35,111.18,17.78
+Littoral,2009,Forêt dense,87146.13,642.69,87.15
+Littoral,2009,Forêt secondaire,44617.81,269.11,44.62
+Littoral,2009,Savane,73340.23,332.99,73.34
+Littoral,2009,Mangrove,4423.66,28.82,4.42
+Littoral,2009,Plantation,18340.92,82.95,18.34
+Littoral,2010,Forêt dense,90507.3,474.64,90.51
+Littoral,2010,Forêt secondaire,43636.79,318.16,43.64
+Littoral,2010,Savane,71877.29,406.14,71.88
+Littoral,2010,Mangrove,4296.92,35.15,4.3
+Littoral,2010,Plantation,17465.35,126.73,17.47
+Littoral,2011,Forêt dense,93895.38,305.23,93.9
+Littoral,2011,Forêt secondaire,45059.37,247.03,45.06
+Littoral,2011,Savane,68032.26,598.39,68.03
+Littoral,2011,Mangrove,4615.3,19.23,4.62
+Littoral,2011,Plantation,18232.99,88.35,18.23
+Littoral,2012,Forêt dense,86421.98,678.9,86.42
+Littoral,2012,Forêt secondaire,43067.54,346.62,43.07
+Littoral,2012,Savane,69916.77,504.16,69.92
+Littoral,2012,Mangrove,4274.72,36.26,4.27
+Littoral,2012,Plantation,16420.56,178.97,16.42
+Littoral,2013,Forêt dense,84987.67,750.62,84.99
+Littoral,2013,Forêt secondaire,45447.44,227.63,45.45
+Littoral,2013,Savane,72110.39,394.48,72.11
+Littoral,2013,Mangrove,4189.59,40.52,4.19
+Littoral,2013,Plantation,16605.85,169.71,16.61
+Littoral,2014,Forêt dense,87644.58,617.77,87.64
+Littoral,2014,Forêt secondaire,41125.88,443.71,41.13
+Littoral,2014,Savane,63723.83,813.81,63.72
+Littoral,2014,Mangrove,4097.19,45.14,4.1
+Littoral,2014,Plantation,17850.56,107.47,17.85
+Littoral,2015,Forêt dense,85559.75,722.01,85.56
+Littoral,2015,Forêt secondaire,44077.22,296.14,44.08
+Littoral,2015,Savane,71183.35,440.83,71.18
+Littoral,2015,Mangrove,4516.16,24.19,4.52
+Littoral,2015,Plantation,18234.95,88.25,18.23
+Littoral,2016,Forêt dense,80149.86,992.51,80.15
+Littoral,2016,Forêt secondaire,45833.57,208.32,45.83
+Littoral,2016,Savane,65872.14,706.39,65.87
+Littoral,2016,Mangrove,3947.9,52.61,3.95
+Littoral,2016,Plantation,15739.97,213.0,15.74
+Littoral,2017,Forêt dense,91124.31,443.78,91.12
+Littoral,2017,Forêt secondaire,42423.51,378.82,42.42
+Littoral,2017,Savane,59957.91,1002.1,59.96
+Littoral,2017,Mangrove,4375.29,31.24,4.38
+Littoral,2017,Plantation,15546.06,222.7,15.55
+Littoral,2018,Forêt dense,77859.21,1107.04,77.86
+Littoral,2018,Forêt secondaire,37478.21,626.09,37.48
+Littoral,2018,Savane,70334.03,483.3,70.33
+Littoral,2018,Mangrove,4408.46,29.58,4.41
+Littoral,2018,Plantation,17840.04,108.0,17.84
+Littoral,2019,Forêt dense,88800.96,559.95,88.8
+Littoral,2019,Forêt secondaire,39170.82,541.46,39.17
+Littoral,2019,Savane,61844.52,907.77,61.84
+Littoral,2019,Mangrove,3749.08,62.55,3.75
+Littoral,2019,Plantation,14847.2,257.64,14.85
+Littoral,2020,Forêt dense,89623.27,518.84,89.62
+Littoral,2020,Forêt secondaire,42429.62,378.52,42.43
+Littoral,2020,Savane,56464.43,1176.78,56.46
+Littoral,2020,Mangrove,3512.47,74.38,3.51
+Littoral,2020,Plantation,15100.02,245.0,15.1
+Littoral,2021,Forêt dense,80527.72,973.61,80.53
+Littoral,2021,Forêt secondaire,35681.93,715.9,35.68
+Littoral,2021,Savane,70920.05,454.0,70.92
+Littoral,2021,Mangrove,3614.94,69.25,3.61
+Littoral,2021,Plantation,17227.68,138.62,17.23
+Littoral,2022,Forêt dense,71199.61,1440.02,71.2
+Littoral,2022,Forêt secondaire,44484.46,275.78,44.48
+Littoral,2022,Savane,60882.92,955.85,60.88
+Littoral,2022,Mangrove,4346.83,32.66,4.35
+Littoral,2022,Plantation,14172.31,291.38,14.17
+Littoral,2023,Forêt dense,72198.13,1390.09,72.2
+Littoral,2023,Forêt secondaire,33566.77,821.66,33.57
+Littoral,2023,Savane,60749.51,962.52,60.75
+Littoral,2023,Mangrove,4024.63,48.77,4.02
+Littoral,2023,Plantation,15001.01,249.95,15.0
+Nord,2000,Forêt dense,100000.0,0.0,100.0
+Nord,2000,Forêt secondaire,50000.0,0.0,50.0
+Nord,2000,Savane,80000.0,0.0,80.0
+Nord,2000,Mangrove,5000.0,0.0,5.0
+Nord,2000,Plantation,20000.0,0.0,20.0
+Nord,2001,Forêt dense,98894.82,55.26,98.89
+Nord,2001,Forêt secondaire,49371.53,31.42,49.37
+Nord,2001,Savane,78964.7,51.77,78.96
+Nord,2001,Mangrove,4928.29,3.59,4.93
+Nord,2001,Plantation,19766.9,11.65,19.77
+Nord,2002,Forêt dense,97429.58,128.52,97.43
+Nord,2002,Forêt secondaire,48561.21,71.94,48.56
+Nord,2002,Savane,78412.75,79.36,78.41
+Nord,2002,Mangrove,4913.61,4.32,4.91
+Nord,2002,Plantation,19501.98,24.9,19.5
+Nord,2003,Forêt dense,96055.74,197.21,96.06
+Nord,2003,Forêt secondaire,48196.49,90.18,48.2
+Nord,2003,Savane,78045.28,97.74,78.05
+Nord,2003,Mangrove,4921.24,3.94,4.92
+Nord,2003,Plantation,19282.35,35.88,19.28
+Nord,2004,Forêt dense,97839.08,108.05,97.84
+Nord,2004,Forêt secondaire,48143.92,92.8,48.14
+Nord,2004,Savane,78273.12,86.34,78.27
+Nord,2004,Mangrove,4727.68,13.62,4.73
+Nord,2004,Plantation,19586.19,20.69,19.59
+Nord,2005,Forêt dense,92937.98,353.1,92.94
+Nord,2005,Forêt secondaire,46841.02,157.95,46.84
+Nord,2005,Savane,76086.82,195.66,76.09
+Nord,2005,Mangrove,4757.9,12.1,4.76
+Nord,2005,Plantation,18852.13,57.39,18.85
+Nord,2006,Forêt dense,95994.79,200.26,95.99
+Nord,2006,Forêt secondaire,46832.47,158.38,46.83
+Nord,2006,Savane,73632.45,318.38,73.63
+Nord,2006,Mangrove,4751.29,12.44,4.75
+Nord,2006,Plantation,19010.7,49.47,19.01
+Nord,2007,Forêt dense,90648.05,467.6,90.65
+Nord,2007,Forêt secondaire,45494.63,225.27,45.49
+Nord,2007,Savane,76074.46,196.28,76.07
+Nord,2007,Mangrove,4686.34,15.68,4.69
+Nord,2007,Plantation,19226.91,38.65,19.23
+Nord,2008,Forêt dense,92297.05,385.15,92.3
+Nord,2008,Forêt secondaire,44213.22,289.34,44.21
+Nord,2008,Savane,74526.65,273.67,74.53
+Nord,2008,Mangrove,4753.9,12.31,4.75
+Nord,2008,Plantation,18218.38,89.08,18.22
+Nord,2009,Forêt dense,92928.1,353.6,92.93
+Nord,2009,Forêt secondaire,43449.38,327.53,43.45
+Nord,2009,Savane,71054.45,447.28,71.05
+Nord,2009,Mangrove,4466.6,26.67,4.47
+Nord,2009,Plantation,17567.93,121.6,17.57
+Nord,2010,Forêt dense,94099.06,295.05,94.1
+Nord,2010,Forêt secondaire,43517.9,324.11,43.52
+Nord,2010,Savane,71463.55,426.82,71.46
+Nord,2010,Mangrove,4635.78,18.21,4.64
+Nord,2010,Plantation,17135.74,143.21,17.14
+Nord,2011,Forêt dense,89817.78,509.11,89.82
+Nord,2011,Forêt secondaire,43508.23,324.59,43.51
+Nord,2011,Savane,72615.18,369.24,72.62
+Nord,2011,Mangrove,4320.52,33.97,4.32
+Nord,2011,Plantation,18590.69,70.47,18.59
+Nord,2012,Forêt dense,86872.99,656.35,86.87
+Nord,2012,Forêt secondaire,45597.36,220.13,45.6
+Nord,2012,Savane,67334.92,633.25,67.33
+Nord,2012,Mangrove,4561.84,21.91,4.56
+Nord,2012,Plantation,17065.26,146.74,17.07
+Nord,2013,Forêt dense,84656.07,767.2,84.66
+Nord,2013,Forêt secondaire,43300.22,334.99,43.3
+Nord,2013,Savane,74217.66,289.12,74.22
+Nord,2013,Mangrove,4137.29,43.14,4.14
+Nord,2013,Plantation,17269.17,136.54,17.27
+Nord,2014,Forêt dense,88478.38,576.08,88.48
+Nord,2014,Forêt secondaire,45027.42,248.63,45.03
+Nord,2014,Savane,69383.24,530.84,69.38
+Nord,2014,Mangrove,4541.12,22.94,4.54
+Nord,2014,Plantation,16534.8,173.26,16.53
+Nord,2015,Forêt dense,91993.46,400.33,91.99
+Nord,2015,Forêt secondaire,43301.06,334.95,43.3
+Nord,2015,Savane,66369.43,681.53,66.37
+Nord,2015,Mangrove,4420.17,28.99,4.42
+Nord,2015,Plantation,15637.05,218.15,15.64
+Nord,2016,Forêt dense,84845.82,757.71,84.85
+Nord,2016,Forêt secondaire,39484.73,525.76,39.48
+Nord,2016,Savane,69034.65,548.27,69.03
+Nord,2016,Mangrove,4333.29,33.34,4.33
+Nord,2016,Plantation,18358.69,82.07,18.36
+Nord,2017,Forêt dense,89410.31,529.48,89.41
+Nord,2017,Forêt secondaire,41702.36,414.88,41.7
+Nord,2017,Savane,66235.13,688.24,66.24
+Nord,2017,Mangrove,3934.14,53.29,3.93
+Nord,2017,Plantation,16786.5,160.68,16.79
+Nord,2018,Forêt dense,74294.98,1285.25,74.29
+Nord,2018,Forêt secondaire,40832.15,458.39,40.83
+Nord,2018,Savane,64197.05,790.15,64.2
+Nord,2018,Mangrove,4131.02,43.45,4.13
+Nord,2018,Plantation,16624.1,168.79,16.62
+Nord,2019,Forêt dense,85120.64,743.97,85.12
+Nord,2019,Forêt secondaire,41734.71,413.26,41.73
+Nord,2019,Savane,71822.35,408.88,71.82
+Nord,2019,Mangrove,4165.48,41.73,4.17
+Nord,2019,Plantation,16316.75,184.16,16.32
+Nord,2020,Forêt dense,85827.49,708.63,85.83
+Nord,2020,Forêt secondaire,42399.22,380.04,42.4
+Nord,2020,Savane,59509.8,1024.51,59.51
+Nord,2020,Mangrove,3622.19,68.89,3.62
+Nord,2020,Plantation,16746.12,162.69,16.75
+Nord,2021,Forêt dense,74294.77,1285.26,74.29
+Nord,2021,Forêt secondaire,41744.81,412.76,41.74
+Nord,2021,Savane,67429.04,628.55,67.43
+Nord,2021,Mangrove,4230.45,38.48,4.23
+Nord,2021,Plantation,14036.98,298.15,14.04
+Nord,2022,Forêt dense,83371.38,831.43,83.37
+Nord,2022,Forêt secondaire,40808.42,459.58,40.81
+Nord,2022,Savane,66352.32,682.38,66.35
+Nord,2022,Mangrove,3610.96,69.45,3.61
+Nord,2022,Plantation,14521.92,273.9,14.52
+Nord,2023,Forêt dense,79807.2,1009.64,79.81
+Nord,2023,Forêt secondaire,38541.24,572.94,38.54
+Nord,2023,Savane,63651.23,817.44,63.65
+Nord,2023,Mangrove,3620.17,68.99,3.62
+Nord,2023,Plantation,16690.25,165.49,16.69
+Nord-Ouest,2000,Forêt dense,100000.0,0.0,100.0
+Nord-Ouest,2000,Forêt secondaire,50000.0,0.0,50.0
+Nord-Ouest,2000,Savane,80000.0,0.0,80.0
+Nord-Ouest,2000,Mangrove,5000.0,0.0,5.0
+Nord-Ouest,2000,Plantation,20000.0,0.0,20.0
+Nord-Ouest,2001,Forêt dense,99336.9,33.15,99.34
+Nord-Ouest,2001,Forêt secondaire,49358.51,32.07,49.36
+Nord-Ouest,2001,Savane,79169.66,41.52,79.17
+Nord-Ouest,2001,Mangrove,4926.94,3.65,4.93
+Nord-Ouest,2001,Plantation,19712.1,14.39,19.71
+Nord-Ouest,2002,Forêt dense,97850.77,107.46,97.85
+Nord-Ouest,2002,Forêt secondaire,49374.69,31.27,49.37
+Nord-Ouest,2002,Savane,79156.61,42.17,79.16
+Nord-Ouest,2002,Mangrove,4942.92,2.85,4.94
+Nord-Ouest,2002,Plantation,19759.49,12.03,19.76
+Nord-Ouest,2003,Forêt dense,96860.84,156.96,96.86
+Nord-Ouest,2003,Forêt secondaire,47810.15,109.49,47.81
+Nord-Ouest,2003,Savane,77851.95,107.4,77.85
+Nord-Ouest,2003,Mangrove,4906.76,4.66,4.91
+Nord-Ouest,2003,Plantation,19473.97,26.3,19.47
+Nord-Ouest,2004,Forêt dense,97875.11,106.24,97.88
+Nord-Ouest,2004,Forêt secondaire,48286.64,85.67,48.29
+Nord-Ouest,2004,Savane,75632.47,218.38,75.63
+Nord-Ouest,2004,Mangrove,4826.54,8.67,4.83
+Nord-Ouest,2004,Plantation,19332.36,33.38,19.33
+Nord-Ouest,2005,Forêt dense,93947.21,302.64,93.95
+Nord-Ouest,2005,Forêt secondaire,48494.92,75.25,48.49
+Nord-Ouest,2005,Savane,74115.42,294.23,74.12
+Nord-Ouest,2005,Mangrove,4705.71,14.71,4.71
+Nord-Ouest,2005,Plantation,19301.37,34.93,19.3
+Nord-Ouest,2006,Forêt dense,94085.0,295.75,94.09
+Nord-Ouest,2006,Forêt secondaire,47217.23,139.14,47.22
+Nord-Ouest,2006,Savane,74886.41,255.68,74.89
+Nord-Ouest,2006,Mangrove,4724.05,13.8,4.72
+Nord-Ouest,2006,Plantation,18757.18,62.14,18.76
+Nord-Ouest,2007,Forêt dense,92672.29,366.39,92.67
+Nord-Ouest,2007,Forêt secondaire,47344.53,132.77,47.34
+Nord-Ouest,2007,Savane,73691.66,315.42,73.69
+Nord-Ouest,2007,Mangrove,4536.09,23.2,4.54
+Nord-Ouest,2007,Plantation,18682.17,65.89,18.68
+Nord-Ouest,2008,Forêt dense,89347.06,532.65,89.35
+Nord-Ouest,2008,Forêt secondaire,46339.38,183.03,46.34
+Nord-Ouest,2008,Savane,71107.85,444.61,71.11
+Nord-Ouest,2008,Mangrove,4584.6,20.77,4.58
+Nord-Ouest,2008,Plantation,18245.72,87.71,18.25
+Nord-Ouest,2009,Forêt dense,87416.88,629.16,87.42
+Nord-Ouest,2009,Forêt secondaire,44464.83,276.76,44.46
+Nord-Ouest,2009,Savane,73768.99,311.55,73.77
+Nord-Ouest,2009,Mangrove,4766.7,11.66,4.77
+Nord-Ouest,2009,Plantation,17508.41,124.58,17.51
+Nord-Ouest,2010,Forêt dense,92797.05,360.15,92.8
+Nord-Ouest,2010,Forêt secondaire,43875.79,306.21,43.88
+Nord-Ouest,2010,Savane,68303.35,584.83,68.3
+Nord-Ouest,2010,Mangrove,4472.95,26.35,4.47
+Nord-Ouest,2010,Plantation,17481.36,125.93,17.48
+Nord-Ouest,2011,Forêt dense,89997.48,500.13,90.0
+Nord-Ouest,2011,Forêt secondaire,42723.16,363.84,42.72
+Nord-Ouest,2011,Savane,71913.52,404.32,71.91
+Nord-Ouest,2011,Mangrove,4182.56,40.87,4.18
+Nord-Ouest,2011,Plantation,17946.83,102.66,17.95
+Nord-Ouest,2012,Forêt dense,86018.91,699.05,86.02
+Nord-Ouest,2012,Forêt secondaire,43598.13,320.09,43.6
+Nord-Ouest,2012,Savane,71983.03,400.85,71.98
+Nord-Ouest,2012,Mangrove,4118.74,44.06,4.12
+Nord-Ouest,2012,Plantation,17966.48,101.68,17.97
+Nord-Ouest,2013,Forêt dense,90677.67,466.12,90.68
+Nord-Ouest,2013,Forêt secondaire,41188.27,440.59,41.19
+Nord-Ouest,2013,Savane,72138.67,393.07,72.14
+Nord-Ouest,2013,Mangrove,4199.49,40.03,4.2
+Nord-Ouest,2013,Plantation,18526.22,73.69,18.53
+Nord-Ouest,2014,Forêt dense,91189.54,440.52,91.19
+Nord-Ouest,2014,Forêt secondaire,43404.65,329.77,43.4
+Nord-Ouest,2014,Savane,67061.7,646.91,67.06
+Nord-Ouest,2014,Mangrove,4193.83,40.31,4.19
+Nord-Ouest,2014,Plantation,17588.71,120.56,17.59
+Nord-Ouest,2015,Forêt dense,81704.82,914.76,81.7
+Nord-Ouest,2015,Forêt secondaire,45853.85,207.31,45.85
+Nord-Ouest,2015,Savane,62303.06,884.85,62.3
+Nord-Ouest,2015,Mangrove,3971.47,51.43,3.97
+Nord-Ouest,2015,Plantation,17453.25,127.34,17.45
+Nord-Ouest,2016,Forêt dense,80621.01,968.95,80.62
+Nord-Ouest,2016,Forêt secondaire,44288.51,285.57,44.29
+Nord-Ouest,2016,Savane,60922.73,953.86,60.92
+Nord-Ouest,2016,Mangrove,4308.27,34.59,4.31
+Nord-Ouest,2016,Plantation,16934.44,153.28,16.93
+Nord-Ouest,2017,Forêt dense,91013.01,449.35,91.01
+Nord-Ouest,2017,Forêt secondaire,41914.41,404.28,41.91
+Nord-Ouest,2017,Savane,63022.79,848.86,63.02
+Nord-Ouest,2017,Mangrove,4060.41,46.98,4.06
+Nord-Ouest,2017,Plantation,17820.84,108.96,17.82
+Nord-Ouest,2018,Forêt dense,82646.49,867.68,82.65
+Nord-Ouest,2018,Forêt secondaire,38412.37,579.38,38.41
+Nord-Ouest,2018,Savane,62385.21,880.74,62.39
+Nord-Ouest,2018,Mangrove,4229.91,38.5,4.23
+Nord-Ouest,2018,Plantation,14636.86,268.16,14.64
+Nord-Ouest,2019,Forêt dense,88836.0,558.2,88.84
+Nord-Ouest,2019,Forêt secondaire,43592.46,320.38,43.59
+Nord-Ouest,2019,Savane,66327.15,683.64,66.33
+Nord-Ouest,2019,Mangrove,4017.42,49.13,4.02
+Nord-Ouest,2019,Plantation,15946.29,202.69,15.95
+Nord-Ouest,2020,Forêt dense,87428.33,628.58,87.43
+Nord-Ouest,2020,Forêt secondaire,42821.38,358.93,42.82
+Nord-Ouest,2020,Savane,63194.24,840.29,63.19
+Nord-Ouest,2020,Mangrove,4295.02,35.25,4.3
+Nord-Ouest,2020,Plantation,16627.73,168.61,16.63
+Nord-Ouest,2021,Forêt dense,81094.47,945.28,81.09
+Nord-Ouest,2021,Forêt secondaire,39523.89,523.81,39.52
+Nord-Ouest,2021,Savane,70446.75,477.66,70.45
+Nord-Ouest,2021,Mangrove,4180.66,40.97,4.18
+Nord-Ouest,2021,Plantation,17590.01,120.5,17.59
+Nord-Ouest,2022,Forêt dense,83508.91,824.55,83.51
+Nord-Ouest,2022,Forêt secondaire,39697.23,515.14,39.7
+Nord-Ouest,2022,Savane,61624.54,918.77,61.62
+Nord-Ouest,2022,Mangrove,3615.11,69.24,3.62
+Nord-Ouest,2022,Plantation,16765.11,161.74,16.77
+Nord-Ouest,2023,Forêt dense,66358.1,1682.1,66.36
+Nord-Ouest,2023,Forêt secondaire,43168.3,341.58,43.17
+Nord-Ouest,2023,Savane,70495.17,475.24,70.5
+Nord-Ouest,2023,Mangrove,4016.63,49.17,4.02
+Nord-Ouest,2023,Plantation,15707.2,214.64,15.71
+Ouest,2000,Forêt dense,100000.0,0.0,100.0
+Ouest,2000,Forêt secondaire,50000.0,0.0,50.0
+Ouest,2000,Savane,80000.0,0.0,80.0
+Ouest,2000,Mangrove,5000.0,0.0,5.0
+Ouest,2000,Plantation,20000.0,0.0,20.0
+Ouest,2001,Forêt dense,98739.19,63.04,98.74
+Ouest,2001,Forêt secondaire,49444.65,27.77,49.44
+Ouest,2001,Savane,79139.32,43.03,79.14
+Ouest,2001,Mangrove,4943.18,2.84,4.94
+Ouest,2001,Plantation,19796.54,10.17,19.8
+Ouest,2002,Forêt dense,97386.43,130.68,97.39
+Ouest,2002,Forêt secondaire,48848.11,57.59,48.85
+Ouest,2002,Savane,78545.71,72.71,78.55
+Ouest,2002,Mangrove,4936.97,3.15,4.94
+Ouest,2002,Plantation,19502.88,24.86,19.5
+Ouest,2003,Forêt dense,95647.99,217.6,95.65
+Ouest,2003,Forêt secondaire,48928.89,53.56,48.93
+Ouest,2003,Savane,76603.46,169.83,76.6
+Ouest,2003,Mangrove,4899.01,5.05,4.9
+Ouest,2003,Plantation,19309.66,34.52,19.31
+Ouest,2004,Forêt dense,96133.06,193.35,96.13
+Ouest,2004,Forêt secondaire,47726.99,113.65,47.73
+Ouest,2004,Savane,78226.38,88.68,78.23
+Ouest,2004,Mangrove,4849.31,7.53,4.85
+Ouest,2004,Plantation,19559.29,22.04,19.56
+Ouest,2005,Forêt dense,95263.69,236.82,95.26
+Ouest,2005,Forêt secondaire,47640.36,117.98,47.64
+Ouest,2005,Savane,75165.27,241.74,75.17
+Ouest,2005,Mangrove,4781.7,10.92,4.78
+Ouest,2005,Plantation,18606.1,69.69,18.61
+Ouest,2006,Forêt dense,95673.49,216.33,95.67
+Ouest,2006,Forêt secondaire,46065.44,196.73,46.07
+Ouest,2006,Savane,72811.6,359.42,72.81
+Ouest,2006,Mangrove,4606.76,19.66,4.61
+Ouest,2006,Plantation,19093.91,45.3,19.09
+Ouest,2007,Forêt dense,96070.56,196.47,96.07
+Ouest,2007,Forêt secondaire,46764.92,161.75,46.76
+Ouest,2007,Savane,72416.88,379.16,72.42
+Ouest,2007,Mangrove,4613.08,19.35,4.61
+Ouest,2007,Plantation,18891.88,55.41,18.89
+Ouest,2008,Forêt dense,92729.91,363.5,92.73
+Ouest,2008,Forêt secondaire,47758.12,112.09,47.76
+Ouest,2008,Savane,73355.57,332.22,73.36
+Ouest,2008,Mangrove,4699.12,15.04,4.7
+Ouest,2008,Plantation,17733.98,113.3,17.73
+Ouest,2009,Forêt dense,93600.22,319.99,93.6
+Ouest,2009,Forêt secondaire,45561.51,221.92,45.56
+Ouest,2009,Savane,69412.19,529.39,69.41
+Ouest,2009,Mangrove,4462.52,26.87,4.46
+Ouest,2009,Plantation,17367.9,131.61,17.37
+Ouest,2010,Forêt dense,87802.37,609.88,87.8
+Ouest,2010,Forêt secondaire,44200.95,289.95,44.2
+Ouest,2010,Savane,73571.07,321.45,73.57
+Ouest,2010,Mangrove,4512.15,24.39,4.51
+Ouest,2010,Plantation,17901.49,104.93,17.9
+Ouest,2011,Forêt dense,93666.5,316.67,93.67
+Ouest,2011,Forêt secondaire,44575.36,271.23,44.58
+Ouest,2011,Savane,72779.31,361.03,72.78
+Ouest,2011,Mangrove,4443.38,27.83,4.44
+Ouest,2011,Plantation,18372.04,81.4,18.37
+Ouest,2012,Forêt dense,83163.17,841.84,83.16
+Ouest,2012,Forêt secondaire,43840.0,308.0,43.84
+Ouest,2012,Savane,69416.28,529.19,69.42
+Ouest,2012,Mangrove,4260.88,36.96,4.26
+Ouest,2012,Plantation,18402.61,79.87,18.4
+Ouest,2013,Forêt dense,90275.66,486.22,90.28
+Ouest,2013,Forêt secondaire,45577.91,221.1,45.58
+Ouest,2013,Savane,67575.22,621.24,67.58
+Ouest,2013,Mangrove,4312.55,34.37,4.31
+Ouest,2013,Plantation,18385.97,80.7,18.39
+Ouest,2014,Forêt dense,85112.31,744.38,85.11
+Ouest,2014,Forêt secondaire,41357.9,432.1,41.36
+Ouest,2014,Savane,71604.76,419.76,71.6
+Ouest,2014,Mangrove,4372.76,31.36,4.37
+Ouest,2014,Plantation,17730.76,113.46,17.73
+Ouest,2015,Forêt dense,86311.61,684.42,86.31
+Ouest,2015,Forêt secondaire,45843.2,207.84,45.84
+Ouest,2015,Savane,73450.96,327.45,73.45
+Ouest,2015,Mangrove,3928.31,53.58,3.93
+Ouest,2015,Plantation,17209.26,139.54,17.21
+Ouest,2016,Forêt dense,90684.45,465.78,90.68
+Ouest,2016,Forêt secondaire,43570.29,321.49,43.57
+Ouest,2016,Savane,62221.98,888.9,62.22
+Ouest,2016,Mangrove,4425.51,28.72,4.43
+Ouest,2016,Plantation,15917.14,204.14,15.92
+Ouest,2017,Forêt dense,76257.56,1187.12,76.26
+Ouest,2017,Forêt secondaire,43086.91,345.65,43.09
+Ouest,2017,Savane,71625.12,418.74,71.63
+Ouest,2017,Mangrove,4153.8,42.31,4.15
+Ouest,2017,Plantation,17132.79,143.36,17.13
+Ouest,2018,Forêt dense,83320.19,833.99,83.32
+Ouest,2018,Forêt secondaire,42801.6,359.92,42.8
+Ouest,2018,Savane,66867.69,656.62,66.87
+Ouest,2018,Mangrove,3836.61,58.17,3.84
+Ouest,2018,Plantation,16312.55,184.37,16.31
+Ouest,2019,Forêt dense,75454.37,1227.28,75.45
+Ouest,2019,Forêt secondaire,44951.35,252.43,44.95
+Ouest,2019,Savane,67703.92,614.8,67.7
+Ouest,2019,Mangrove,3657.78,67.11,3.66
+Ouest,2019,Plantation,17269.27,136.54,17.27
+Ouest,2020,Forêt dense,71948.07,1402.6,71.95
+Ouest,2020,Forêt secondaire,41915.59,404.22,41.92
+Ouest,2020,Savane,64777.77,761.11,64.78
+Ouest,2020,Mangrove,3625.49,68.73,3.63
+Ouest,2020,Plantation,16598.77,170.06,16.6
+Ouest,2021,Forêt dense,77913.52,1104.32,77.91
+Ouest,2021,Forêt secondaire,38148.88,592.56,38.15
+Ouest,2021,Savane,66335.84,683.21,66.34
+Ouest,2021,Mangrove,3687.44,65.63,3.69
+Ouest,2021,Plantation,16553.2,172.34,16.55
+Ouest,2022,Forêt dense,73260.89,1336.96,73.26
+Ouest,2022,Forêt secondaire,34570.5,771.47,34.57
+Ouest,2022,Savane,54459.23,1277.04,54.46
+Ouest,2022,Mangrove,3398.73,80.06,3.4
+Ouest,2022,Plantation,14604.31,269.78,14.6
+Ouest,2023,Forêt dense,68822.63,1558.87,68.82
+Ouest,2023,Forêt secondaire,41221.18,438.94,41.22
+Ouest,2023,Savane,59122.91,1043.85,59.12
+Ouest,2023,Mangrove,3552.99,72.35,3.55
+Ouest,2023,Plantation,15532.47,223.38,15.53
+Sud,2000,Forêt dense,100000.0,0.0,100.0
+Sud,2000,Forêt secondaire,50000.0,0.0,50.0
+Sud,2000,Savane,80000.0,0.0,80.0
+Sud,2000,Mangrove,5000.0,0.0,5.0
+Sud,2000,Plantation,20000.0,0.0,20.0
+Sud,2001,Forêt dense,98784.94,60.75,98.78
+Sud,2001,Forêt secondaire,49511.9,24.4,49.51
+Sud,2001,Savane,79422.08,28.9,79.42
+Sud,2001,Mangrove,4934.86,3.26,4.93
+Sud,2001,Plantation,19891.15,5.44,19.89
+Sud,2002,Forêt dense,97542.21,122.89,97.54
+Sud,2002,Forêt secondaire,49361.65,31.92,49.36
+Sud,2002,Savane,78205.54,89.72,78.21
+Sud,2002,Mangrove,4926.22,3.69,4.93
+Sud,2002,Plantation,19495.65,25.22,19.5
+Sud,2003,Forêt dense,96859.68,157.02,96.86
+Sud,2003,Forêt secondaire,48378.01,81.1,48.38
+Sud,2003,Savane,77200.21,139.99,77.2
+Sud,2003,Mangrove,4849.5,7.53,4.85
+Sud,2003,Plantation,19216.91,39.15,19.22
+Sud,2004,Forêt dense,95962.64,201.87,95.96
+Sud,2004,Forêt secondaire,48139.41,93.03,48.14
+Sud,2004,Savane,77755.79,112.21,77.76
+Sud,2004,Mangrove,4725.31,13.73,4.73
+Sud,2004,Plantation,19420.64,28.97,19.42
+Sud,2005,Forêt dense,93163.54,341.82,93.16
+Sud,2005,Forêt secondaire,48338.55,83.07,48.34
+Sud,2005,Savane,74091.56,295.42,74.09
+Sud,2005,Mangrove,4776.87,11.16,4.78
+Sud,2005,Plantation,19038.88,48.06,19.04
+Sud,2006,Forêt dense,95085.51,245.72,95.09
+Sud,2006,Forêt secondaire,48193.82,90.31,48.19
+Sud,2006,Savane,75555.92,222.2,75.56
+Sud,2006,Mangrove,4706.77,14.66,4.71
+Sud,2006,Plantation,18558.4,72.08,18.56
+Sud,2007,Forêt dense,95451.73,227.41,95.45
+Sud,2007,Forêt secondaire,45399.25,230.04,45.4
+Sud,2007,Savane,76104.12,194.79,76.1
+Sud,2007,Mangrove,4770.82,11.46,4.77
+Sud,2007,Plantation,18467.1,76.64,18.47
+Sud,2008,Forêt dense,90107.45,494.63,90.11
+Sud,2008,Forêt secondaire,46469.11,176.54,46.47
+Sud,2008,Savane,71837.81,408.11,71.84
+Sud,2008,Mangrove,4718.95,14.05,4.72
+Sud,2008,Plantation,18346.66,82.67,18.35
+Sud,2009,Forêt dense,94149.79,292.51,94.15
+Sud,2009,Forêt secondaire,45497.29,225.14,45.5
+Sud,2009,Savane,75968.46,201.58,75.97
+Sud,2009,Mangrove,4476.86,26.16,4.48
+Sud,2009,Plantation,18645.46,67.73,18.65
+Sud,2010,Forêt dense,91385.44,430.73,91.39
+Sud,2010,Forêt secondaire,43667.97,316.6,43.67
+Sud,2010,Savane,70750.4,462.48,70.75
+Sud,2010,Mangrove,4645.31,17.73,4.65
+Sud,2010,Plantation,18392.72,80.36,18.39
+Sud,2011,Forêt dense,88264.18,586.79,88.26
+Sud,2011,Forêt secondaire,43752.22,312.39,43.75
+Sud,2011,Savane,72644.76,367.76,72.64
+Sud,2011,Mangrove,4617.97,19.1,4.62
+Sud,2011,Plantation,18183.69,90.82,18.18
+Sud,2012,Forêt dense,89277.49,536.13,89.28
+Sud,2012,Forêt secondaire,42170.06,391.5,42.17
+Sud,2012,Savane,67598.15,620.09,67.6
+Sud,2012,Mangrove,4129.99,43.5,4.13
+Sud,2012,Plantation,18719.12,64.04,18.72
+Sud,2013,Forêt dense,89017.96,549.1,89.02
+Sud,2013,Forêt secondaire,42682.97,365.85,42.68
+Sud,2013,Savane,68876.7,556.17,68.88
+Sud,2013,Mangrove,4338.78,33.06,4.34
+Sud,2013,Plantation,17824.49,108.78,17.82
+Sud,2014,Forêt dense,83559.67,822.02,83.56
+Sud,2014,Forêt secondaire,41179.01,441.05,41.18
+Sud,2014,Savane,70276.16,486.19,70.28
+Sud,2014,Mangrove,4250.58,37.47,4.25
+Sud,2014,Plantation,18514.36,74.28,18.51
+Sud,2015,Forêt dense,87509.13,624.54,87.51
+Sud,2015,Forêt secondaire,43083.65,345.82,43.08
+Sud,2015,Savane,71533.4,423.33,71.53
+Sud,2015,Mangrove,3912.6,54.37,3.91
+Sud,2015,Plantation,15705.83,214.71,15.71
+Sud,2016,Forêt dense,91051.67,447.42,91.05
+Sud,2016,Forêt secondaire,42987.03,350.65,42.99
+Sud,2016,Savane,71789.33,410.53,71.79
+Sud,2016,Mangrove,4562.14,21.89,4.56
+Sud,2016,Plantation,17500.06,125.0,17.5
+Sud,2017,Forêt dense,84153.86,792.31,84.15
+Sud,2017,Forêt secondaire,41484.04,425.8,41.48
+Sud,2017,Savane,64368.75,781.56,64.37
+Sud,2017,Mangrove,3857.34,57.13,3.86
+Sud,2017,Plantation,16730.85,163.46,16.73
+Sud,2018,Forêt dense,79727.8,1013.61,79.73
+Sud,2018,Forêt secondaire,43512.65,324.37,43.51
+Sud,2018,Savane,66010.22,699.49,66.01
+Sud,2018,Mangrove,3774.94,61.25,3.77
+Sud,2018,Plantation,16502.42,174.88,16.5
+Sud,2019,Forêt dense,84377.37,781.13,84.38
+Sud,2019,Forêt secondaire,38588.08,570.6,38.59
+Sud,2019,Savane,71705.4,414.73,71.71
+Sud,2019,Mangrove,3998.97,50.05,4.0
+Sud,2019,Plantation,15037.27,248.14,15.04
+Sud,2020,Forêt dense,86615.85,669.21,86.62
+Sud,2020,Forêt secondaire,35156.44,742.18,35.16
+Sud,2020,Savane,63291.03,835.45,63.29
+Sud,2020,Mangrove,3914.04,54.3,3.91
+Sud,2020,Plantation,14903.92,254.8,14.9
+Sud,2021,Forêt dense,85458.89,727.06,85.46
+Sud,2021,Forêt secondaire,34566.83,771.66,34.57
+Sud,2021,Savane,71540.34,422.98,71.54
+Sud,2021,Mangrove,3902.21,54.89,3.9
+Sud,2021,Plantation,16902.83,154.86,16.9
+Sud,2022,Forêt dense,77452.19,1127.39,77.45
+Sud,2022,Forêt secondaire,34706.81,764.66,34.71
+Sud,2022,Savane,60627.16,968.64,60.63
+Sud,2022,Mangrove,3686.71,65.66,3.69
+Sud,2022,Plantation,15024.36,248.78,15.02
+Sud,2023,Forêt dense,77234.55,1138.27,77.23
+Sud,2023,Forêt secondaire,33961.87,801.91,33.96
+Sud,2023,Savane,63920.18,803.99,63.92
+Sud,2023,Mangrove,4396.71,30.16,4.4
+Sud,2023,Plantation,16439.96,178.0,16.44
+Sud-Ouest,2000,Forêt dense,100000.0,0.0,100.0
+Sud-Ouest,2000,Forêt secondaire,50000.0,0.0,50.0
+Sud-Ouest,2000,Savane,80000.0,0.0,80.0
+Sud-Ouest,2000,Mangrove,5000.0,0.0,5.0
+Sud-Ouest,2000,Plantation,20000.0,0.0,20.0
+Sud-Ouest,2001,Forêt dense,98932.94,53.35,98.93
+Sud-Ouest,2001,Forêt secondaire,49685.07,15.75,49.69
+Sud-Ouest,2001,Savane,79111.17,44.44,79.11
+Sud-Ouest,2001,Mangrove,4962.28,1.89,4.96
+Sud-Ouest,2001,Plantation,19739.45,13.03,19.74
+Sud-Ouest,2002,Forêt dense,98034.49,98.28,98.03
+Sud-Ouest,2002,Forêt secondaire,49137.78,43.11,49.14
+Sud-Ouest,2002,Savane,78691.65,65.42,78.69
+Sud-Ouest,2002,Mangrove,4940.05,3.0,4.94
+Sud-Ouest,2002,Plantation,19755.17,12.24,19.76
+Sud-Ouest,2003,Forêt dense,98070.36,96.48,98.07
+Sud-Ouest,2003,Forêt secondaire,49109.33,44.53,49.11
+Sud-Ouest,2003,Savane,76526.12,173.69,76.53
+Sud-Ouest,2003,Mangrove,4877.34,6.13,4.88
+Sud-Ouest,2003,Plantation,19184.38,40.78,19.18
+Sud-Ouest,2004,Forêt dense,96438.69,178.07,96.44
+Sud-Ouest,2004,Forêt secondaire,48524.94,73.75,48.52
+Sud-Ouest,2004,Savane,77139.21,143.04,77.14
+Sud-Ouest,2004,Mangrove,4788.55,10.57,4.79
+Sud-Ouest,2004,Plantation,19159.29,42.04,19.16
+Sud-Ouest,2005,Forêt dense,96810.32,159.48,96.81
+Sud-Ouest,2005,Forêt secondaire,48020.8,98.96,48.02
+Sud-Ouest,2005,Savane,76433.29,178.34,76.43
+Sud-Ouest,2005,Mangrove,4660.3,16.99,4.66
+Sud-Ouest,2005,Plantation,19399.97,30.0,19.4
+Sud-Ouest,2006,Forêt dense,96911.85,154.41,96.91
+Sud-Ouest,2006,Forêt secondaire,48155.01,92.25,48.16
+Sud-Ouest,2006,Savane,73815.91,309.2,73.82
+Sud-Ouest,2006,Mangrove,4795.05,10.25,4.8
+Sud-Ouest,2006,Plantation,18586.19,70.69,18.59
+Sud-Ouest,2007,Forêt dense,89736.33,513.18,89.74
+Sud-Ouest,2007,Forêt secondaire,46503.37,174.83,46.5
+Sud-Ouest,2007,Savane,73398.08,330.1,73.4
+Sud-Ouest,2007,Mangrove,4491.24,25.44,4.49
+Sud-Ouest,2007,Plantation,18261.05,86.95,18.26
+Sud-Ouest,2008,Forêt dense,89895.18,505.24,89.9
+Sud-Ouest,2008,Forêt secondaire,47804.46,109.78,47.8
+Sud-Ouest,2008,Savane,70672.29,466.39,70.67
+Sud-Ouest,2008,Mangrove,4604.97,19.75,4.6
+Sud-Ouest,2008,Plantation,19195.3,40.24,19.2
+Sud-Ouest,2009,Forêt dense,95010.25,249.49,95.01
+Sud-Ouest,2009,Forêt secondaire,47135.31,143.23,47.14
+Sud-Ouest,2009,Savane,69478.33,526.08,69.48
+Sud-Ouest,2009,Mangrove,4356.12,32.19,4.36
+Sud-Ouest,2009,Plantation,17481.12,125.94,17.48
+Sud-Ouest,2010,Forêt dense,85574.69,721.27,85.57
+Sud-Ouest,2010,Forêt secondaire,44049.92,297.5,44.05
+Sud-Ouest,2010,Savane,68603.2,569.84,68.6
+Sud-Ouest,2010,Mangrove,4415.91,29.2,4.42
+Sud-Ouest,2010,Plantation,18368.4,81.58,18.37
+Sud-Ouest,2011,Forêt dense,92087.83,395.61,92.09
+Sud-Ouest,2011,Forêt secondaire,43584.79,320.76,43.58
+Sud-Ouest,2011,Savane,73777.14,311.14,73.78
+Sud-Ouest,2011,Mangrove,4336.14,33.19,4.34
+Sud-Ouest,2011,Plantation,18661.47,66.93,18.66
+Sud-Ouest,2012,Forêt dense,89004.65,549.77,89.0
+Sud-Ouest,2012,Forêt secondaire,43214.32,339.28,43.21
+Sud-Ouest,2012,Savane,66535.55,673.22,66.54
+Sud-Ouest,2012,Mangrove,4179.59,41.02,4.18
+Sud-Ouest,2012,Plantation,18542.69,72.87,18.54
+Sud-Ouest,2013,Forêt dense,91659.91,417.0,91.66
+Sud-Ouest,2013,Forêt secondaire,44922.46,253.88,44.92
+Sud-Ouest,2013,Savane,69024.04,548.8,69.02
+Sud-Ouest,2013,Mangrove,4474.82,26.26,4.47
+Sud-Ouest,2013,Plantation,17217.34,139.13,17.22
+Sud-Ouest,2014,Forêt dense,91435.63,428.22,91.44
+Sud-Ouest,2014,Forêt secondaire,44422.05,278.9,44.42
+Sud-Ouest,2014,Savane,67263.72,636.81,67.26
+Sud-Ouest,2014,Mangrove,4648.23,17.59,4.65
+Sud-Ouest,2014,Plantation,18353.21,82.34,18.35
+Sud-Ouest,2015,Forêt dense,79924.19,1003.79,79.92
+Sud-Ouest,2015,Forêt secondaire,45598.77,220.06,45.6
+Sud-Ouest,2015,Savane,63542.0,822.9,63.54
+Sud-Ouest,2015,Mangrove,3944.5,52.78,3.94
+Sud-Ouest,2015,Plantation,17719.38,114.03,17.72
+Sud-Ouest,2016,Forêt dense,91893.2,405.34,91.89
+Sud-Ouest,2016,Forêt secondaire,42416.79,379.16,42.42
+Sud-Ouest,2016,Savane,66178.38,691.08,66.18
+Sud-Ouest,2016,Mangrove,4078.76,46.06,4.08
+Sud-Ouest,2016,Plantation,16902.16,154.89,16.9
+Sud-Ouest,2017,Forêt dense,74618.21,1269.09,74.62
+Sud-Ouest,2017,Forêt secondaire,45228.91,238.55,45.23
+Sud-Ouest,2017,Savane,62562.3,871.88,62.56
+Sud-Ouest,2017,Mangrove,4434.55,28.27,4.43
+Sud-Ouest,2017,Plantation,15826.14,208.69,15.83
+Sud-Ouest,2018,Forêt dense,86294.53,685.27,86.29
+Sud-Ouest,2018,Forêt secondaire,44141.62,292.92,44.14
+Sud-Ouest,2018,Savane,70076.21,496.19,70.08
+Sud-Ouest,2018,Mangrove,3877.78,56.11,3.88
+Sud-Ouest,2018,Plantation,17307.95,134.6,17.31
+Sud-Ouest,2019,Forêt dense,80474.66,976.27,80.47
+Sud-Ouest,2019,Forêt secondaire,36448.51,677.57,36.45
+Sud-Ouest,2019,Savane,59744.6,1012.77,59.74
+Sud-Ouest,2019,Mangrove,4400.15,29.99,4.4
+Sud-Ouest,2019,Plantation,16794.97,160.25,16.79
+Sud-Ouest,2020,Forêt dense,87071.22,646.44,87.07
+Sud-Ouest,2020,Forêt secondaire,43864.1,306.79,43.86
+Sud-Ouest,2020,Savane,69343.4,532.83,69.34
+Sud-Ouest,2020,Mangrove,3529.56,73.52,3.53
+Sud-Ouest,2020,Plantation,17797.95,110.1,17.8
+Sud-Ouest,2021,Forêt dense,83628.51,818.57,83.63
+Sud-Ouest,2021,Forêt secondaire,35761.48,711.93,35.76
+Sud-Ouest,2021,Savane,71596.09,420.2,71.6
+Sud-Ouest,2021,Mangrove,3599.48,70.03,3.6
+Sud-Ouest,2021,Plantation,16265.02,186.75,16.27
+Sud-Ouest,2022,Forêt dense,78591.56,1070.42,78.59
+Sud-Ouest,2022,Forêt secondaire,44464.47,276.78,44.46
+Sud-Ouest,2022,Savane,65180.66,740.97,65.18
+Sud-Ouest,2022,Mangrove,3510.29,74.49,3.51
+Sud-Ouest,2022,Plantation,16888.23,155.59,16.89
+Sud-Ouest,2023,Forêt dense,76451.07,1177.45,76.45
+Sud-Ouest,2023,Forêt secondaire,35442.1,727.9,35.44
+Sud-Ouest,2023,Savane,57616.01,1119.2,57.62
+Sud-Ouest,2023,Mangrove,3796.81,60.16,3.8
+Sud-Ouest,2023,Plantation,14203.87,289.81,14.2

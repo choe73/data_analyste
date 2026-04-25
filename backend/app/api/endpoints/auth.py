@@ -1,15 +1,16 @@
 """Authentication endpoints."""
 
-from datetime import timedelta
+from datetime import timedelta, datetime
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status, Cookie, Response
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from app.core.database import get_db
 from app.core.config import settings
+from app.core.auth import get_current_user, get_current_active_user
 from app.models.user import User, UserConsent
 from app.schemas.user import (
     UserCreate,
@@ -27,48 +28,6 @@ from app.utils.security import (
 )
 
 router = APIRouter()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
-
-
-async def get_current_user(
-    token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)
-) -> User:
-    """Get current authenticated user."""
-    from jose import JWTError, jwt
-
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-
-    try:
-        payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
-        )
-        user_id: str = payload.get("sub")
-        if user_id is None:
-            raise credentials_exception
-    except JWTError:
-        raise credentials_exception
-
-    query = select(User).where(User.id == int(user_id))
-    result = await db.execute(query)
-    user = result.scalar_one_or_none()
-
-    if user is None:
-        raise credentials_exception
-
-    return user
-
-
-async def get_current_active_user(
-    current_user: User = Depends(get_current_user),
-) -> User:
-    """Check if user is active."""
-    if not current_user.is_active:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    return current_user
 
 
 @router.post("/register", response_model=User, status_code=status.HTTP_201_CREATED)
@@ -121,8 +80,6 @@ async def login(
         raise HTTPException(status_code=400, detail="Inactive user")
 
     # Update last login
-    from datetime import datetime
-
     user.last_login = datetime.utcnow()
     await db.commit()
 

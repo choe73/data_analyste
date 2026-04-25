@@ -42,6 +42,8 @@ class User(Base):
     consents = relationship(
         "UserConsent", back_populates="user", lazy="selectin", uselist=False
     )
+    forms = relationship("Form", back_populates="owner", lazy="selectin")
+    data_imports = relationship("DataImport", back_populates="owner", lazy="selectin")
 
 
 class Subscription(Base):

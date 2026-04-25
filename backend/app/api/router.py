@@ -12,6 +12,9 @@ from app.api.endpoints import (
     analytics,
     consent,
     feedback,
+    forms,
+    public_forms,
+    imports,
 )
 
 # Main API router
@@ -31,3 +34,6 @@ api_router.include_router(
 api_router.include_router(analytics.router, prefix="/analytics", tags=["Analytics"])
 api_router.include_router(consent.router, prefix="/consent", tags=["Consent"])
 api_router.include_router(feedback.router, prefix="/feedback", tags=["Feedback"])
+api_router.include_router(forms.router, prefix="/forms", tags=["Forms"])
+api_router.include_router(public_forms.router, prefix="/public/forms", tags=["Public Forms"])
+api_router.include_router(imports.router, prefix="/imports", tags=["Data Import"])

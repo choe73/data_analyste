@@ -7,6 +7,11 @@ import { Analysis } from '@/pages/Analysis'
 import { DataCollection } from '@/pages/DataCollection'
 import { Models } from '@/pages/Models'
 import { Settings } from '@/pages/Settings'
+import { CookieConsent } from '@/components/CookieConsent'
+import FormsList from '@/pages/FormsList'
+import FormBuilder from '@/pages/FormBuilder'
+import DataImportPage from '@/pages/DataImport'
+import PublicForm from '@/pages/PublicForm'
 
 function App() {
   return (
@@ -19,8 +24,15 @@ function App() {
           <Route path="/collection" element={<DataCollection />} />
           <Route path="/models" element={<Models />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/forms" element={<FormsList />} />
+          <Route path="/forms/new" element={<FormBuilder />} />
+          <Route path="/import" element={<DataImportPage />} />
         </Routes>
       </MainLayout>
+      <Routes>
+        <Route path="/f/:shareToken" element={<PublicForm />} />
+      </Routes>
+      <CookieConsent />
       <Toaster />
     </>
   )

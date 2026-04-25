@@ -1,0 +1,5 @@
+fichier,lignes,colonnes,taille_kb,periode
+prix_alimentaires_inflation.csv,24,8,2.93,2000-2023
+acces_services_base.csv,24,9,3.07,2000-2023
+infrastructures.csv,24,7,2.18,2000-2023
+demographie.csv,24,7,2.09,2000-2023

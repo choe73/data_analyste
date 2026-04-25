@@ -56,23 +56,23 @@ export function Analysis() {
         <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5">
           <TabsTrigger value="descriptive">
             <BarChart3 className="w-4 h-4 mr-2" />
-            Descriptive
+            0-Statistiques Descriptives
           </TabsTrigger>
           <TabsTrigger value="regression">
             <LineChart className="w-4 h-4 mr-2" />
-            Régression
+            1-Régression Linéaire
           </TabsTrigger>
           <TabsTrigger value="pca">
             <PieChart className="w-4 h-4 mr-2" />
-            ACP
+            2-Réduction Dimensions
           </TabsTrigger>
           <TabsTrigger value="classification">
             <Activity className="w-4 h-4 mr-2" />
-            Classification
+            3-Classification Supervisée
           </TabsTrigger>
           <TabsTrigger value="clustering">
             <BarChart3 className="w-4 h-4 mr-2" />
-            Clustering
+            4-Classification Non-Supervisée
           </TabsTrigger>
         </TabsList>
 

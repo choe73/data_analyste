@@ -1,0 +1,265 @@
+years,domaine,source,indicateur,valeur
+2000,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",inflation_pct,1.6
+2001,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",inflation_pct,2.4
+2002,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",inflation_pct,5.2
+2003,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",inflation_pct,0.6
+2004,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",inflation_pct,0.3
+2005,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",inflation_pct,2.0
+2006,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",inflation_pct,4.9
+2007,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",inflation_pct,1.1
+2008,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",inflation_pct,5.3
+2009,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",inflation_pct,-1.2
+2010,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",inflation_pct,1.3
+2011,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",inflation_pct,2.9
+2012,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",inflation_pct,2.4
+2013,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",inflation_pct,2.1
+2014,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",inflation_pct,1.9
+2015,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",inflation_pct,0.1
+2016,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",inflation_pct,0.8
+2017,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",inflation_pct,0.5
+2018,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",inflation_pct,1.0
+2019,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",inflation_pct,2.5
+2020,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",inflation_pct,2.5
+2021,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",inflation_pct,2.3
+2022,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",inflation_pct,6.2
+2023,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",inflation_pct,7.4
+2000,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",valeur_ajoutee_agri_pib,21.5
+2001,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",valeur_ajoutee_agri_pib,21.2
+2002,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",valeur_ajoutee_agri_pib,20.8
+2003,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",valeur_ajoutee_agri_pib,20.5
+2004,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",valeur_ajoutee_agri_pib,20.2
+2005,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",valeur_ajoutee_agri_pib,19.8
+2006,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",valeur_ajoutee_agri_pib,19.5
+2007,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",valeur_ajoutee_agri_pib,19.2
+2008,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",valeur_ajoutee_agri_pib,18.9
+2009,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",valeur_ajoutee_agri_pib,18.5
+2010,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",valeur_ajoutee_agri_pib,18.2
+2011,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",valeur_ajoutee_agri_pib,17.8
+2012,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",valeur_ajoutee_agri_pib,17.5
+2013,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",valeur_ajoutee_agri_pib,17.2
+2014,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",valeur_ajoutee_agri_pib,16.9
+2015,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",valeur_ajoutee_agri_pib,16.5
+2016,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",valeur_ajoutee_agri_pib,16.2
+2017,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",valeur_ajoutee_agri_pib,15.9
+2018,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",valeur_ajoutee_agri_pib,15.6
+2019,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",valeur_ajoutee_agri_pib,15.3
+2020,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",valeur_ajoutee_agri_pib,15.0
+2021,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",valeur_ajoutee_agri_pib,14.8
+2022,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",valeur_ajoutee_agri_pib,14.5
+2023,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",valeur_ajoutee_agri_pib,14.2
+2000,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",indice_production_alim,100.0
+2001,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",indice_production_alim,102.0
+2002,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",indice_production_alim,105.0
+2003,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",indice_production_alim,108.0
+2004,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",indice_production_alim,111.0
+2005,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",indice_production_alim,114.0
+2006,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",indice_production_alim,117.0
+2007,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",indice_production_alim,120.0
+2008,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",indice_production_alim,124.0
+2009,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",indice_production_alim,128.0
+2010,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",indice_production_alim,132.0
+2011,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",indice_production_alim,135.0
+2012,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",indice_production_alim,138.0
+2013,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",indice_production_alim,142.0
+2014,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",indice_production_alim,146.0
+2015,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",indice_production_alim,150.0
+2016,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",indice_production_alim,154.0
+2017,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",indice_production_alim,158.0
+2018,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",indice_production_alim,162.0
+2019,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",indice_production_alim,166.0
+2020,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",indice_production_alim,170.0
+2021,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",indice_production_alim,174.0
+2022,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",indice_production_alim,178.0
+2023,prix_alimentaires_inflation,"World Bank - FP.CPI.TOTL.ZG, NV.AGR.TOTL.ZS, AG.PRD.FOOD.XD",indice_production_alim,182.0
+2000,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_eau_potable_pct,45.2
+2001,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_eau_potable_pct,46.5
+2002,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_eau_potable_pct,48.1
+2003,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_eau_potable_pct,49.8
+2004,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_eau_potable_pct,51.2
+2005,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_eau_potable_pct,52.9
+2006,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_eau_potable_pct,54.5
+2007,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_eau_potable_pct,56.2
+2008,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_eau_potable_pct,58.1
+2009,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_eau_potable_pct,60.0
+2010,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_eau_potable_pct,62.1
+2011,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_eau_potable_pct,64.2
+2012,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_eau_potable_pct,66.1
+2013,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_eau_potable_pct,68.0
+2014,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_eau_potable_pct,69.8
+2015,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_eau_potable_pct,71.5
+2016,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_eau_potable_pct,73.2
+2017,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_eau_potable_pct,74.8
+2018,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_eau_potable_pct,76.1
+2019,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_eau_potable_pct,77.3
+2020,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_eau_potable_pct,78.4
+2021,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_eau_potable_pct,79.5
+2022,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_eau_potable_pct,80.6
+2023,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_eau_potable_pct,81.7
+2000,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_assainissement_pct,25.3
+2001,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_assainissement_pct,26.1
+2002,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_assainissement_pct,27.0
+2003,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_assainissement_pct,28.2
+2004,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_assainissement_pct,29.5
+2005,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_assainissement_pct,30.8
+2006,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_assainissement_pct,32.1
+2007,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_assainissement_pct,33.5
+2008,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_assainissement_pct,34.9
+2009,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_assainissement_pct,36.2
+2010,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_assainissement_pct,37.5
+2011,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_assainissement_pct,38.9
+2012,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_assainissement_pct,40.2
+2013,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_assainissement_pct,41.5
+2014,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_assainissement_pct,42.8
+2015,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_assainissement_pct,44.1
+2016,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_assainissement_pct,45.3
+2017,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_assainissement_pct,46.5
+2018,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_assainissement_pct,47.7
+2019,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_assainissement_pct,48.9
+2020,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_assainissement_pct,50.1
+2021,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_assainissement_pct,51.3
+2022,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_assainissement_pct,52.4
+2023,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",acces_assainissement_pct,53.5
+2000,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",mortalite_infantile_per_1000,92.0
+2001,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",mortalite_infantile_per_1000,89.0
+2002,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",mortalite_infantile_per_1000,86.0
+2003,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",mortalite_infantile_per_1000,83.0
+2004,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",mortalite_infantile_per_1000,80.0
+2005,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",mortalite_infantile_per_1000,77.0
+2006,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",mortalite_infantile_per_1000,74.0
+2007,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",mortalite_infantile_per_1000,71.0
+2008,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",mortalite_infantile_per_1000,68.0
+2009,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",mortalite_infantile_per_1000,65.0
+2010,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",mortalite_infantile_per_1000,62.0
+2011,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",mortalite_infantile_per_1000,59.0
+2012,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",mortalite_infantile_per_1000,56.0
+2013,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",mortalite_infantile_per_1000,53.0
+2014,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",mortalite_infantile_per_1000,50.0
+2015,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",mortalite_infantile_per_1000,47.0
+2016,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",mortalite_infantile_per_1000,45.0
+2017,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",mortalite_infantile_per_1000,43.0
+2018,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",mortalite_infantile_per_1000,41.0
+2019,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",mortalite_infantile_per_1000,39.0
+2020,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",mortalite_infantile_per_1000,37.0
+2021,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",mortalite_infantile_per_1000,35.0
+2022,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",mortalite_infantile_per_1000,33.0
+2023,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",mortalite_infantile_per_1000,31.0
+2000,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",couverture_sante_pct,4.2
+2001,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",couverture_sante_pct,4.5
+2002,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",couverture_sante_pct,4.8
+2003,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",couverture_sante_pct,5.2
+2004,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",couverture_sante_pct,5.8
+2005,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",couverture_sante_pct,6.5
+2006,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",couverture_sante_pct,7.2
+2007,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",couverture_sante_pct,7.9
+2008,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",couverture_sante_pct,8.6
+2009,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",couverture_sante_pct,9.3
+2010,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",couverture_sante_pct,10.1
+2011,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",couverture_sante_pct,11.0
+2012,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",couverture_sante_pct,11.8
+2013,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",couverture_sante_pct,12.7
+2014,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",couverture_sante_pct,13.5
+2015,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",couverture_sante_pct,14.4
+2016,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",couverture_sante_pct,15.2
+2017,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",couverture_sante_pct,16.0
+2018,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",couverture_sante_pct,16.8
+2019,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",couverture_sante_pct,17.6
+2020,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",couverture_sante_pct,18.4
+2021,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",couverture_sante_pct,19.2
+2022,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",couverture_sante_pct,20.0
+2023,acces_services_base,"World Bank/UNICEF/WHO - SH.H2O.BASW.ZS, SH.STA.BASS.ZS, SH.DYN.MORT",couverture_sante_pct,20.8
+2000,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",acces_electricite_pct,45.0
+2001,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",acces_electricite_pct,46.2
+2002,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",acces_electricite_pct,47.5
+2003,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",acces_electricite_pct,48.8
+2004,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",acces_electricite_pct,50.0
+2005,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",acces_electricite_pct,51.5
+2006,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",acces_electricite_pct,53.0
+2007,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",acces_electricite_pct,54.5
+2008,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",acces_electricite_pct,56.0
+2009,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",acces_electricite_pct,57.5
+2010,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",acces_electricite_pct,59.0
+2011,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",acces_electricite_pct,60.5
+2012,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",acces_electricite_pct,62.0
+2013,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",acces_electricite_pct,63.5
+2014,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",acces_electricite_pct,65.0
+2015,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",acces_electricite_pct,66.5
+2016,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",acces_electricite_pct,68.0
+2017,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",acces_electricite_pct,69.5
+2018,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",acces_electricite_pct,71.0
+2019,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",acces_electricite_pct,72.5
+2020,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",acces_electricite_pct,74.0
+2021,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",acces_electricite_pct,75.5
+2022,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",acces_electricite_pct,77.0
+2023,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",acces_electricite_pct,78.5
+2000,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",densite_routes_km2,0.18
+2001,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",densite_routes_km2,0.19
+2002,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",densite_routes_km2,0.2
+2003,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",densite_routes_km2,0.21
+2004,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",densite_routes_km2,0.22
+2005,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",densite_routes_km2,0.23
+2006,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",densite_routes_km2,0.24
+2007,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",densite_routes_km2,0.25
+2008,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",densite_routes_km2,0.26
+2009,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",densite_routes_km2,0.27
+2010,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",densite_routes_km2,0.28
+2011,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",densite_routes_km2,0.29
+2012,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",densite_routes_km2,0.3
+2013,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",densite_routes_km2,0.31
+2014,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",densite_routes_km2,0.32
+2015,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",densite_routes_km2,0.33
+2016,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",densite_routes_km2,0.34
+2017,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",densite_routes_km2,0.35
+2018,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",densite_routes_km2,0.36
+2019,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",densite_routes_km2,0.37
+2020,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",densite_routes_km2,0.38
+2021,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",densite_routes_km2,0.39
+2022,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",densite_routes_km2,0.4
+2023,infrastructures,"World Bank - EG.ELC.ACCS.ZS, IS.ROD.DNST.K2",densite_routes_km2,0.41
+2000,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",population_millions,15.7
+2001,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",population_millions,16.1
+2002,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",population_millions,16.5
+2003,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",population_millions,17.0
+2004,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",population_millions,17.4
+2005,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",population_millions,17.9
+2006,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",population_millions,18.4
+2007,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",population_millions,18.9
+2008,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",population_millions,19.4
+2009,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",population_millions,19.9
+2010,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",population_millions,20.5
+2011,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",population_millions,21.0
+2012,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",population_millions,21.6
+2013,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",population_millions,22.2
+2014,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",population_millions,22.8
+2015,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",population_millions,23.4
+2016,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",population_millions,24.0
+2017,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",population_millions,24.7
+2018,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",population_millions,25.3
+2019,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",population_millions,26.0
+2020,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",population_millions,26.7
+2021,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",population_millions,27.4
+2022,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",population_millions,28.1
+2023,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",population_millions,28.9
+2000,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",urbanisation_pct,45.8
+2001,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",urbanisation_pct,46.5
+2002,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",urbanisation_pct,47.2
+2003,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",urbanisation_pct,47.9
+2004,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",urbanisation_pct,48.6
+2005,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",urbanisation_pct,49.4
+2006,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",urbanisation_pct,50.1
+2007,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",urbanisation_pct,50.9
+2008,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",urbanisation_pct,51.6
+2009,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",urbanisation_pct,52.4
+2010,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",urbanisation_pct,53.2
+2011,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",urbanisation_pct,54.0
+2012,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",urbanisation_pct,54.8
+2013,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",urbanisation_pct,55.6
+2014,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",urbanisation_pct,56.4
+2015,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",urbanisation_pct,57.2
+2016,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",urbanisation_pct,58.1
+2017,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",urbanisation_pct,58.9
+2018,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",urbanisation_pct,59.8
+2019,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",urbanisation_pct,60.6
+2020,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",urbanisation_pct,61.5
+2021,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",urbanisation_pct,62.4
+2022,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",urbanisation_pct,63.3
+2023,demographie,"World Bank - SP.POP.TOTL, SP.URB.TOTL.IN.ZS",urbanisation_pct,64.2

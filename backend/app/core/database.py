@@ -46,6 +46,7 @@ async def init_db():
             ml_models,
             analysis_results,
             celery_jobs,
+            user,
         )
 
         await conn.run_sync(Base.metadata.create_all)

@@ -2,7 +2,7 @@
 
 from typing import List, Optional
 from pydantic_settings import BaseSettings
-from pydantic import PostgresDsn, RedisDsn, validator
+from pydantic import PostgresDsn, RedisDsn, model_validator
 
 
 class Settings(BaseSettings):
@@ -18,30 +18,12 @@ class Settings(BaseSettings):
     POSTGRES_DB: str = "datacollect"
     POSTGRES_HOST: str = "db"
     POSTGRES_PORT: int = 5432
-    DATABASE_URL: Optional[PostgresDsn] = None
-
-    @validator("DATABASE_URL", pre=True)
-    def assemble_db_connection(cls, v: Optional[str], values: dict) -> str:
-        """Assemble database URL from components."""
-        if isinstance(v, str):
-            return v
-        return (
-            f"postgresql://{values.get('POSTGRES_USER')}:{values.get('POSTGRES_PASSWORD')}"
-            f"@{values.get('POSTGRES_HOST')}:{values.get('POSTGRES_PORT')}"
-            f"/{values.get('POSTGRES_DB')}"
-        )
+    DATABASE_URL: Optional[str] = None
 
     # Redis
-    REDIS_URL: Optional[RedisDsn] = None
+    REDIS_URL: Optional[str] = None
     REDIS_HOST: str = "redis"
     REDIS_PORT: int = 6379
-
-    @validator("REDIS_URL", pre=True)
-    def assemble_redis_url(cls, v: Optional[str], values: dict) -> str:
-        """Assemble Redis URL."""
-        if isinstance(v, str):
-            return v
-        return f"redis://{values.get('REDIS_HOST')}:{values.get('REDIS_PORT')}"
 
     # Celery
     CELERY_BROKER_URL: str = "redis://redis:6379/3"
@@ -69,6 +51,19 @@ class Settings(BaseSettings):
 
     # Render
     RENDER_EXTERNAL_URL: Optional[str] = None
+
+    @model_validator(mode="after")
+    def assemble_urls(self) -> "Settings":
+        """Assemble DATABASE_URL and REDIS_URL from components if not provided."""
+        if not self.DATABASE_URL:
+            host = self.POSTGRES_HOST or "localhost"
+            port = self.POSTGRES_PORT or 5432
+            self.DATABASE_URL = f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{host}:{port}/{self.POSTGRES_DB}"
+        if not self.REDIS_URL:
+            host = self.REDIS_HOST or "localhost"
+            port = self.REDIS_PORT or 6379
+            self.REDIS_URL = f"redis://{host}:{port}"
+        return self
 
     class Config:
         """Pydantic config."""

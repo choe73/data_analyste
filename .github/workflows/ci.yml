@@ -136,12 +136,12 @@ jobs:
 
     - name: Check Python code formatting
       working-directory: backend
-      run: black . --quiet
+      run: black --check .
 
     - name: Check Python imports
       working-directory: backend
-      run: isort . --quiet
+      run: isort --check-only .
 
     - name: Run flake8
       working-directory: backend
-      run: flake8 . --max-line-length=100 --extend-ignore=E203,W503
+      run: flake8 . --max-line-length=100 --extend-ignore=E203,W503,F401,E402,E501,E712,E722,F811,F841

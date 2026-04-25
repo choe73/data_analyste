@@ -1,0 +1,32 @@
+=== MATRICE DE CROISEMENT INTER-DOMAINES ===
+
+prix_alimentaires_inflation | demographie | years | Économique: impact démographie sur agriculture
+prix_alimentaires_inflation | infrastructures | years | Logistique: routes et distribution alimentaire
+acces_services_base | infrastructures | years | Santé: services de base et électricité
+acces_services_base | demographie | years | Planification: besoins santé vs population
+acces_services_base | prix_alimentaires_inflation | years | Santé publique: nutrition et prix alimentaires
+infrastructures | demographie | years | Urban: pression infrastructure vs croissance
+
+=== DOMAINES INTÉRESSANTS ===
+
+
+AGRICULTURE (Idée 1 - Prix Justes)
+  Données: ['inflation_pct', 'valeur_ajoutee_agri_pib', 'indice_production_alim']
+  Granularité: Annuelle, nationale
+  Opportunité: Ajouter données géo-localisées régionales (MINADER)
+  Croisements: ['Population', 'Routes', 'Inflation']
+  Crowdsourcing: Prix marchés locaux, disponibilité produits
+
+SANTÉ/ASSAINISSEMENT (Idée 3 - SaniCamer)
+  Données: ['acces_eau_potable_pct', 'acces_assainissement_pct', 'mortalite_infantile_per_1000']
+  Granularité: Annuelle, nationale
+  Opportunité: Cartographie quartiers, points noirs
+  Croisements: ['Urbanisation', 'Population', 'Electricité']
+  Crowdsourcing: Signalements dépôts sauvages, qualité eau
+
+INFRASTRUCTURES
+  Données: ['acces_electricite_pct', 'densite_routes_km2']
+  Granularité: Annuelle, nationale
+  Opportunité: Données géo-routières temps réel
+  Croisements: ['Agriculture', 'Santé', 'Urbanisation']
+  Crowdsourcing: État routes, pannes électricité

@@ -1,18 +1,28 @@
 """Pytest configuration and fixtures."""
 
+import os
 import pytest
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from httpx import AsyncClient
+from httpx import AsyncClient, ASGITransport
+
+# Set test environment variables before importing app
+os.environ["DATABASE_URL"] = "postgresql+asyncpg://postgres:postgres@localhost:5432/datacollect_test"
+os.environ["REDIS_URL"] = "redis://localhost:6379"
+os.environ["SECRET_KEY"] = "test-secret-key-for-ci"
+os.environ["ENVIRONMENT"] = "test"
+os.environ["DEBUG"] = "true"
 
 from app.main import app
 from app.core.database import Base, get_db
-from app.core.config import settings
 
 # Test database URL
-TEST_DATABASE_URL = "postgresql+asyncpg://postgres:postgres@db:5432/datacollect_test"
+TEST_DATABASE_URL = os.environ.get(
+    "TEST_DATABASE_URL",
+    "postgresql+asyncpg://postgres:postgres@localhost:5432/datacollect_test",
+)
 
 # Create test engine
-test_engine = create_async_engine(TEST_DATABASE_URL, echo=False)
+test_engine = create_async_engine(TEST_DATABASE_URL, echo=False, pool_pre_ping=True)
 TestingSessionLocal = async_sessionmaker(
     test_engine,
     class_=AsyncSession,
@@ -51,13 +61,13 @@ async def db_session(db_engine):
 @pytest.fixture
 async def client(db_session):
     """Create a test client."""
-
     async def override_get_db():
         yield db_session
 
     app.dependency_overrides[get_db] = override_get_db
 
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
         yield ac
 
     app.dependency_overrides.clear()

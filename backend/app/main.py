@@ -12,6 +12,7 @@ from app.core.config import settings
 from app.core.database import init_db
 from app.api.router import api_router
 from app.core.redis import redis_client
+from app.core.middleware import SubscriptionQuotaMiddleware, AnalyticsMiddleware
 
 # Configure logging
 logging.basicConfig(
@@ -61,6 +62,11 @@ app.add_middleware(
     TrustedHostMiddleware,
     allowed_hosts=settings.ALLOWED_HOSTS,
 )
+
+
+# AVENANT middlewares
+app.add_middleware(SubscriptionQuotaMiddleware)
+app.add_middleware(AnalyticsMiddleware)
 
 
 # Request timing middleware
