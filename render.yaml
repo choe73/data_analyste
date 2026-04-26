@@ -1,92 +1,25 @@
 services:
-  # Backend API
   - type: web
     name: datacollect-backend
-    env: python
-    buildCommand: |
-      cd backend && pip install -r requirements.txt
-      cd backend && alembic upgrade head
-    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    runtime: python
+    buildCommand: pip install -r backend/requirements-prod.txt
+    startCommand: cd backend && uvicorn app_prod:app --host 0.0.0.0 --port $PORT
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.0
       - key: DATABASE_URL
-        fromDatabase:
-          name: datacollect-db
-          property: connectionString
-      - key: REDIS_URL
-        fromService:
-          type: redis
-          name: datacollect-redis
-          property: connectionString
-      - key: SECRET_KEY
-        generateValue: true
+        value: postgresql+asyncpg://postgres:NJtz24HYFr9JNrNK@db.qsuemkbonmgfufpcscua.supabase.co:5432/postgres
       - key: ENVIRONMENT
         value: production
-      - key: CELERY_BROKER_URL
-        fromService:
-          type: redis
-          name: datacollect-redis
-          property: connectionString
-    healthCheckPath: /health
-
-  # Frontend
-  - type: web
+      - key: DEBUG
+        value: "False"
+    plan: free
+    region: oregon
+    
+  - type: static
     name: datacollect-frontend
-    env: static
-    buildCommand: cd frontend && npm install && npm run build
+    buildCommand: cd frontend && npm ci && npm run build
     staticPublishPath: frontend/dist
     envVars:
-      - key: NODE_VERSION
-        value: 20.11.0
-
-  # Celery Worker
-  - type: worker
-    name: datacollect-worker
-    env: python
-    buildCommand: cd backend && pip install -r requirements.txt
-    startCommand: cd backend && celery -A app.celery_app worker --loglevel=info
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.0
-      - key: DATABASE_URL
-        fromDatabase:
-          name: datacollect-db
-          property: connectionString
-      - key: REDIS_URL
-        fromService:
-          type: redis
-          name: datacollect-redis
-          property: connectionString
-
-  # Celery Beat (Scheduler)
-  - type: worker
-    name: datacollect-beat
-    env: python
-    buildCommand: cd backend && pip install -r requirements.txt
-    startCommand: cd backend && celery -A app.celery_app beat --loglevel=info
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.0
-      - key: DATABASE_URL
-        fromDatabase:
-          name: datacollect-db
-          property: connectionString
-      - key: REDIS_URL
-        fromService:
-          type: redis
-          name: datacollect-redis
-          property: connectionString
-
-# PostgreSQL Database
-databases:
-  - name: datacollect-db
-    databaseName: datacollect
-    user: datacollect
+      - key: VITE_API_URL
+        value: https://datacollect-backend.onrender.com
     plan: free
-
-# Redis Cache
-redis:
-  - name: datacollect-redis
-    plan: free
-    maxmemoryPolicy: allkeys-lru
+    region: oregon
