@@ -15,6 +15,7 @@ from app.api.endpoints import (
     forms,
     public_forms,
     imports,
+    cache,
 )
 
 # Main API router
@@ -28,6 +29,7 @@ api_router.include_router(analysis.router, prefix="/analysis", tags=["Analysis"]
 api_router.include_router(
     data_collection.router, prefix="/collect", tags=["Data Collection"]
 )
+api_router.include_router(cache.router, prefix="/cache", tags=["Cache"])
 api_router.include_router(
     subscriptions.router, prefix="/subscriptions", tags=["Subscriptions"]
 )
