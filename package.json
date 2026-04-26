@@ -1,0 +1,22 @@
+{
+  "name": "datacollect-pro-cameroun",
+  "version": "1.0.0",
+  "description": "DataCollect Pro Cameroun - Full stack data collection and analysis platform",
+  "private": true,
+  "scripts": {
+    "build": "cd frontend && npm ci --legacy-peer-deps && npm run build",
+    "dev": "cd frontend && npm run dev",
+    "preview": "cd frontend && npm run preview",
+    "lint": "cd frontend && npm run lint",
+    "test": "cd frontend && npm run test"
+  },
+  "keywords": [
+    "data-collection",
+    "analysis",
+    "cameroon",
+    "react",
+    "fastapi"
+  ],
+  "author": "choe73",
+  "license": "MIT"
+}
