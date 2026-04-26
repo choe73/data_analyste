@@ -8,6 +8,10 @@ export interface Dataset {
   description?: string;
   row_count: number;
   created_at: string;
+  source?: string;
+  domain?: string;
+  columns?: string[];
+  last_updated?: string;
 }
 
 export interface DataSource {
@@ -16,6 +20,7 @@ export interface DataSource {
   type: string;
   status: string;
   last_run?: string;
+  sources?: any[];
 }
 
 export interface Analysis {
@@ -25,6 +30,32 @@ export interface Analysis {
   description?: string;
   result?: string;
   created_at: string;
+}
+
+export interface DescriptiveRequest {
+  dataset_id: number;
+}
+
+export interface RegressionRequest {
+  dataset_id: number;
+  target_column: string;
+  feature_columns: string[];
+}
+
+export interface PCARequest {
+  dataset_id: number;
+  n_components: number;
+}
+
+export interface ClassificationRequest {
+  dataset_id: number;
+  target_column: string;
+  feature_columns: string[];
+}
+
+export interface ClusteringRequest {
+  dataset_id: number;
+  n_clusters: number;
 }
 
 export interface User {
