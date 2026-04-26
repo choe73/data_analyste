@@ -1,9 +1,14 @@
 import * as React from "react"
 
-import type { Toast, ToastActionElement } from "@/components/ui/toaster"
+export type Toast = {
+  title?: React.ReactNode
+  description?: React.ReactNode
+  action?: React.ReactNode
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+}
 
-const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 1000000
+export type ToastActionElement = React.ReactNode
 
 type ToasterToast = Toast & {
   id: string
@@ -21,9 +26,10 @@ const actionTypes = {
   REMOVE_TOAST: "REMOVE_TOAST",
 } as const
 
-let count = 0
+const TOAST_LIMIT = 1
+const TOAST_REMOVE_DELAY = 1000000
 
-function genId() {
+let count = 0function genId() {
   count = (count + 1) % Number.MAX_VALUE
   return count.toString()
 }
