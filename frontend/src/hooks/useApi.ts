@@ -1,4 +1,4 @@
-"""Custom hooks for API operations."""
+// Custom hooks for API operations.
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
