@@ -3,6 +3,7 @@
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
 from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.orm import relationship
 
 from app.core.database import Base
 
@@ -25,6 +26,9 @@ class MLModel(Base):
     dataset_id = Column(Integer, ForeignKey("datasets.id"))
     created_at = Column(DateTime, default=datetime.utcnow)
     is_active = Column(Boolean, default=False)
+
+    # Relationships
+    dataset = relationship("Dataset", back_populates="ml_models")
 
     def __repr__(self):
         return (

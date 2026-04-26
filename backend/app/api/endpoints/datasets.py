@@ -6,7 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 
 from app.core.database import get_db
-from app.schemas.datasets import Dataset, DatasetStats, DatasetQuery, PaginatedResponse
+from app.schemas.datasets import Dataset, DatasetStats, DatasetQuery
+from app.schemas.common import PaginatedResponse
 from app.services.dataset_service import DatasetService
 
 router = APIRouter()

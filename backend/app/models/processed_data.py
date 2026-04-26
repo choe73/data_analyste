@@ -30,7 +30,7 @@ class ProcessedData(Base):
     date_value = Column(DateTime, index=True)
     numeric_value = Column(Numeric(15, 5))
     string_value = Column(Text)
-    metadata = Column(JSONB)
+    meta_data = Column(JSONB)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationships
