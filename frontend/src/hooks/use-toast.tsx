@@ -4,6 +4,7 @@ export type Toast = {
   title?: React.ReactNode
   description?: React.ReactNode
   action?: React.ReactNode
+  variant?: "default" | "destructive"
   open?: boolean
   onOpenChange?: (open: boolean) => void
 }
@@ -15,6 +16,7 @@ type ToasterToast = Toast & {
   title?: React.ReactNode
   description?: React.ReactNode
   action?: ToastActionElement
+  variant?: "default" | "destructive"
   open?: boolean
   onOpenChange?: (open: boolean) => void
 }
