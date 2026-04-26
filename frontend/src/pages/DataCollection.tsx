@@ -3,7 +3,7 @@ import { getSources, triggerCollection, triggerAllCollections, getCollectionStat
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { CloudDownload, Play, RefreshCw, CheckCircle, XCircle, Clock } from 'lucide-react'
+import { Download, Play, RefreshCw, CheckCircle, XCircle, Clock } from 'lucide-react'
 import { useToast } from '@/components/ui/use-toast'
 import type { DataSource } from '@/types'
 
@@ -68,7 +68,7 @@ export function DataCollection() {
           onClick={() => collectAllMutation.mutate()}
           disabled={collectAllMutation.isPending}
         >
-          <CloudDownload className="w-4 h-4 mr-2" />
+          <Download className="w-4 h-4 mr-2" />
           {collectAllMutation.isPending ? 'Collecte en cours...' : 'Collecter toutes les sources'}
         </Button>
       </div>

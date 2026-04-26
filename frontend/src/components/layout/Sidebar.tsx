@@ -3,7 +3,7 @@ import {
   LayoutDashboard,
   Database,
   BarChart3,
-  CloudDownload,
+  Download,
   Brain,
   Settings,
   PieChart,
@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils'
 
 const navItems = [
   { label: 'Tableau de bord', href: '/', icon: LayoutDashboard },
-  { label: 'Collecte & Formulaires', href: '/collection', icon: CloudDownload },
+  { label: 'Collecte & Formulaires', href: '/collection', icon: Download },
   { label: 'Statistiques Descriptives', href: '/datasets', icon: Database },
   { label: 'Régressions (Linéaires)', href: '/analysis?tab=regression', icon: BarChart3 },
   { label: 'Réduction dimensions (ACP)', href: '/analysis?tab=pca', icon: PieChart },
