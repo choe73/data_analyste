@@ -16,6 +16,7 @@ from app.api.endpoints import (
     public_forms,
     imports,
     cache,
+    smart_analysis,
 )
 
 # Main API router
@@ -26,6 +27,7 @@ api_router.include_router(health.router, prefix="/health", tags=["Health"])
 api_router.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 api_router.include_router(datasets.router, prefix="/datasets", tags=["Datasets"])
 api_router.include_router(analysis.router, prefix="/analysis", tags=["Analysis"])
+api_router.include_router(smart_analysis.router, prefix="/smart-analysis", tags=["Smart Analysis"])
 api_router.include_router(
     data_collection.router, prefix="/collect", tags=["Data Collection"]
 )
