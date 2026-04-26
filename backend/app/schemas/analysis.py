@@ -279,3 +279,20 @@ class ClusteringResult(BaseModel):
     elbow_plot_data: Optional[Dict[str, Any]] = None
     silhouette_plot_data: Optional[Dict[str, Any]] = None
     cluster_visualization: Optional[Dict[str, Any]] = None
+
+
+class GeminiInterpretRequest(BaseModel):
+    """Request for Gemini AI interpretation of analysis results."""
+
+    analysis_type: str = Field(..., description="Type of analysis: descriptive, regression, pca, classification, clustering")
+    analysis_data: Dict[str, Any] = Field(..., description="The analysis results to interpret")
+    user_question: Optional[str] = Field(None, description="Optional specific question about the data")
+
+
+class GeminiInterpretResponse(BaseModel):
+    """Response from Gemini AI interpretation."""
+
+    interpretation: str
+    key_findings: List[str]
+    recommendations: List[str]
+    quota_remaining: int

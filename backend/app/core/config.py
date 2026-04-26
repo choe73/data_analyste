@@ -44,6 +44,7 @@ class Settings(BaseSettings):
     ALLOWED_HOSTS: List[str] = ["*"]
 
     # External APIs
+    GEMINI_API_KEY: Optional[str] = None
     WORLD_BANK_API_URL: str = "https://api.worldbank.org/v2"
     OPEN_DATA_CAMEROON_URL: str = "https://cameroon.opendataforafrica.org/api"
     NASA_POWER_API_URL: str = "https://power.larc.nasa.gov/api/temporal/daily/point"
@@ -56,13 +57,12 @@ class Settings(BaseSettings):
     def assemble_urls(self) -> "Settings":
         """Assemble DATABASE_URL and REDIS_URL from components if not provided."""
         if not self.DATABASE_URL:
-            host = self.POSTGRES_HOST or "localhost"
-            port = self.POSTGRES_PORT or 5432
-            self.DATABASE_URL = f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{host}:{port}/{self.POSTGRES_DB}"
+            self.DATABASE_URL = (
+                f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
+                f"@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+            )
         if not self.REDIS_URL:
-            host = self.REDIS_HOST or "localhost"
-            port = self.REDIS_PORT or 6379
-            self.REDIS_URL = f"redis://{host}:{port}"
+            self.REDIS_URL = f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}"
         return self
 
     class Config:
