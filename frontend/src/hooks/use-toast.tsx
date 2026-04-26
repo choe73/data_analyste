@@ -29,7 +29,9 @@ const actionTypes = {
 const TOAST_LIMIT = 1
 const TOAST_REMOVE_DELAY = 1000000
 
-let count = 0function genId() {
+let count = 0
+
+function genId() {
   count = (count + 1) % Number.MAX_VALUE
   return count.toString()
 }
