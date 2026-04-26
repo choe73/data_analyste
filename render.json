@@ -1,0 +1,10 @@
+{
+  "buildCommand": "npm --prefix frontend ci && npm --prefix frontend run build",
+  "startCommand": "npm --prefix frontend preview",
+  "envVars": [
+    {
+      "key": "VITE_API_URL",
+      "value": "https://datacollect-cameroun-prod.onrender.com"
+    }
+  ]
+}

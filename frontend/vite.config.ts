@@ -17,6 +17,7 @@ export default defineConfig({
       '@/lib': path.resolve(__dirname, './src/lib'),
       '@/types': path.resolve(__dirname, './src/types'),
     },
+    extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json'],
   },
   server: {
     port: 3000,
