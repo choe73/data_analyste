@@ -67,8 +67,8 @@ docker-compose.override.yml
 .DS_Store
 Thumbs.db
 
-# Render
-render.yaml
+# Render - commented to allow blueprint
+# render.yaml
 
 # Temporary files
 *.tmp

@@ -28,14 +28,24 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("Starting up DataCollect Pro Cameroun...")
     await init_db()
-    await redis_client.ping()
+    
+    # Try to connect to Redis, but don't fail if unavailable
+    try:
+        await redis_client.ping()
+        logger.info("Redis connected successfully")
+    except Exception as e:
+        logger.warning(f"Redis connection failed: {e}. Continuing without Redis.")
+    
     logger.info("Application started successfully!")
 
     yield
 
     # Shutdown
     logger.info("Shutting down...")
-    await redis_client.close()
+    try:
+        await redis_client.close()
+    except Exception:
+        pass
 
 
 # Create FastAPI app
@@ -98,12 +108,13 @@ async def root():
 @app.get("/health")
 async def health_check():
     """Health check endpoint."""
+    redis_status = "unavailable"
     try:
         # Check Redis
         await redis_client.ping()
         redis_status = "healthy"
     except Exception as e:
-        redis_status = f"unhealthy: {str(e)}"
+        redis_status = f"unavailable: {str(e)}"
 
     return {
         "status": "healthy",

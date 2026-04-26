@@ -17,8 +17,12 @@ async def check_gemini_quota(user_id: int, is_premium: bool) -> tuple[int, int]:
     current_hour = int(time.time() / 3600)
     redis_key = f"gemini_quota:{user_id}:{current_hour}"
     
-    count = await redis_client.get(redis_key)
-    count = int(count) if count else 0
+    try:
+        count = await redis_client.get(redis_key)
+        count = int(count) if count else 0
+    except Exception:
+        # If Redis is unavailable, allow unlimited requests
+        count = 0
     
     limit = 5 if is_premium else 1
     remaining = max(0, limit - count)
@@ -31,8 +35,12 @@ async def increment_gemini_quota(user_id: int) -> None:
     current_hour = int(time.time() / 3600)
     redis_key = f"gemini_quota:{user_id}:{current_hour}"
     
-    await redis_client.incr(redis_key)
-    await redis_client.expire(redis_key, 3600)
+    try:
+        await redis_client.incr(redis_key)
+        await redis_client.expire(redis_key, 3600)
+    except Exception:
+        # If Redis is unavailable, silently skip quota tracking
+        pass
 
 
 async def interpret_with_gemini(
