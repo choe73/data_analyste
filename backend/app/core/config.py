@@ -39,9 +39,18 @@ class Settings(BaseSettings):
     RATE_LIMIT_REQUESTS: int = 100
     RATE_LIMIT_PERIOD: int = 60
 
-    # CORS
+    # CORS - accepts comma-separated string or JSON array from env
     CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:5173"]
     ALLOWED_HOSTS: List[str] = ["*"]
+
+    @model_validator(mode="before")
+    @classmethod
+    def parse_cors(cls, values: dict) -> dict:
+        """Parse CORS_ORIGINS from comma-separated string if needed."""
+        cors = values.get("CORS_ORIGINS")
+        if isinstance(cors, str) and not cors.startswith("["):
+            values["CORS_ORIGINS"] = [o.strip() for o in cors.split(",") if o.strip()]
+        return values
 
     # External APIs
     GEMINI_API_KEY: Optional[str] = None
