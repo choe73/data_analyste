@@ -23,6 +23,7 @@ from app.services.gemini_service import (
     check_gemini_quota,
     increment_gemini_quota,
     interpret_with_gemini,
+    PLAN_LIMITS,
 )
 from app.api.endpoints.auth import get_current_user
 
@@ -116,26 +117,28 @@ async def get_analysis_result(
 @router.post("/interpret", response_model=GeminiInterpretResponse)
 async def interpret_analysis(
     request: GeminiInterpretRequest,
+    db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user),
 ):
-    """Interpret analysis results using Gemini AI.
-    
-    Rate limits:
-    - Free/Standard: 1 request per hour
-    - Premium: 5 requests per hour
-    """
+    """Interpret analysis results using Gemini AI."""
     user_id = current_user.id
-    is_premium = getattr(current_user, 'subscription_type', 'free') == 'premium'
-    
-    current_count, remaining = await check_gemini_quota(user_id, is_premium)
-    
+    is_premium = getattr(current_user, 'subscription_type', None) == 'premium'
+    if not is_premium and current_user.subscriptions:
+        active = [s for s in current_user.subscriptions if s.status == "active"]
+        if active:
+            is_premium = active[0].plan in ("standard", "premium")
+
+    current_count, remaining = await check_gemini_quota(user_id, is_premium, db)
+
     if remaining <= 0:
-        limit = 5 if is_premium else 1
+        plan = "premium" if is_premium else "free"
+        limit = PLAN_LIMITS.get(plan, 1)
         raise HTTPException(
             status_code=429,
-            detail=f"Quota horaire d'IA dépassé. Limite: {limit}/heure pour votre type de compte."
+            detail=f"Quota Gemini epuise ({limit}/heure). Passez a un plan superieur pour plus d'interpretations.",
+            headers={"X-Quota-Limit": str(limit), "X-Quota-Used": str(current_count)},
         )
-    
+
     try:
         result = await interpret_with_gemini(
             request.analysis_type,
@@ -143,8 +146,8 @@ async def interpret_analysis(
             request.user_question,
             domain_hint=getattr(request, 'domain_hint', None),
         )
-        await increment_gemini_quota(user_id)
-        
+        await increment_gemini_quota(user_id, db)
+
         return GeminiInterpretResponse(
             interpretation=result["interpretation"],
             key_findings=result["key_findings"],
@@ -157,4 +160,4 @@ async def interpret_analysis(
     except ValueError as e:
         raise HTTPException(status_code=503, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur lors de l'interprétation: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erreur Gemini: {str(e)}")
