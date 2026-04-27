@@ -8,6 +8,7 @@ import { DataCollection } from '@/pages/DataCollection'
 import { Models } from '@/pages/Models'
 import { Settings } from '@/pages/Settings'
 import { CookieConsent } from '@/components/CookieConsent'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 import FormsList from '@/pages/FormsList'
 import FormBuilder from '@/pages/FormBuilder'
 import DataImportPage from '@/pages/DataImport'
@@ -16,7 +17,8 @@ import PublicForm from '@/pages/PublicForm'
 
 function App() {
   return (
-    <Routes>
+    <ErrorBoundary>
+      <Routes>
       {/* Public route - no layout */}
       <Route path="/f/:shareToken" element={<PublicForm />} />
 
@@ -42,6 +44,7 @@ function App() {
         </>
       } />
     </Routes>
+    </ErrorBoundary>
   )
 }
 

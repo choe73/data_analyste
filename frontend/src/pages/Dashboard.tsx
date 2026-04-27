@@ -8,9 +8,14 @@ import { Activity, Database, FileText, Upload, CheckCircle, AlertCircle, Clock }
 const API = (import.meta.env.VITE_API_URL as string) || ''
 
 async function apiFetch(path: string) {
-  const r = await fetch(`${API}${path}`, { credentials: 'include' })
-  if (!r.ok) return null
-  return r.json()
+  try {
+    const r = await fetch(`${API}${path}`, { credentials: 'include' })
+    if (!r.ok) return []
+    const data = await r.json()
+    return Array.isArray(data) ? data : (data ?? [])
+  } catch {
+    return []
+  }
 }
 
 export function Dashboard() {
