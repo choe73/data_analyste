@@ -10,7 +10,7 @@ from app.core.config import settings
 router = APIRouter()
 
 
-@router.post("/diagnostics/init-db")
+@router.post("/init-db")
 async def init_db_endpoint():
     """Initialize database tables (for emergency use only)."""
     try:
@@ -26,7 +26,7 @@ async def init_db_endpoint():
         }
 
 
-@router.get("/diagnostics/db")
+@router.get("/db")
 async def db_diagnostics(db: AsyncSession = Depends(get_db)):
     """Check database connection and tables."""
     try:
@@ -59,7 +59,7 @@ async def db_diagnostics(db: AsyncSession = Depends(get_db)):
         }
 
 
-@router.get("/diagnostics/config")
+@router.get("/config")
 async def config_diagnostics():
     """Check configuration."""
     return {
