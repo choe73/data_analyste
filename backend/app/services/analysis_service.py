@@ -1,484 +1,552 @@
-"""Analysis service for statistical operations with real ML."""
+"""Analysis service - statistical operations using existing ML stack."""
 
+import json
+import warnings
 import numpy as np
 import pandas as pd
 from typing import List, Dict, Any, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet
 from sklearn.preprocessing import PolynomialFeatures, StandardScaler, LabelEncoder
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans, DBSCAN, AgglomerativeClustering
 from sklearn.mixture import GaussianMixture
 from sklearn.metrics import (
-    silhouette_score,
-    calinski_harabasz_score,
-    davies_bouldin_score,
-    r2_score,
-    mean_squared_error,
-    mean_absolute_error,
-    accuracy_score,
-    precision_score,
-    recall_score,
-    f1_score,
-    confusion_matrix,
+    silhouette_score, calinski_harabasz_score, davies_bouldin_score,
+    r2_score, mean_squared_error, mean_absolute_error,
+    accuracy_score, precision_score, recall_score, f1_score, confusion_matrix,
 )
-from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
+from sklearn.model_selection import train_test_split, cross_val_score
 from scipy import stats
-import json
-import warnings
 
 from app.schemas.analysis import (
-    DescriptiveRequest,
-    DescriptiveAnalysisResponse,
-    RegressionRequest,
-    RegressionResult,
-    PCARequest,
-    PCAResult,
-    ClassificationRequest,
-    ClassificationResult,
-    ClusteringRequest,
-    ClusteringResult,
+    DescriptiveRequest, DescriptiveAnalysisResponse, DescriptiveResult, CorrelationMatrix,
+    RegressionRequest, RegressionResult, RegressionMetrics, RegressionDiagnostics, CoefficientInfo,
+    PCARequest, PCAResult, PCAComponent, PCAIndividual,
+    ClassificationRequest, ClassificationResult, ClassificationMetrics, ClassMetrics, ConfusionMatrix,
+    ClusteringRequest, ClusteringResult, ClusteringMetrics, ClusterInfo,
 )
 from app.models.processed_data import ProcessedData
+from app.models.form import DataImport
 
 warnings.filterwarnings("ignore")
-
 MAX_ROWS = 5000
 
 
 class AnalysisService:
-    """Service for statistical analysis operations."""
-
     def __init__(self, db: AsyncSession):
         self.db = db
 
     async def _load_dataset(self, dataset_id: int) -> Optional[pd.DataFrame]:
-        """Load dataset from database with row limit for memory safety."""
+        """Load dataset - supports both ProcessedData and user imports."""
+        # Try user import first (DataImport table)
         result = await self.db.execute(
-            select(ProcessedData).where(ProcessedData.dataset_id == dataset_id)
+            select(DataImport).where(DataImport.id == dataset_id)
+        )
+        imp = result.scalar_one_or_none()
+        if imp and imp.storage_path:
+            import os
+            if os.path.exists(imp.storage_path):
+                ext = os.path.splitext(imp.storage_path)[1].lower()
+                try:
+                    if ext == ".csv":
+                        df = pd.read_csv(imp.storage_path)
+                    elif ext in (".xlsx", ".xls"):
+                        df = pd.read_excel(imp.storage_path)
+                    else:
+                        df = pd.read_json(imp.storage_path)
+                    if len(df) > MAX_ROWS:
+                        df = df.sample(n=MAX_ROWS, random_state=42)
+                    return df
+                except Exception:
+                    pass
+
+        # Fallback: ProcessedData table (collected data)
+        result = await self.db.execute(
+            select(ProcessedData).where(ProcessedData.domain == str(dataset_id)).limit(MAX_ROWS)
         )
         rows = result.scalars().all()
         if not rows:
+            # Try by domain name from datasets
             return None
+
         data_list = []
         for row in rows:
-            record = {"id": row.id, "region": row.region, "indicator": row.indicator}
-            if row.data:
-                try:
-                    record.update(json.loads(row.data))
-                except:
-                    pass
+            record = {
+                "region": row.region,
+                "indicator": row.indicator,
+                "value": float(row.numeric_value) if row.numeric_value else None,
+                "date": str(row.date_value) if row.date_value else None,
+            }
+            if row.meta_data:
+                record.update(row.meta_data)
             data_list.append(record)
-        df = pd.DataFrame(data_list)
-        if len(df) > MAX_ROWS:
-            df = df.sample(n=MAX_ROWS, random_state=42)
-        return df
+        return pd.DataFrame(data_list)
 
-    async def descriptive_analysis(
-        self, request: DescriptiveRequest
-    ) -> DescriptiveAnalysisResponse:
-        """Perform descriptive statistical analysis."""
+    async def descriptive_analysis(self, request: DescriptiveRequest) -> DescriptiveAnalysisResponse:
         df = await self._load_dataset(request.dataset_id)
         if df is None or df.empty:
-            return DescriptiveAnalysisResponse(
-                statistics=[],
-                correlations=None,
-                plot_data=None,
-            )
-        numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+            return DescriptiveAnalysisResponse(statistics=[], correlations=None, plot_data=None)
+
+        # Filter to requested columns if specified
+        cols = [c for c in request.columns if c in df.columns] if request.columns else df.columns.tolist()
+        numeric_cols = df[cols].select_dtypes(include=[np.number]).columns.tolist()
+
         if not numeric_cols:
-            return DescriptiveAnalysisResponse(
-                statistics=[],
-                correlations=None,
-                plot_data=None,
+            return DescriptiveAnalysisResponse(statistics=[], correlations=None, plot_data=None)
+
+        statistics = []
+        for col in numeric_cols:
+            series = df[col].dropna()
+            if len(series) == 0:
+                continue
+            n = len(series)
+            mean = float(series.mean())
+            std = float(series.std())
+            # Confidence interval
+            ci = stats.t.interval(request.confidence_level, df=n - 1, loc=mean, scale=stats.sem(series))
+            statistics.append(DescriptiveResult(
+                column=col,
+                count=n,
+                mean=round(mean, 4),
+                std=round(std, 4),
+                min=round(float(series.min()), 4),
+                q25=round(float(series.quantile(0.25)), 4),
+                median=round(float(series.median()), 4),
+                q75=round(float(series.quantile(0.75)), 4),
+                max=round(float(series.max()), 4),
+                ci_lower=round(float(ci[0]), 4),
+                ci_upper=round(float(ci[1]), 4),
+                skewness=round(float(stats.skew(series)), 4),
+                kurtosis=round(float(stats.kurtosis(series)), 4),
+                missing_count=int(df[col].isnull().sum()),
+                unique_count=int(df[col].nunique()),
+            ))
+
+        # Correlation matrix
+        corr_result = None
+        if len(numeric_cols) > 1:
+            corr_df = df[numeric_cols].corr(method="pearson")
+            corr_result = CorrelationMatrix(
+                columns=numeric_cols,
+                values=corr_df.values.tolist(),
+                method="pearson",
             )
-        desc = df[numeric_cols].describe().to_dict()
-        statistics = [
-            {"column": col, "stats": stats}
-            for col, stats in desc.items()
-        ]
-        corr = df[numeric_cols].corr().to_dict() if len(numeric_cols) > 1 else None
+
+        # Plot data: histograms + boxplot data
         plot_data = {
-            "histograms": {
-                col: df[col].dropna().head(100).tolist()
-                for col in numeric_cols[:5]
-            }
+            "histograms": {col: df[col].dropna().tolist()[:500] for col in numeric_cols[:6]},
+            "boxplot": {
+                col: {
+                    "min": float(df[col].min()), "q1": float(df[col].quantile(0.25)),
+                    "median": float(df[col].median()), "q3": float(df[col].quantile(0.75)),
+                    "max": float(df[col].max()),
+                } for col in numeric_cols[:6]
+            },
         }
-        return DescriptiveAnalysisResponse(
-            statistics=statistics,
-            correlations=corr,
-            plot_data=plot_data,
-        )
+
+        return DescriptiveAnalysisResponse(statistics=statistics, correlations=corr_result, plot_data=plot_data)
 
     async def regression_analysis(self, request: RegressionRequest) -> RegressionResult:
-        """Perform regression analysis with real sklearn."""
         df = await self._load_dataset(request.dataset_id)
+        warnings_list = []
+
         if df is None or df.empty:
-            return RegressionResult(
-                intercept=0.0,
-                coefficients=[],
-                metrics=None,
-                diagnostics=None,
-                predictions=[],
-                residuals=[],
-                actual_values=[],
-                plot_data=None,
-                method=request.method,
-                warning_messages=["No data available"],
-            )
-        numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
-        if len(numeric_cols) < 2:
-            return RegressionResult(
-                intercept=0.0,
-                coefficients=[],
-                metrics=None,
-                diagnostics=None,
-                predictions=[],
-                residuals=[],
-                actual_values=[],
-                plot_data=None,
-                method=request.method,
-                warning_messages=["Need at least 2 numeric columns"],
-            )
-        target = request.target_column or numeric_cols[-1]
-        features = [c for c in numeric_cols if c != target]
-        if request.feature_columns:
-            features = [f for f in request.feature_columns if f in numeric_cols]
-        if not features:
-            features = [numeric_cols[0]]
-        X = df[features].fillna(0).values
-        y = df[target].fillna(0).values
-        if len(X) < 10:
-            return RegressionResult(
-                intercept=0.0,
-                coefficients=[],
-                metrics=None,
-                diagnostics=None,
-                predictions=[],
-                residuals=[],
-                actual_values=[],
-                plot_data=None,
-                method=request.method,
-                warning_messages=["Insufficient data points"],
-            )
-        model = {
-            "linear": LinearRegression(),
-            "ridge": Ridge(alpha=1.0),
-            "lasso": Lasso(alpha=1.0),
-            "elasticnet": ElasticNet(alpha=1.0, l1_ratio=0.5),
-        }.get(request.method, LinearRegression())
-        model.fit(X, y)
-        y_pred = model.predict(X)
-        residuals = y - y_pred
-        r2 = r2_score(y, y_pred)
-        mse = mean_squared_error(y, y_pred)
-        rmse = np.sqrt(mse)
-        mae = mean_absolute_error(y, y_pred)
-        metrics = {
-            "r2_score": round(r2, 4),
-            "mse": round(mse, 4),
-            "rmse": round(rmse, 4),
-            "mae": round(mae, 4),
-        }
-        coefficients = (
-            list(model.coef_) if hasattr(model, "coef_") else []
-        )
-        intercept = float(model.intercept_) if hasattr(model, "intercept_") else 0.0
-        diagnostics = {
-            "skewness": round(float(stats.skew(residuals)), 4),
-            "kurtosis": round(float(stats.kurtosis(residuals)), 4),
-        }
+            return self._empty_regression(request, ["No data available"])
+
+        # Validate columns
+        all_cols = [request.target_column] + request.feature_columns
+        missing = [c for c in all_cols if c not in df.columns]
+        if missing:
+            return self._empty_regression(request, [f"Missing columns: {missing}"])
+
+        df_clean = df[all_cols].dropna()
+        if len(df_clean) < 10:
+            return self._empty_regression(request, ["Not enough data (min 10 rows)"])
+
+        X = df_clean[request.feature_columns].values
+        y = df_clean[request.target_column].values
+
+        # Split
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=request.test_size, random_state=42)
+
+        # Model selection
+        if request.method == "polynomial":
+            degree = request.polynomial_degree or 2
+            poly = PolynomialFeatures(degree=degree, include_bias=False)
+            X_train = poly.fit_transform(X_train)
+            X_test = poly.transform(X_test)
+            feature_names = poly.get_feature_names_out(request.feature_columns)
+            model = LinearRegression()
+        elif request.method == "ridge":
+            model = Ridge(alpha=request.alpha)
+            feature_names = request.feature_columns
+        elif request.method == "lasso":
+            model = Lasso(alpha=request.alpha)
+            feature_names = request.feature_columns
+        elif request.method == "elasticnet":
+            model = ElasticNet(alpha=request.alpha, l1_ratio=request.l1_ratio)
+            feature_names = request.feature_columns
+        else:
+            model = LinearRegression()
+            feature_names = request.feature_columns
+
+        model.fit(X_train, y_train)
+        y_pred_test = model.predict(X_test)
+        y_pred_all = model.predict(X if request.method != "polynomial" else poly.transform(X))
+        residuals = y - y_pred_all
+
+        # Metrics
+        r2 = r2_score(y_test, y_pred_test)
+        n, p = len(y), len(feature_names)
+        adj_r2 = 1 - (1 - r2) * (n - 1) / (n - p - 1) if n > p + 1 else None
+        rmse = float(np.sqrt(mean_squared_error(y_test, y_pred_test)))
+        mae = float(mean_absolute_error(y_test, y_pred_test))
+        mse = float(mean_squared_error(y_test, y_pred_test))
+
+        # F-statistic
+        ss_res = np.sum(residuals ** 2)
+        ss_tot = np.sum((y - np.mean(y)) ** 2)
+        f_stat = ((ss_tot - ss_res) / p) / (ss_res / (n - p - 1)) if n > p + 1 else None
+        f_pval = float(stats.f.sf(f_stat, p, n - p - 1)) if f_stat else None
+
+        # Durbin-Watson
+        dw = float(np.sum(np.diff(residuals) ** 2) / ss_res) if ss_res > 0 else None
+
+        # Coefficients with VIF
+        coefs = []
+        coef_values = model.coef_.tolist() if hasattr(model, "coef_") else []
+        for i, (name, val) in enumerate(zip(feature_names, coef_values)):
+            vif = None
+            if len(feature_names) > 1 and request.method == "linear":
+                try:
+                    from statsmodels.stats.outliers_influence import variance_inflation_factor
+                    vif = float(variance_inflation_factor(X, i))
+                except Exception:
+                    pass
+            coefs.append(CoefficientInfo(name=name, value=round(float(val), 6), vif=vif))
+
+        if len(coef_values) == 0:
+            warnings_list.append("Model has no coefficients")
+
         return RegressionResult(
-            intercept=intercept,
-            coefficients=coefficients,
-            metrics=metrics,
-            diagnostics=diagnostics,
-            predictions=y_pred[:50].tolist(),
-            residuals=residuals[:50].tolist(),
-            actual_values=y[:50].tolist(),
+            intercept=round(float(model.intercept_), 6) if hasattr(model, "intercept_") else 0.0,
+            coefficients=coefs,
+            metrics=RegressionMetrics(
+                r2_score=round(r2, 4), adjusted_r2=round(adj_r2, 4) if adj_r2 else None,
+                rmse=round(rmse, 4), mae=round(mae, 4), mse=round(mse, 4),
+                f_statistic=round(f_stat, 4) if f_stat else None,
+                f_pvalue=round(f_pval, 6) if f_pval else None,
+            ),
+            diagnostics=RegressionDiagnostics(
+                durbin_watson=round(dw, 4) if dw else None,
+                high_vif_features=[c.name for c in coefs if c.vif and c.vif > 10],
+            ),
+            predictions=y_pred_test[:100].tolist(),
+            residuals=residuals[:100].tolist(),
+            actual_values=y[:100].tolist(),
             plot_data={
-                "scatter": {
-                    "x": y_pred.tolist()[:100],
-                    "y": y.tolist()[:100],
-                }
+                "scatter": {"x": y_pred_all[:200].tolist(), "y": y[:200].tolist()},
+                "residuals": {"x": y_pred_all[:200].tolist(), "y": residuals[:200].tolist()},
             },
             method=request.method,
-            warning_messages=[],
+            warning_messages=warnings_list,
+        )
+
+    def _empty_regression(self, request: RegressionRequest, warnings_list: List[str]) -> RegressionResult:
+        return RegressionResult(
+            intercept=0.0, coefficients=[],
+            metrics=RegressionMetrics(r2_score=0, rmse=0, mae=0, mse=0),
+            diagnostics=RegressionDiagnostics(),
+            predictions=[], residuals=[], actual_values=[],
+            plot_data=None, method=request.method, warning_messages=warnings_list,
         )
 
     async def pca_analysis(self, request: PCARequest) -> PCAResult:
-        """Perform PCA analysis with real sklearn."""
         df = await self._load_dataset(request.dataset_id)
+        empty = PCAResult(n_components=0, components=[], individuals=[], scree_plot_data={}, explained_variance={})
+
         if df is None or df.empty:
-            return PCAResult(
-                n_components=2,
-                components=[],
-                individuals=[],
-                correlation_circle=None,
-                scree_plot_data={},
-                biplot_data=None,
-                explained_variance={},
-            )
-        numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
-        if len(numeric_cols) < 2:
-            return PCAResult(
-                n_components=2,
-                components=[],
-                individuals=[],
-                correlation_circle=None,
-                scree_plot_data={},
-                biplot_data=None,
-                explained_variance={},
-            )
-        features = request.feature_columns or numeric_cols
-        features = [f for f in features if f in numeric_cols]
-        if len(features) < 2:
-            return PCAResult(
-                n_components=2,
-                components=[],
-                individuals=[],
-                correlation_circle=None,
-                scree_plot_data={},
-                biplot_data=None,
-                explained_variance={},
-            )
-        X = df[features].fillna(0).values
-        scaler = StandardScaler()
-        X_scaled = scaler.fit_transform(X)
-        n_comp = min(request.n_components or 2, len(features))
+            return empty
+
+        cols = [c for c in request.columns if c in df.columns]
+        if len(cols) < 2:
+            return empty
+
+        df_clean = df[cols].dropna()
+        if len(df_clean) < 3:
+            return empty
+
+        X = df_clean.values
+        if request.standardize:
+            scaler = StandardScaler()
+            X = scaler.fit_transform(X)
+
+        # Determine n_components
+        max_comp = min(len(cols), len(df_clean))
+        if request.method == "kaiser":
+            # Run full PCA first to find eigenvalues > 1
+            pca_full = PCA(n_components=max_comp)
+            pca_full.fit(X)
+            n_comp = max(1, int(np.sum(pca_full.explained_variance_ > 1)))
+        elif request.method == "variance_80":
+            pca_full = PCA(n_components=max_comp)
+            pca_full.fit(X)
+            cumvar = np.cumsum(pca_full.explained_variance_ratio_)
+            n_comp = max(1, int(np.searchsorted(cumvar, 0.80) + 1))
+        else:
+            n_comp = request.n_components or min(2, max_comp)
+
+        n_comp = min(n_comp, max_comp)
         pca = PCA(n_components=n_comp)
-        components = pca.fit_transform(X_scaled)
-        explained_var = pca.explained_variance_ratio_
+        scores = pca.fit_transform(X)
+
+        components = []
+        for i in range(n_comp):
+            loadings = {col: round(float(pca.components_[i][j]), 4) for j, col in enumerate(cols)}
+            components.append(PCAComponent(
+                component_number=i + 1,
+                eigenvalue=round(float(pca.explained_variance_[i]), 4),
+                variance_explained_pct=round(float(pca.explained_variance_ratio_[i]) * 100, 2),
+                cumulative_variance_pct=round(float(np.cumsum(pca.explained_variance_ratio_)[i]) * 100, 2),
+                loadings=loadings,
+            ))
+
+        individuals = []
+        for idx in range(min(len(scores), 500)):
+            cos2 = [round(float(scores[idx, k] ** 2 / np.sum(scores[idx] ** 2)), 4) for k in range(n_comp)]
+            contrib = [round(float(scores[idx, k] ** 2 / np.sum(scores[:, k] ** 2) * 100), 4) for k in range(n_comp)]
+            individuals.append(PCAIndividual(
+                id=idx, coordinates=[round(float(v), 4) for v in scores[idx]], cos2=cos2, contribution=contrib,
+            ))
+
         return PCAResult(
             n_components=n_comp,
-            components=pca.components_.tolist(),
-            individuals=components[:100].tolist(),
+            components=components,
+            individuals=individuals,
             correlation_circle={
-                "x": pca.components_[0].tolist() if n_comp > 0 else [],
-                "y": pca.components_[1].tolist() if n_comp > 1 else [],
-                "labels": features,
+                "variables": cols,
+                "x": pca.components_[0].tolist(),
+                "y": pca.components_[1].tolist() if n_comp > 1 else [0.0] * len(cols),
             },
             scree_plot_data={
-                "components": list(range(1, len(explained_var) + 1)),
-                "variance": explained_var.tolist(),
+                "components": list(range(1, n_comp + 1)),
+                "eigenvalues": pca.explained_variance_.tolist(),
+                "variance_pct": (pca.explained_variance_ratio_ * 100).tolist(),
             },
             biplot_data={
-                "scores": components[:50].tolist(),
+                "scores": scores[:200].tolist(),
                 "loadings": pca.components_.tolist(),
+                "feature_names": cols,
             },
             explained_variance={
-                "explained_variance_ratio": explained_var.tolist(),
-                "cumulative": np.cumsum(explained_var).tolist(),
+                "explained_variance_ratio": pca.explained_variance_ratio_.tolist(),
+                "cumulative": np.cumsum(pca.explained_variance_ratio_).tolist(),
             },
         )
 
-    async def classification_analysis(
-        self, request: ClassificationRequest
-    ) -> ClassificationResult:
-        """Perform supervised classification with real sklearn."""
+    async def classification_analysis(self, request: ClassificationRequest) -> ClassificationResult:
         df = await self._load_dataset(request.dataset_id)
-        if df is None or df.empty:
-            return ClassificationResult(
-                algorithm=request.algorithm,
-                overall_metrics=None,
-                class_metrics=[],
-                confusion_matrix=None,
-                roc_curve_data=None,
-                feature_importances=None,
-                grid_search_results=None,
-                best_params=None,
-                cross_validation_scores=None,
-            )
-        numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
-        cat_cols = df.select_dtypes(include=["object", "category"]).columns.tolist()
-        if not numeric_cols or not cat_cols:
-            return ClassificationResult(
-                algorithm=request.algorithm,
-                overall_metrics=None,
-                class_metrics=[],
-                confusion_matrix=None,
-                roc_curve_data=None,
-                feature_importances=None,
-                grid_search_results=None,
-                best_params=None,
-                cross_validation_scores=None,
-            )
-        target_col = request.target_column or cat_cols[0]
-        if target_col not in df.columns:
-            return ClassificationResult(
-                algorithm=request.algorithm,
-                overall_metrics=None,
-                class_metrics=[],
-                confusion_matrix=None,
-                roc_curve_data=None,
-                feature_importances=None,
-                grid_search_results=None,
-                best_params=None,
-                cross_validation_scores=None,
-            )
-        features = [c for c in numeric_cols if c != target_col]
-        if request.feature_columns:
-            features = [f for f in request.feature_columns if f in numeric_cols]
-        if not features:
-            return ClassificationResult(
-                algorithm=request.algorithm,
-                overall_metrics=None,
-                class_metrics=[],
-                confusion_matrix=None,
-                roc_curve_data=None,
-                feature_importances=None,
-                grid_search_results=None,
-                best_params=None,
-                cross_validation_scores=None,
-            )
-        le = LabelEncoder()
-        y = le.fit_transform(df[target_col].astype(str))
-        X = df[features].fillna(0).values
-        if len(np.unique(y)) < 2:
-            return ClassificationResult(
-                algorithm=request.algorithm,
-                overall_metrics=None,
-                class_metrics=[],
-                confusion_matrix=None,
-                roc_curve_data=None,
-                feature_importances=None,
-                grid_search_results=None,
-                best_params=None,
-                cross_validation_scores=None,
-            )
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=0.2, random_state=42
+        empty = ClassificationResult(
+            algorithm=request.algorithm,
+            overall_metrics=ClassificationMetrics(accuracy=0, precision=0, recall=0, f1_score=0),
+            class_metrics=[], confusion_matrix=ConfusionMatrix(labels=[], matrix=[]),
         )
+
+        if df is None or df.empty:
+            return empty
+
+        all_cols = [request.target_column] + request.feature_columns
+        missing = [c for c in all_cols if c not in df.columns]
+        if missing:
+            return empty
+
+        df_clean = df[all_cols].dropna()
+        if len(df_clean) < 10:
+            return empty
+
+        le = LabelEncoder()
+        y = le.fit_transform(df_clean[request.target_column].astype(str))
+        X = df_clean[request.feature_columns].select_dtypes(include=[np.number]).values
+
+        if X.shape[1] == 0 or len(np.unique(y)) < 2:
+            return empty
+
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=request.test_size, random_state=42)
+
         from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
         from sklearn.svm import SVC
         from sklearn.neighbors import KNeighborsClassifier
-        models = {
+        from sklearn.linear_model import LogisticRegression
+        from sklearn.naive_bayes import GaussianNB
+
+        model_map = {
+            "logistic": LogisticRegression(max_iter=1000, random_state=42),
+            "svm": SVC(kernel="rbf", probability=True, random_state=42),
             "random_forest": RandomForestClassifier(n_estimators=100, random_state=42),
             "gradient_boosting": GradientBoostingClassifier(n_estimators=100, random_state=42),
-            "svm": SVC(kernel="rbf", probability=True, random_state=42),
             "knn": KNeighborsClassifier(n_neighbors=5),
+            "naive_bayes": GaussianNB(),
         }
-        model = models.get(request.algorithm, RandomForestClassifier(n_estimators=100))
+        model = model_map.get(request.algorithm, RandomForestClassifier(n_estimators=100, random_state=42))
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
-        acc = accuracy_score(y_test, y_pred)
-        prec = precision_score(y_test, y_pred, average="weighted", zero_division=0)
-        rec = recall_score(y_test, y_pred, average="weighted", zero_division=0)
-        f1 = f1_score(y_test, y_pred, average="weighted", zero_division=0)
-        cm = confusion_matrix(y_test, y_pred).tolist()
-        cv_scores = cross_val_score(model, X, y, cv=5).tolist()
-        feature_importances = (
-            model.feature_importances_.tolist() if hasattr(model, "feature_importances_") else None
-        )
+
+        acc = float(accuracy_score(y_test, y_pred))
+        prec = float(precision_score(y_test, y_pred, average="weighted", zero_division=0))
+        rec = float(recall_score(y_test, y_pred, average="weighted", zero_division=0))
+        f1 = float(f1_score(y_test, y_pred, average="weighted", zero_division=0))
+
+        cm = confusion_matrix(y_test, y_pred)
+        labels = le.classes_.tolist()
+
+        # Per-class metrics
+        prec_per = precision_score(y_test, y_pred, average=None, zero_division=0)
+        rec_per = recall_score(y_test, y_pred, average=None, zero_division=0)
+        f1_per = f1_score(y_test, y_pred, average=None, zero_division=0)
+        support = np.bincount(y_test)
+
+        class_metrics = []
+        for i, cls in enumerate(labels):
+            if i < len(prec_per):
+                class_metrics.append(ClassMetrics(
+                    class_name=str(cls),
+                    precision=round(float(prec_per[i]), 4),
+                    recall=round(float(rec_per[i]), 4),
+                    f1_score=round(float(f1_per[i]), 4),
+                    support=int(support[i]) if i < len(support) else 0,
+                ))
+
+        cv_scores = cross_val_score(model, X, y, cv=min(request.cv_folds, len(np.unique(y)))).tolist()
+
+        feat_imp = None
+        if hasattr(model, "feature_importances_"):
+            feat_imp = {f: round(float(v), 4) for f, v in zip(request.feature_columns, model.feature_importances_)}
+
         return ClassificationResult(
             algorithm=request.algorithm,
-            overall_metrics={
-                "accuracy": round(acc, 4),
-                "precision": round(prec, 4),
-                "recall": round(rec, 4),
-                "f1_score": round(f1, 4),
-            },
-            class_metrics=[
-                {"class": str(c), "precision": 0.0, "recall": 0.0, "f1": 0.0}
-                for c in le.classes_
-            ],
-            confusion_matrix=cm,
-            roc_curve_data=None,
-            feature_importances=feature_importances,
-            grid_search_results=None,
-            best_params=None,
+            overall_metrics=ClassificationMetrics(
+                accuracy=round(acc, 4), precision=round(prec, 4),
+                recall=round(rec, 4), f1_score=round(f1, 4),
+            ),
+            class_metrics=class_metrics,
+            confusion_matrix=ConfusionMatrix(labels=labels, matrix=cm.tolist()),
+            feature_importances=feat_imp,
             cross_validation_scores=cv_scores,
         )
 
     async def clustering_analysis(self, request: ClusteringRequest) -> ClusteringResult:
-        """Perform unsupervised clustering with real sklearn."""
         df = await self._load_dataset(request.dataset_id)
+        empty = ClusteringResult(
+            algorithm=request.algorithm, n_clusters=0, clusters=[],
+            metrics=ClusteringMetrics(silhouette_score=0),
+        )
+
         if df is None or df.empty:
-            return ClusteringResult(
-                algorithm=request.algorithm,
-                n_clusters=3,
-                clusters=[],
-                metrics=None,
-                optimal_k_analysis=None,
-                elbow_plot_data=None,
-                silhouette_plot_data=None,
-                cluster_visualization=None,
-            )
-        numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
-        if len(numeric_cols) < 2:
-            return ClusteringResult(
-                algorithm=request.algorithm,
-                n_clusters=3,
-                clusters=[],
-                metrics=None,
-                optimal_k_analysis=None,
-                elbow_plot_data=None,
-                silhouette_plot_data=None,
-                cluster_visualization=None,
-            )
-        features = request.feature_columns or numeric_cols
-        features = [f for f in features if f in numeric_cols]
-        if len(features) < 2:
-            return ClusteringResult(
-                algorithm=request.algorithm,
-                n_clusters=3,
-                clusters=[],
-                metrics=None,
-                optimal_k_analysis=None,
-                elbow_plot_data=None,
-                silhouette_plot_data=None,
-                cluster_visualization=None,
-            )
-        X = df[features].fillna(0).values
+            return empty
+
+        cols = [c for c in request.columns if c in df.columns]
+        if len(cols) < 2:
+            return empty
+
+        df_clean = df[cols].dropna()
+        if len(df_clean) < 4:
+            return empty
+
+        scaler = StandardScaler()
+        X = scaler.fit_transform(df_clean[cols].select_dtypes(include=[np.number]).values)
+
+        if X.shape[1] < 2:
+            return empty
+
+        # Elbow / silhouette to find optimal k
+        elbow_data = None
+        sil_data = None
         n_clusters = request.n_clusters or 3
-        if request.algorithm == "kmeans":
-            model = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
-        elif request.algorithm == "dbscan":
-            model = DBSCAN(eps=0.5, min_samples=5)
-            n_clusters = len(set(model.fit_predict(X))) - (1 if -1 in model.labels_ else 0)
-        elif request.algorithm == "hierarchical":
-            model = AgglomerativeClustering(n_clusters=n_clusters)
-        elif request.algorithm == "gmm":
-            model = GaussianMixture(n_components=n_clusters, random_state=42)
-        else:
-            model = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
-        labels = model.fit_predict(X)
-        sil = silhouette_score(X, labels) if len(set(labels)) > 1 else 0
-        cal = calinski_harabasz_score(X, labels) if len(set(labels)) > 1 else 0
-        db = davies_bouldin_score(X, labels) if len(set(labels)) > 1 else 0
-        if request.find_optimal_k and request.algorithm == "kmeans":
-            inertias = []
-            silhouettes = []
-            for k in range(2, min(10, len(X))):
+
+        if request.method in ("elbow", "silhouette", "auto") and request.algorithm == "kmeans":
+            k_range = range(2, min(11, len(df_clean)))
+            inertias, silhouettes = [], []
+            for k in k_range:
                 km = KMeans(n_clusters=k, random_state=42, n_init=10)
                 lbls = km.fit_predict(X)
-                inertias.append(km.inertia_)
-                silhouettes.append(silhouette_score(X, lbls))
-            elbow_data = {"k": list(range(2, len(inertias) + 2)), "inertia": inertias}
-            sil_data = {"k": list(range(2, len(silhouettes) + 2)), "silhouette": silhouettes}
+                inertias.append(float(km.inertia_))
+                silhouettes.append(float(silhouette_score(X, lbls)))
+            k_list = list(k_range)
+            elbow_data = {"k": k_list, "inertia": inertias}
+            sil_data = {"k": k_list, "silhouette": silhouettes}
+            if request.method in ("silhouette", "auto") and not request.n_clusters:
+                n_clusters = k_list[int(np.argmax(silhouettes))]
+
+        # Fit final model
+        if request.algorithm == "kmeans":
+            model = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+            labels = model.fit_predict(X)
+        elif request.algorithm == "dbscan":
+            eps = request.eps or 0.5
+            min_s = request.min_samples or 5
+            model = DBSCAN(eps=eps, min_samples=min_s)
+            labels = model.fit_predict(X)
+            n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
+        elif request.algorithm == "hierarchical":
+            model = AgglomerativeClustering(n_clusters=n_clusters)
+            labels = model.fit_predict(X)
+        elif request.algorithm == "gmm":
+            model = GaussianMixture(n_components=n_clusters, random_state=42)
+            labels = model.fit_predict(X)
         else:
-            elbow_data = None
-            sil_data = None
+            model = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+            labels = model.fit_predict(X)
+
+        unique_labels = set(labels)
+        if len(unique_labels) < 2:
+            return empty
+
+        sil = float(silhouette_score(X, labels))
+        cal = float(calinski_harabasz_score(X, labels))
+        db = float(davies_bouldin_score(X, labels))
+        inertia = float(model.inertia_) if hasattr(model, "inertia_") else None
+
+        # Build cluster info
+        clusters = []
+        for cid in sorted(unique_labels):
+            if cid == -1:
+                continue
+            mask = labels == cid
+            centroid = X[mask].mean(axis=0).tolist()
+            clusters.append(ClusterInfo(
+                cluster_id=int(cid),
+                size=int(mask.sum()),
+                centroid=[round(v, 4) for v in centroid],
+                individuals=np.where(mask)[0][:50].tolist(),
+            ))
+
+        # 2D visualization via PCA if needed
+        if X.shape[1] > 2:
+            pca2 = PCA(n_components=2)
+            X_2d = pca2.fit_transform(X)
+        else:
+            X_2d = X
+
         return ClusteringResult(
             algorithm=request.algorithm,
             n_clusters=n_clusters,
-            clusters=labels[:100].tolist(),
-            metrics={
-                "silhouette": round(sil, 4),
-                "calinski_harabasz": round(cal, 4),
-                "davies_bouldin": round(db, 4),
-            },
-            optimal_k_analysis={"suggested_k": n_clusters} if request.find_optimal_k else None,
+            clusters=clusters,
+            metrics=ClusteringMetrics(
+                silhouette_score=round(sil, 4),
+                calinski_harabasz_score=round(cal, 4),
+                davies_bouldin_score=round(db, 4),
+                inertia=round(inertia, 2) if inertia else None,
+            ),
             elbow_plot_data=elbow_data,
             silhouette_plot_data=sil_data,
             cluster_visualization={
-                "x": X[:100, 0].tolist() if X.shape[1] > 0 else [],
-                "y": X[:100, 1].tolist() if X.shape[1] > 1 else [],
-                "labels": labels[:100].tolist(),
+                "x": X_2d[:500, 0].tolist(),
+                "y": X_2d[:500, 1].tolist(),
+                "labels": labels[:500].tolist(),
             },
         )
 
     async def get_result(self, result_id: int) -> Optional[Dict[str, Any]]:
-        """Retrieve a previous analysis result."""
         return None
