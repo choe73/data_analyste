@@ -25,22 +25,25 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan events."""
-    # Startup
     logger.info("Starting up DataCollect Pro Cameroun...")
-    await init_db()
-    
-    # Try to connect to Redis, but don't fail if unavailable
+
+    # Init DB - non-blocking, app starts even if DB is unreachable
+    try:
+        await init_db()
+        logger.info("Database initialized successfully")
+    except Exception as e:
+        logger.warning(f"Database initialization failed: {e}. App will start anyway.")
+
+    # Try Redis
     try:
         await redis_client.ping()
         logger.info("Redis connected successfully")
     except Exception as e:
-        logger.warning(f"Redis connection failed: {e}. Continuing without Redis.")
-    
-    logger.info("Application started successfully!")
+        logger.warning(f"Redis unavailable: {e}. Continuing without Redis.")
 
+    logger.info("Application started!")
     yield
 
-    # Shutdown
     logger.info("Shutting down...")
     try:
         await redis_client.close()

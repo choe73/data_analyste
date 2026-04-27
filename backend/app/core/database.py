@@ -6,15 +6,25 @@ from sqlalchemy.pool import NullPool
 
 from app.core.config import settings
 
-# Create async engine
+
+def _make_async_url(url: str) -> str:
+    """Ensure the database URL uses asyncpg driver."""
+    url = str(url)
+    if url.startswith("postgresql://"):
+        url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
+    elif url.startswith("postgres://"):
+        url = url.replace("postgres://", "postgresql+asyncpg://", 1)
+    return url
+
+
 async_engine = create_async_engine(
-    str(settings.DATABASE_URL).replace("postgresql://", "postgresql+asyncpg://"),
-    echo=settings.DEBUG,
-    poolclass=NullPool if settings.is_development else None,
+    _make_async_url(settings.DATABASE_URL),
+    echo=False,
+    poolclass=NullPool,
     future=True,
+    connect_args={"ssl": "require"},
 )
 
-# Create async session factory
 AsyncSessionLocal = async_sessionmaker(
     async_engine,
     class_=AsyncSession,
@@ -23,7 +33,6 @@ AsyncSessionLocal = async_sessionmaker(
     autoflush=False,
 )
 
-# Base class for models
 Base = declarative_base()
 
 
@@ -37,16 +46,10 @@ async def get_db():
 
 
 async def init_db():
-    """Initialize database tables."""
+    """Initialize database tables. Raises on failure."""
     async with async_engine.begin() as conn:
-        # Import all models here to ensure they're registered
         from app.models import (
-            raw_data,
-            processed_data,
-            ml_models,
-            analysis_results,
-            celery_jobs,
-            user,
+            raw_data, processed_data, ml_models,
+            analysis_results, celery_jobs, user, form,
         )
-
         await conn.run_sync(Base.metadata.create_all)
