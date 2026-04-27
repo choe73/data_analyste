@@ -17,6 +17,7 @@ from app.api.endpoints import (
     imports,
     cache,
     smart_analysis,
+    diagnostics,
 )
 
 # Main API router
@@ -41,3 +42,4 @@ api_router.include_router(feedback.router, prefix="/feedback", tags=["Feedback"]
 api_router.include_router(forms.router, prefix="/forms", tags=["Forms"])
 api_router.include_router(public_forms.router, prefix="/public/forms", tags=["Public Forms"])
 api_router.include_router(imports.router, prefix="/imports", tags=["Data Import"])
+api_router.include_router(diagnostics.router, prefix="/diagnostics", tags=["Diagnostics"])
