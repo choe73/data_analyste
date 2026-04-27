@@ -11,6 +11,7 @@ class Settings(BaseSettings):
 
     ENVIRONMENT: str = "development"
     DEBUG: bool = True
+    # v4 - force redeploy with public auth endpoint
 
     # Database
     DATABASE_URL: Optional[str] = None
