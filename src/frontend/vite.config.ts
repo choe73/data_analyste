@@ -9,15 +9,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    alias: [
-      { find: '@', replacement: path.resolve(__dirname, '../../frontend/src') },
-      { find: '@/components', replacement: path.resolve(__dirname, '../../frontend/src/components') },
-      { find: '@/pages', replacement: path.resolve(__dirname, '../../frontend/src/pages') },
-      { find: '@/hooks', replacement: path.resolve(__dirname, '../../frontend/src/hooks') },
-      { find: '@/lib', replacement: path.resolve(__dirname, '../../frontend/src/lib') },
-      { find: '@/types', replacement: path.resolve(__dirname, '../../frontend/src/types') },
-    ],
-    extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json'],
+    alias: {
+      '@': path.resolve(__dirname, '../../frontend/src'),
+    },
   },
   server: {
     port: 3000,
