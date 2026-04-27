@@ -16,10 +16,11 @@ services:
     
   - type: static
     name: datacollect-frontend
-    buildCommand: npm --prefix frontend ci && npm --prefix frontend run build
+    buildCommand: cd frontend && npm ci --legacy-peer-deps && npm run build
     staticPublishPath: frontend/dist
     envVars:
       - key: VITE_API_URL
         value: https://datacollect-cameroun-prod.onrender.com
     plan: free
     region: oregon
+
