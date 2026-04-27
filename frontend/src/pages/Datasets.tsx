@@ -124,13 +124,13 @@ export function Datasets() {
                   </div>
 
                   {/* Aperçu des colonnes */}
-                  {dataset.columns?.length > 0 && (
+                  {(dataset.columns?.length ?? 0) > 0 && (
                     <div className="flex flex-wrap gap-1 mb-3">
-                      {dataset.columns.slice(0, 4).map(col => (
+                      {(dataset.columns ?? []).slice(0, 4).map(col => (
                         <Badge key={col} variant="outline" className="text-xs">{col}</Badge>
                       ))}
-                      {dataset.columns.length > 4 && (
-                        <Badge variant="outline" className="text-xs">+{dataset.columns.length - 4}</Badge>
+                      {(dataset.columns?.length ?? 0) > 4 && (
+                        <Badge variant="outline" className="text-xs">+{(dataset.columns?.length ?? 0) - 4}</Badge>
                       )}
                     </div>
                   )}

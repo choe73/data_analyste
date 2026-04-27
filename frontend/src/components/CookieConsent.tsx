@@ -27,35 +27,39 @@ export function CookieConsent() {
         const res = await fetch('/api/v1/consent/status', { credentials: 'include' })
         if (res.ok) {
           const data = await res.json()
-          if (data.cookie_consent || data.analytics_consent || data.marketing_consent) {
+          if (data.cookie_consent || data.analytics_consent) {
             setShowBanner(false)
-          } else {
-            setShowBanner(true)
+            return
           }
-        } else {
-          setShowBanner(true)
         }
+        // Show banner if endpoint missing or no consent recorded
+        const stored = localStorage.getItem('cookie_consent')
+        setShowBanner(!stored)
       } catch {
-        setShowBanner(true)
+        const stored = localStorage.getItem('cookie_consent')
+        setShowBanner(!stored)
       }
     }
     checkConsent()
   }, [consent])
 
   const handleAcceptAll = async () => {
-    await updateConsent({ cookie_consent: true, analytics_consent: true, marketing_consent: true })
+    localStorage.setItem('cookie_consent', 'all')
+    await updateConsent({ cookie_consent: true, analytics_consent: true, marketing_consent: true }).catch(() => {})
     setShowBanner(false)
     setShowCustomize(false)
   }
 
   const handleRefuse = async () => {
-    await updateConsent({ cookie_consent: true, analytics_consent: false, marketing_consent: false })
+    localStorage.setItem('cookie_consent', 'essential')
+    await updateConsent({ cookie_consent: true, analytics_consent: false, marketing_consent: false }).catch(() => {})
     setShowBanner(false)
     setShowCustomize(false)
   }
 
   const handleCustomizeSave = async () => {
-    await updateConsent(localConsent)
+    localStorage.setItem('cookie_consent', 'custom')
+    await updateConsent(localConsent).catch(() => {})
     setShowBanner(false)
     setShowCustomize(false)
   }

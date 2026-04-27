@@ -16,23 +16,23 @@ async function apiFetch(path: string) {
 export function Dashboard() {
   const { data: health } = useQuery({
     queryKey: ['health'],
-    queryFn: () => apiFetch('/health'),
+    queryFn: () => apiFetch('/health').catch(() => null),
     refetchInterval: 30000,
   })
 
   const { data: datasets = [] } = useQuery({
     queryKey: ['datasets'],
-    queryFn: () => apiFetch('/api/v1/datasets'),
+    queryFn: () => apiFetch('/api/v1/datasets').catch(() => []),
   })
 
   const { data: imports = [] } = useQuery({
     queryKey: ['imports'],
-    queryFn: () => apiFetch('/api/v1/imports'),
+    queryFn: () => apiFetch('/api/v1/imports').catch(() => []),
   })
 
   const { data: forms = [] } = useQuery({
     queryKey: ['forms'],
-    queryFn: () => apiFetch('/api/v1/forms'),
+    queryFn: () => apiFetch('/api/v1/forms').catch(() => []),
   })
 
   const totalResponses = (forms as any[]).reduce((sum: number, f: any) => sum + (f.response_count || 0), 0)
