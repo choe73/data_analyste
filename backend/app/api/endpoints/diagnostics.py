@@ -4,10 +4,26 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 
-from app.core.database import get_db
+from app.core.database import get_db, init_db
 from app.core.config import settings
 
 router = APIRouter()
+
+
+@router.post("/diagnostics/init-db")
+async def init_db_endpoint():
+    """Initialize database tables (for emergency use only)."""
+    try:
+        await init_db()
+        return {
+            "status": "ok",
+            "message": "Database initialized successfully",
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error": str(e),
+        }
 
 
 @router.get("/diagnostics/db")
