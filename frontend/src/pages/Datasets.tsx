@@ -115,7 +115,7 @@ export function Datasets() {
                   <div className="grid grid-cols-2 gap-3 text-sm mb-3">
                     <div>
                       <p className="text-muted-foreground text-xs">Lignes</p>
-                      <p className="font-medium">{dataset.row_count?.toLocaleString()}</p>
+                      <p className="font-medium">{(dataset.row_count ?? 0).toLocaleString()}</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground text-xs">Colonnes</p>
@@ -124,7 +124,7 @@ export function Datasets() {
                   </div>
 
                   {/* Aperçu des colonnes */}
-                  {dataset.columns && dataset.columns.length > 0 && (
+                  {dataset.columns?.length > 0 && (
                     <div className="flex flex-wrap gap-1 mb-3">
                       {dataset.columns.slice(0, 4).map(col => (
                         <Badge key={col} variant="outline" className="text-xs">{col}</Badge>
