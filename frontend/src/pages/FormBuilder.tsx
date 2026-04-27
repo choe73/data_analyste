@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
+import { authFetch } from '@/store/auth'
 
 interface FormFieldData {
   field_type: string
@@ -76,14 +77,10 @@ export default function FormBuilderPage() {
 
     setSaving(true)
     try {
-      const res = await fetch('/api/v1/forms', {
+      const res = await authFetch('/api/v1/forms', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({
-          title,
-          description,
-          domain,
+          title, description, domain,
           fields: fields.map(f => ({
             ...f,
             options: f.field_type === 'select' || f.field_type === 'multiselect'

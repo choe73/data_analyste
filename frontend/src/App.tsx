@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
 import { MainLayout } from '@/components/layout/MainLayout'
 import { Dashboard } from '@/pages/Dashboard'
@@ -9,41 +9,52 @@ import { Models } from '@/pages/Models'
 import { Settings } from '@/pages/Settings'
 import { CookieConsent } from '@/components/CookieConsent'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { useAuth } from '@/store/auth'
 import FormsList from '@/pages/FormsList'
 import FormBuilder from '@/pages/FormBuilder'
 import DataImportPage from '@/pages/DataImport'
 import ImportResults from '@/pages/ImportResults'
 import PublicForm from '@/pages/PublicForm'
+import LoginPage from '@/pages/Login'
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useAuth()
+  if (!isAuthenticated) return <Navigate to="/login" replace />
+  return <>{children}</>
+}
 
 function App() {
   return (
     <ErrorBoundary>
       <Routes>
-      {/* Public route - no layout */}
-      <Route path="/f/:shareToken" element={<PublicForm />} />
+        {/* Public routes - no layout */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/f/:shareToken" element={<PublicForm />} />
 
-      {/* App routes - with layout */}
-      <Route path="/*" element={
-        <>
-          <MainLayout>
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/datasets" element={<Datasets />} />
-              <Route path="/analysis" element={<Analysis />} />
-              <Route path="/collection" element={<DataCollection />} />
-              <Route path="/models" element={<Models />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/forms" element={<FormsList />} />
-              <Route path="/forms/new" element={<FormBuilder />} />
-              <Route path="/import" element={<DataImportPage />} />
-              <Route path="/import/:importId" element={<ImportResults />} />
-            </Routes>
-          </MainLayout>
-          <CookieConsent />
-          <Toaster />
-        </>
-      } />
-    </Routes>
+        {/* Protected app routes */}
+        <Route path="/*" element={
+          <ProtectedRoute>
+            <>
+              <MainLayout>
+                <Routes>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/datasets" element={<Datasets />} />
+                  <Route path="/analysis" element={<Analysis />} />
+                  <Route path="/collection" element={<DataCollection />} />
+                  <Route path="/models" element={<Models />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/forms" element={<FormsList />} />
+                  <Route path="/forms/new" element={<FormBuilder />} />
+                  <Route path="/import" element={<DataImportPage />} />
+                  <Route path="/import/:importId" element={<ImportResults />} />
+                </Routes>
+              </MainLayout>
+              <CookieConsent />
+              <Toaster />
+            </>
+          </ProtectedRoute>
+        } />
+      </Routes>
     </ErrorBoundary>
   )
 }

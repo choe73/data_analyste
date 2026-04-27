@@ -6,12 +6,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import { Download, BarChart3, Link2, Eye, Trash2, Globe, EyeOff } from 'lucide-react'
+import { Download, BarChart3, Link2, Trash2, Globe, EyeOff } from 'lucide-react'
+import { authFetch } from '@/store/auth'
 
 const API = (import.meta.env.VITE_API_URL as string) || ''
 
 async function apiFetch(path: string, opts?: RequestInit) {
-  const r = await fetch(`${API}${path}`, { credentials: 'include', ...opts })
+  const r = await authFetch(path, opts)
   if (!r.ok) throw new Error(await r.text())
   return r.json()
 }

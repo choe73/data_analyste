@@ -8,17 +8,19 @@ import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Database, Search, BarChart3, Upload } from 'lucide-react'
 import type { Dataset } from '@/types'
-
-const API = (import.meta.env.VITE_API_URL as string) || ''
+import { authFetch } from '@/store/auth'
 
 async function fetchDatasets(domain?: string, source?: string): Promise<Dataset[]> {
   const params = new URLSearchParams()
   if (domain && domain !== 'all') params.append('domain', domain)
   if (source && source !== 'all') params.append('source', source)
   const qs = params.toString()
-  const r = await fetch(`${API}/api/v1/datasets${qs ? '?' + qs : ''}`, { credentials: 'include' })
-  if (!r.ok) return []
-  return r.json()
+  try {
+    const r = await authFetch(`/api/v1/datasets${qs ? '?' + qs : ''}`)
+    if (!r.ok) return []
+    const data = await r.json()
+    return Array.isArray(data) ? data : []
+  } catch { return [] }
 }
 
 const DOMAIN_COLORS: Record<string, string> = {

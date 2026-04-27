@@ -3,25 +3,29 @@ import { Link } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Activity, Database, FileText, Upload, CheckCircle, AlertCircle, Clock } from 'lucide-react'
+import { Activity, Database, FileText, Upload, CheckCircle, AlertCircle } from 'lucide-react'
+import { authFetch } from '@/store/auth'
 
 const API = (import.meta.env.VITE_API_URL as string) || ''
 
 async function apiFetch(path: string) {
   try {
-    const r = await fetch(`${API}${path}`, { credentials: 'include' })
+    const r = await authFetch(path)
     if (!r.ok) return []
     const data = await r.json()
     return Array.isArray(data) ? data : (data ?? [])
-  } catch {
-    return []
-  }
+  } catch { return [] }
 }
 
 export function Dashboard() {
   const { data: health } = useQuery({
     queryKey: ['health'],
-    queryFn: () => apiFetch('/health').catch(() => null),
+    queryFn: async () => {
+      try {
+        const r = await fetch(`${API}/health`)
+        return r.ok ? r.json() : null
+      } catch { return null }
+    },
     refetchInterval: 30000,
   })
 

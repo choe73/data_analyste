@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
+import { authFetch } from '@/store/auth'
 
 interface DataImportItem {
   id: number
@@ -21,9 +22,9 @@ export default function DataImportPage() {
   const { toast } = useToast()
 
   const fetchImports = () => {
-    fetch('/api/v1/imports', { credentials: 'include' })
+    authFetch('/api/v1/imports')
       .then(res => res.ok ? res.json() : [])
-      .then(data => setImports(data))
+      .then(data => setImports(Array.isArray(data) ? data : []))
       .catch(() => setImports([]))
       .finally(() => setLoading(false))
   }
@@ -33,33 +34,26 @@ export default function DataImportPage() {
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-
     const ext = file.name.split('.').pop()?.toLowerCase()
     if (!['csv', 'xlsx', 'xls', 'json', 'geojson'].includes(ext || '')) {
-      toast({ title: 'Format non supporté', description: 'Utilisez CSV, Excel, JSON ou GeoJSON', variant: 'destructive' })
+      toast({ title: 'Format non supporte', description: 'Utilisez CSV, Excel, JSON ou GeoJSON', variant: 'destructive' })
       return
     }
-
     setUploading(true)
     const formData = new FormData()
     formData.append('file', file)
-
     try {
-      const res = await fetch('/api/v1/imports/upload', {
-        method: 'POST',
-        credentials: 'include',
-        body: formData,
-      })
+      const res = await authFetch('/api/v1/imports/upload', { method: 'POST', body: formData })
       if (res.ok) {
         const data = await res.json()
-        toast({ title: 'Fichier importé !', description: `${data.row_count} lignes détectées` })
+        toast({ title: 'Fichier importe !', description: `${data.row_count} lignes detectees` })
         fetchImports()
       } else {
-        const err = await res.json()
-        toast({ title: 'Erreur', description: err.detail || 'Import échoué', variant: 'destructive' })
+        const err = await res.json().catch(() => ({}))
+        toast({ title: 'Erreur', description: err.detail || 'Import echoue', variant: 'destructive' })
       }
     } catch {
-      toast({ title: 'Erreur réseau', variant: 'destructive' })
+      toast({ title: 'Erreur reseau', variant: 'destructive' })
     } finally {
       setUploading(false)
       e.target.value = ''
@@ -68,27 +62,23 @@ export default function DataImportPage() {
 
   const handleAnalyze = async (importId: number) => {
     try {
-      const res = await fetch(`/api/v1/imports/${importId}/analyze`, {
-        method: 'POST',
-        credentials: 'include',
-      })
-      if (res.ok) {
-        toast({ title: 'Analyse lancée !' })
-        fetchImports()
-      } else {
-        toast({ title: 'Erreur', variant: 'destructive' })
-      }
-    } catch {
-      toast({ title: 'Erreur réseau', variant: 'destructive' })
-    }
+      const res = await authFetch(`/api/v1/imports/${importId}/analyze`, { method: 'POST' })
+      if (res.ok) { toast({ title: 'Analyse lancee !' }); fetchImports() }
+      else toast({ title: 'Erreur', variant: 'destructive' })
+    } catch { toast({ title: 'Erreur reseau', variant: 'destructive' }) }
+  }
+
+  const handleDelete = async (importId: number) => {
+    await authFetch(`/api/v1/imports/${importId}`, { method: 'DELETE' })
+    fetchImports()
   }
 
   const statusLabel: Record<string, { text: string; variant: 'default' | 'secondary' | 'destructive' }> = {
-    uploaded: { text: 'Uploadé', variant: 'secondary' },
-    confirmed: { text: 'Confirmé', variant: 'default' },
+    uploaded: { text: 'Uploade', variant: 'secondary' },
+    confirmed: { text: 'Confirme', variant: 'default' },
     pending: { text: 'En attente', variant: 'secondary' },
-    completed: { text: 'Analysé', variant: 'default' },
-    failed: { text: 'Échoué', variant: 'destructive' },
+    completed: { text: 'Analyse', variant: 'default' },
+    failed: { text: 'Echoue', variant: 'destructive' },
   }
 
   return (
@@ -145,10 +135,7 @@ export default function DataImportPage() {
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={async () => {
-                        await fetch(`/api/v1/imports/${imp.id}`, { method: 'DELETE', credentials: 'include' })
-                        fetchImports()
-                      }}
+                      onClick={() => handleDelete(imp.id)}
                     >
                       Supprimer
                     </Button>

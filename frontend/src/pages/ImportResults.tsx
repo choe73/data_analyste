@@ -5,11 +5,10 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { ArrowLeft, BarChart3 } from 'lucide-react'
-
-const API = (import.meta.env.VITE_API_URL as string) || ''
+import { authFetch } from '@/store/auth'
 
 async function fetchImport(id: string) {
-  const r = await fetch(`${API}/api/v1/imports/${id}`, { credentials: 'include' })
+  const r = await authFetch(`/api/v1/imports/${id}`)
   if (!r.ok) throw new Error('Import not found')
   return r.json()
 }
