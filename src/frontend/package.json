@@ -1,0 +1,13 @@
+{
+  "name": "datacollect-frontend-redirect",
+  "version": "1.0.0",
+  "description": "Redirect to actual frontend for Render",
+  "private": true,
+  "scripts": {
+    "build": "cd ../../frontend && npm run build",
+    "dev": "cd ../../frontend && npm run dev",
+    "preview": "cd ../../frontend && npm run preview",
+    "lint": "cd ../../frontend && npm run lint",
+    "test": "cd ../../frontend && npm run test"
+  }
+}
