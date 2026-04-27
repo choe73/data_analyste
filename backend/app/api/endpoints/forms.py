@@ -277,3 +277,69 @@ async def form_analytics(
             field_stats[key] = {"count": len(non_empty)}
 
     return FormAnalytics(total_responses=len(responses), field_stats=field_stats)
+
+
+@router.get("/{form_id}/responses/export")
+async def export_responses(
+    form_id: int,
+    format: str = Query("csv", regex="^(csv|json)$"),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Export form responses as CSV or JSON."""
+    import io
+    import csv
+    import json as json_lib
+    from fastapi.responses import StreamingResponse
+
+    result = await db.execute(
+        select(Form).where(Form.id == form_id, Form.user_id == current_user.id)
+    )
+    form = result.scalar_one_or_none()
+    if not form:
+        raise HTTPException(status_code=404, detail="Form not found")
+
+    result = await db.execute(
+        select(FormResponse).where(FormResponse.form_id == form_id).order_by(FormResponse.submitted_at)
+    )
+    responses = result.scalars().all()
+
+    # Build field label map
+    field_labels = {str(f.id): f.label for f in form.fields}
+
+    if format == "json":
+        data = [
+            {
+                "id": r.id,
+                "submitted_at": r.submitted_at.isoformat() if r.submitted_at else None,
+                **{field_labels.get(k, k): v for k, v in (r.responses or {}).items()},
+            }
+            for r in responses
+        ]
+        content = json_lib.dumps(data, ensure_ascii=False, indent=2)
+        return StreamingResponse(
+            io.BytesIO(content.encode("utf-8")),
+            media_type="application/json",
+            headers={"Content-Disposition": f'attachment; filename="form_{form_id}_responses.json"'},
+        )
+
+    # CSV
+    output = io.StringIO()
+    headers = ["id", "submitted_at"] + [f.label for f in sorted(form.fields, key=lambda x: x.order)]
+    writer = csv.DictWriter(output, fieldnames=headers, extrasaction="ignore")
+    writer.writeheader()
+    for r in responses:
+        row = {
+            "id": r.id,
+            "submitted_at": r.submitted_at.isoformat() if r.submitted_at else "",
+        }
+        for field in form.fields:
+            row[field.label] = (r.responses or {}).get(str(field.id), "")
+        writer.writerow(row)
+
+    output.seek(0)
+    return StreamingResponse(
+        io.BytesIO(output.getvalue().encode("utf-8-sig")),  # utf-8-sig for Excel compatibility
+        media_type="text/csv",
+        headers={"Content-Disposition": f'attachment; filename="form_{form_id}_responses.csv"'},
+    )

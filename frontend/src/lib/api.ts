@@ -124,11 +124,12 @@ class ApiClient {
   }
 
   // Datasets
-  async listDatasets(skip: number = 0, limit: number = 10): Promise<Dataset[]> {
-    const params = new URLSearchParams();
-    params.append('skip', skip.toString());
-    params.append('limit', limit.toString());
-    return this.request(`/api/v1/datasets?${params}`);
+  async listDatasets(domain?: string, source?: string): Promise<Dataset[]> {
+    const params = new URLSearchParams()
+    if (domain) params.append('domain', domain)
+    if (source) params.append('source', source)
+    const qs = params.toString()
+    return this.request(`/api/v1/datasets${qs ? '?' + qs : ''}`)
   }
 
   async getDataset(id: number): Promise<Dataset> {
@@ -166,8 +167,8 @@ export const listAnalyses = (type?: string, skip?: number, limit?: number) =>
 export const getAnalysis = (id: number) => apiClient.getAnalysis(id)
 export const createAnalysis = (data: AnalysisCreate) => apiClient.createAnalysis(data)
 export const interpretAnalysis = (data: any) => apiClient.interpretAnalysis(data)
-export const getDatasets = (skip?: number, limit?: number) =>
-  apiClient.listDatasets(skip, limit)
+export const getDatasets = (domain?: string, source?: string) =>
+  apiClient.listDatasets(domain, source)
 export const getDataset = (id: number) => apiClient.getDataset(id)
 export const getSources = () => apiClient.listSources()
 export const triggerCollection = (sourceId: number) => apiClient.triggerCollection(sourceId)

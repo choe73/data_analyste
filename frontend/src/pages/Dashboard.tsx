@@ -1,191 +1,194 @@
 import { useQuery } from '@tanstack/react-query'
-import { checkHealth } from '@/lib/api'
+import { Link } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Activity, Database, Brain, Cloud } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Activity, Database, FileText, Upload, CheckCircle, AlertCircle, Clock } from 'lucide-react'
+
+const API = (import.meta.env.VITE_API_URL as string) || ''
+
+async function apiFetch(path: string) {
+  const r = await fetch(`${API}${path}`, { credentials: 'include' })
+  if (!r.ok) return null
+  return r.json()
+}
 
 export function Dashboard() {
   const { data: health } = useQuery({
     queryKey: ['health'],
-    queryFn: checkHealth,
-    refetchInterval: 30000, // Refresh every 30 seconds
+    queryFn: () => apiFetch('/health'),
+    refetchInterval: 30000,
   })
 
+  const { data: datasets = [] } = useQuery({
+    queryKey: ['datasets'],
+    queryFn: () => apiFetch('/api/v1/datasets'),
+  })
+
+  const { data: imports = [] } = useQuery({
+    queryKey: ['imports'],
+    queryFn: () => apiFetch('/api/v1/imports'),
+  })
+
+  const { data: forms = [] } = useQuery({
+    queryKey: ['forms'],
+    queryFn: () => apiFetch('/api/v1/forms'),
+  })
+
+  const totalResponses = (forms as any[]).reduce((sum: number, f: any) => sum + (f.response_count || 0), 0)
+  const completedImports = (imports as any[]).filter((i: any) => i.analysis_status === 'completed').length
+  const publishedForms = (forms as any[]).filter((f: any) => f.is_published).length
+
   const stats = [
-    {
-      title: 'Datasets',
-      value: '47',
-      description: 'Total datasets disponibles',
-      icon: Database,
-      color: 'bg-blue-500',
-    },
-    {
-      title: 'Analyses',
-      value: '128',
-      description: 'Analyses complétées',
-      icon: Activity,
-      color: 'bg-green-500',
-    },
-    {
-      title: 'Modèles ML',
-      value: '12',
-      description: 'Modèles entraînés',
-      icon: Brain,
-      color: 'bg-purple-500',
-    },
-    {
-      title: 'Collectes',
-      value: '24',
-      description: 'Collectes ce mois',
-      icon: Cloud,
-      color: 'bg-cm-yellow',
-    },
+    { title: 'Datasets disponibles', value: (datasets as any[]).length, icon: Database, color: 'bg-blue-500', link: '/datasets' },
+    { title: 'Imports analysés', value: completedImports, icon: Upload, color: 'bg-green-500', link: '/import' },
+    { title: 'Formulaires publiés', value: publishedForms, icon: FileText, color: 'bg-purple-500', link: '/forms' },
+    { title: 'Réponses collectées', value: totalResponses, icon: Activity, color: 'bg-orange-500', link: '/forms' },
   ]
+
+  const dbStatus = health?.status === 'healthy'
+  const redisStatus = health?.redis === 'healthy'
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Tableau de bord</h1>
-        <p className="text-muted-foreground">
-          Vue d'ensemble de la plateforme DataCollect Pro Cameroun
-        </p>
+        <p className="text-muted-foreground">Vue d'ensemble de la plateforme DataCollect Pro Cameroun</p>
       </div>
 
-      {/* Stats Grid */}
+      {/* Stats réelles */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => {
           const Icon = stat.icon
           return (
-            <Card key={stat.title}>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">
-                  {stat.title}
-                </CardTitle>
-                <div className={`p-2 rounded-full ${stat.color}`}>
-                  <Icon className="w-4 h-4 text-white" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
-                <p className="text-xs text-muted-foreground">
-                  {stat.description}
-                </p>
-              </CardContent>
-            </Card>
+            <Link key={stat.title} to={stat.link}>
+              <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+                  <div className={`p-2 rounded-full ${stat.color}`}>
+                    <Icon className="w-4 h-4 text-white" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stat.value}</div>
+                </CardContent>
+              </Card>
+            </Link>
           )
         })}
       </div>
 
-      {/* System Health */}
+      {/* Santé système */}
       <Card>
-        <CardHeader>
-          <CardTitle>État du système</CardTitle>
-        </CardHeader>
+        <CardHeader><CardTitle>État du système</CardTitle></CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm">Statut général</span>
-              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                health?.status === 'healthy' 
-                  ? 'bg-green-100 text-green-800' 
-                  : 'bg-red-100 text-red-800'
-              }`}>
-                {health?.status === 'healthy' ? 'Opérationnel' : 'Problème détecté'}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm">Base de données</span>
-              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                health?.services?.database === 'healthy'
-                  ? 'bg-green-100 text-green-800'
-                  : 'bg-red-100 text-red-800'
-              }`}>
-                {health?.services?.database === 'healthy' ? 'Connectée' : 'Déconnectée'}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm">Cache Redis</span>
-              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                health?.services?.redis === 'healthy'
-                  ? 'bg-green-100 text-green-800'
-                  : 'bg-red-100 text-red-800'
-              }`}>
-                {health?.services?.redis === 'healthy' ? 'Connecté' : 'Déconnecté'}
-              </span>
-            </div>
+            {[
+              { label: 'API Backend', ok: !!health },
+              { label: 'Base de données', ok: dbStatus },
+              { label: 'Cache Redis', ok: redisStatus },
+            ].map(({ label, ok }) => (
+              <div key={label} className="flex items-center justify-between">
+                <span className="text-sm">{label}</span>
+                <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${ok ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                  {ok ? <CheckCircle className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
+                  {ok ? 'Opérationnel' : 'Indisponible'}
+                </span>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>
 
-      {/* Recent Activity Placeholder */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Imports récents */}
         <Card>
-          <CardHeader>
-            <CardTitle>Dernières collectes</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Imports récents</CardTitle>
+            <Link to="/import"><Button variant="ghost" size="sm">Voir tout</Button></Link>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium">World Bank API</p>
-                  <p className="text-xs text-muted-foreground">Il y a 2 heures</p>
-                </div>
-                <span className="text-xs text-green-600">Succès</span>
+            {(imports as any[]).length === 0 ? (
+              <div className="text-center py-4">
+                <p className="text-muted-foreground text-sm mb-2">Aucun import</p>
+                <Link to="/import"><Button size="sm" variant="outline">Importer des données</Button></Link>
               </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium">NASA POWER (Météo)</p>
-                  <p className="text-xs text-muted-foreground">Il y a 5 heures</p>
-                </div>
-                <span className="text-xs text-green-600">Succès</span>
+            ) : (
+              <div className="space-y-3">
+                {(imports as any[]).slice(0, 5).map((imp: any) => (
+                  <div key={imp.id} className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium truncate max-w-[200px]">{imp.original_filename}</p>
+                      <p className="text-xs text-muted-foreground">{imp.row_count?.toLocaleString()} lignes</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant={imp.analysis_status === 'completed' ? 'default' : 'secondary'} className="text-xs">
+                        {imp.analysis_status === 'completed' ? 'Analysé' : imp.analysis_status === 'uploaded' ? 'Uploadé' : imp.analysis_status}
+                      </Badge>
+                      {imp.analysis_status === 'completed' && (
+                        <Link to={`/import/${imp.id}`}><Button variant="ghost" size="sm" className="h-6 text-xs">Voir</Button></Link>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium">FAO FAOSTAT</p>
-                  <p className="text-xs text-muted-foreground">Il y a 1 jour</p>
-                </div>
-                <span className="text-xs text-green-600">Succès</span>
-              </div>
-            </div>
+            )}
           </CardContent>
         </Card>
 
+        {/* Formulaires récents */}
         <Card>
-          <CardHeader>
-            <CardTitle>Modèles récents</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Formulaires actifs</CardTitle>
+            <Link to="/forms"><Button variant="ghost" size="sm">Voir tout</Button></Link>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium">Régression Prix Agricoles</p>
-                  <p className="text-xs text-muted-foreground">R² = 0.992</p>
-                </div>
-                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                  Actif
-                </span>
+            {(forms as any[]).length === 0 ? (
+              <div className="text-center py-4">
+                <p className="text-muted-foreground text-sm mb-2">Aucun formulaire</p>
+                <Link to="/forms/new"><Button size="sm" variant="outline">Créer un formulaire</Button></Link>
               </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium">K-Means Régions</p>
-                  <p className="text-xs text-muted-foreground">Silhouette = 0.82</p>
-                </div>
-                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                  Actif
-                </span>
+            ) : (
+              <div className="space-y-3">
+                {(forms as any[]).slice(0, 5).map((form: any) => (
+                  <div key={form.id} className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium truncate max-w-[200px]">{form.title}</p>
+                      <p className="text-xs text-muted-foreground">{form.domain} · {form.response_count || 0} réponse(s)</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant={form.is_published ? 'default' : 'secondary'} className="text-xs">
+                        {form.is_published ? 'Publié' : 'Brouillon'}
+                      </Badge>
+                      {form.is_published && form.share_token && (
+                        <Button
+                          variant="ghost" size="sm" className="h-6 text-xs"
+                          onClick={() => navigator.clipboard.writeText(`${window.location.origin}/f/${form.share_token}`)}
+                        >
+                          Copier lien
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium">Classification Santé</p>
-                  <p className="text-xs text-muted-foreground">Accuracy = 0.945</p>
-                </div>
-                <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
-                  Entraînement
-                </span>
-              </div>
-            </div>
+            )}
           </CardContent>
         </Card>
       </div>
+
+      {/* Actions rapides */}
+      <Card>
+        <CardHeader><CardTitle>Actions rapides</CardTitle></CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-3">
+            <Link to="/import"><Button variant="outline"><Upload className="w-4 h-4 mr-2" />Importer des données</Button></Link>
+            <Link to="/forms/new"><Button variant="outline"><FileText className="w-4 h-4 mr-2" />Créer un formulaire</Button></Link>
+            <Link to="/analysis"><Button variant="outline"><Activity className="w-4 h-4 mr-2" />Lancer une analyse</Button></Link>
+            <Link to="/datasets"><Button variant="outline"><Database className="w-4 h-4 mr-2" />Explorer les datasets</Button></Link>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

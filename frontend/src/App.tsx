@@ -11,30 +11,37 @@ import { CookieConsent } from '@/components/CookieConsent'
 import FormsList from '@/pages/FormsList'
 import FormBuilder from '@/pages/FormBuilder'
 import DataImportPage from '@/pages/DataImport'
+import ImportResults from '@/pages/ImportResults'
 import PublicForm from '@/pages/PublicForm'
 
 function App() {
   return (
-    <>
-      <MainLayout>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/datasets" element={<Datasets />} />
-          <Route path="/analysis" element={<Analysis />} />
-          <Route path="/collection" element={<DataCollection />} />
-          <Route path="/models" element={<Models />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/forms" element={<FormsList />} />
-          <Route path="/forms/new" element={<FormBuilder />} />
-          <Route path="/import" element={<DataImportPage />} />
-        </Routes>
-      </MainLayout>
-      <Routes>
-        <Route path="/f/:shareToken" element={<PublicForm />} />
-      </Routes>
-      <CookieConsent />
-      <Toaster />
-    </>
+    <Routes>
+      {/* Public route - no layout */}
+      <Route path="/f/:shareToken" element={<PublicForm />} />
+
+      {/* App routes - with layout */}
+      <Route path="/*" element={
+        <>
+          <MainLayout>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/datasets" element={<Datasets />} />
+              <Route path="/analysis" element={<Analysis />} />
+              <Route path="/collection" element={<DataCollection />} />
+              <Route path="/models" element={<Models />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/forms" element={<FormsList />} />
+              <Route path="/forms/new" element={<FormBuilder />} />
+              <Route path="/import" element={<DataImportPage />} />
+              <Route path="/import/:importId" element={<ImportResults />} />
+            </Routes>
+          </MainLayout>
+          <CookieConsent />
+          <Toaster />
+        </>
+      } />
+    </Routes>
   )
 }
 
