@@ -9,14 +9,14 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@/components': path.resolve(__dirname, './src/components'),
-      '@/pages': path.resolve(__dirname, './src/pages'),
-      '@/hooks': path.resolve(__dirname, './src/hooks'),
-      '@/lib': path.resolve(__dirname, './src/lib'),
-      '@/types': path.resolve(__dirname, './src/types'),
-    },
+    alias: [
+      { find: '@', replacement: path.resolve(__dirname, './src') },
+      { find: '@/components', replacement: path.resolve(__dirname, './src/components') },
+      { find: '@/pages', replacement: path.resolve(__dirname, './src/pages') },
+      { find: '@/hooks', replacement: path.resolve(__dirname, './src/hooks') },
+      { find: '@/lib', replacement: path.resolve(__dirname, './src/lib') },
+      { find: '@/types', replacement: path.resolve(__dirname, './src/types') },
+    ],
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json'],
   },
   server: {
