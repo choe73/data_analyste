@@ -44,6 +44,31 @@ class User(Base):
     )
     forms = relationship("Form", back_populates="owner", lazy="selectin")
     data_imports = relationship("DataImport", back_populates="owner", lazy="selectin")
+    
+    @property
+    def subscription_plan(self) -> str:
+        """Get current subscription plan (convenience property)."""
+        if self.subscriptions:
+            active_sub = next(
+                (s for s in self.subscriptions if s.status == "active"),
+                self.subscriptions[0] if self.subscriptions else None
+            )
+            return active_sub.plan if active_sub else "gratuit"
+        return "gratuit"
+    
+    @property
+    def analysis_quota(self) -> int:
+        """Get remaining analysis quota for current month."""
+        if self.subscriptions:
+            active_sub = next(
+                (s for s in self.subscriptions if s.status == "active"),
+                None
+            )
+            if active_sub:
+                quota_map = {"gratuit": 10, "standard": 50, "premium": 500}
+                max_quota = quota_map.get(active_sub.plan, 10)
+                return max(0, max_quota - active_sub.analyses_used_this_month)
+        return 10  # Default free tier
 
 
 class Subscription(Base):

@@ -287,6 +287,7 @@ class GeminiInterpretRequest(BaseModel):
     analysis_type: str = Field(..., description="Type of analysis: descriptive, regression, pca, classification, clustering")
     analysis_data: Dict[str, Any] = Field(..., description="The analysis results to interpret")
     user_question: Optional[str] = Field(None, description="Optional specific question about the data")
+    domain_hint: Optional[str] = Field(None, description="Domain hint: sante, agriculture, finance, entrepreneuriat, education, environnement")
 
 
 class GeminiInterpretResponse(BaseModel):
@@ -295,4 +296,7 @@ class GeminiInterpretResponse(BaseModel):
     interpretation: str
     key_findings: List[str]
     recommendations: List[str]
+    warnings: List[str] = Field(default_factory=list)
+    domain: Optional[str] = None
+    persona: Optional[str] = None
     quota_remaining: int

@@ -141,6 +141,7 @@ async def interpret_analysis(
             request.analysis_type,
             request.analysis_data,
             request.user_question,
+            domain_hint=getattr(request, 'domain_hint', None),
         )
         await increment_gemini_quota(user_id)
         
@@ -148,6 +149,9 @@ async def interpret_analysis(
             interpretation=result["interpretation"],
             key_findings=result["key_findings"],
             recommendations=result["recommendations"],
+            warnings=result.get("warnings", []),
+            domain=result.get("domain"),
+            persona=result.get("persona"),
             quota_remaining=remaining - 1,
         )
     except ValueError as e:
