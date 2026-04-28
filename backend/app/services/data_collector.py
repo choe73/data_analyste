@@ -185,7 +185,7 @@ class WorldBankCollector:
             indicator=indicator,
             date_value=date_value,
             numeric_value=numeric_value,
-            metadata=metadata,
+            meta_info=metadata,
         )
         self.db.add(processed)
         await self.db.commit()
@@ -308,7 +308,7 @@ class NASAPowerCollector:
             region=data["region"],
             date_value=datetime(year, month, day),
             numeric_value=data.get("T2M", 0),
-            metadata={
+            meta_info={
                 "precipitation": data.get("PRECTOTCORR"),
                 "humidity": data.get("RH2M"),
                 "wind_speed": data.get("WS10M"),
@@ -407,7 +407,7 @@ class FAOCollector:
             indicator=f"fao_{dataset_name}",
             date_value=datetime(year, 1, 1),
             numeric_value=float(item.get("value", 0)) if item.get("value") else 0,
-            metadata={
+            meta_info={
                 "item": item.get("item"),
                 "element": item.get("element"),
                 "unit": item.get("unit"),
