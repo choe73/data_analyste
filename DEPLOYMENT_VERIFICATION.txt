@@ -1,0 +1,125 @@
+================================================================================
+VÉRIFICATION DU DÉPLOIEMENT
+================================================================================
+
+COMMIT POUSSÉ:
+- Hash: 3bfbd0c
+- Message: fix: apply all corrections - pricing, models, api endpoints, diagnostics
+- Timestamp: 2026-04-29 19:15 UTC
+- Branch: main
+
+CHANGEMENTS INCLUS:
+✓ frontend/src/App.tsx - Routes corrigées
+✓ frontend/src/components/layout/Sidebar.tsx - Lien pricing corrigé
+✓ frontend/src/pages/Models.tsx - Remplacé par Coming Soon
+✓ frontend/src/lib/api.ts - Endpoints corrigés
+✓ frontend/src/pages/CollectorDebug.tsx - Page de diagnostic NOUVEAU
+✓ backend/app/api/endpoints/data_collection.py - Endpoints corrigés
+✓ backend/app/api/endpoints/diagnostics_collectors.py - Tests NOUVEAU
+✓ backend/app/api/endpoints/data_status.py - Vérification données NOUVEAU
+✓ backend/app/api/endpoints/collection_debug.py - Collecte avec logs NOUVEAU
+✓ backend/app/models/raw_data.py - Modèle NOUVEAU
+✓ backend/app/models/processed_data.py - Modèle NOUVEAU
+✓ backend/app/api/router.py - Nouveaux endpoints enregistrés
+
+FICHIERS SUPPRIMÉS (Documentation):
+- 40+ fichiers .md (nettoyage)
+
+================================================================================
+ÉTAPES DE VÉRIFICATION
+================================================================================
+
+ÉTAPE 1: Attendre redéploiement Render (5-10 min)
+- Render détecte le push automatiquement
+- Redéploie frontend et backend
+- Vérifier sur: https://dashboard.render.com/
+
+ÉTAPE 2: Vérifier frontend (après redéploiement)
+URL: https://datacollect-cameroun-frontend.onrender.com
+
+Vérifications:
+□ Page charge sans erreurs
+□ Sidebar affiche 9 menu items
+□ "Abonnements" link visible
+□ "Modèles ML" affiche "Coming Soon"
+□ "Collecte API (Officiel)" visible
+□ "Analyses & Gemini IA" visible
+
+ÉTAPE 3: Vérifier backend endpoints
+URL: https://datacollect-cameroun-prod.onrender.com
+
+Vérifications:
+□ /api/v1/diagnostics/test/world-bank - Répond
+□ /api/v1/diagnostics/test/nasa-power - Répond
+□ /api/v1/diagnostics/test/fao - Répond
+□ /api/v1/diagnostics/test/all - Répond
+□ /api/v1/collect/collect-debug/world_bank - Répond
+□ /api/v1/data/data-status - Répond
+
+ÉTAPE 4: Tester login et navigation
+1. Aller sur frontend
+2. Login: demo@datacollect.cm / Password123
+3. Vérifier sidebar
+4. Cliquer "Abonnements" → Doit afficher plans
+5. Cliquer "Modèles ML" → Doit afficher "Coming Soon"
+6. Cliquer "Collecte API" → Doit afficher sources
+
+ÉTAPE 5: Tester import CSV
+1. Cliquer "Import Fichiers"
+2. Télécharger: /home/morningstar/Musique/tp_stat/cameroon_data/BASE_UNIFIEE_CAMEROUN.csv
+3. Vérifier que import fonctionne
+4. Vérifier que données apparaissent dans "Datasets"
+
+ÉTAPE 6: Tester analyse
+1. Aller à "Analyses & Gemini IA"
+2. Sélectionner dataset importé
+3. Cliquer "Descriptif" → Doit afficher statistiques
+4. Cliquer "Regression" → Doit afficher scatter plot
+
+================================================================================
+TIMELINE
+================================================================================
+
+19:15 UTC - Commit poussé
+19:20 UTC - Render détecte le push
+19:25 UTC - Redéploiement commence
+19:30 UTC - Redéploiement terminé (estimé)
+19:35 UTC - Vérifications possibles
+
+================================================================================
+SI REDÉPLOIEMENT NE FONCTIONNE PAS
+================================================================================
+
+1. Vérifier Render Dashboard:
+   https://dashboard.render.com/
+   - Sélectionner "datacollect-cameroun-frontend"
+   - Vérifier "Deploys" tab
+   - Vérifier "Events" tab pour erreurs
+
+2. Forcer redéploiement manuel:
+   - Cliquer "Manual Deploy"
+   - Sélectionner "main" branch
+   - Cliquer "Deploy"
+
+3. Vérifier logs:
+   - Cliquer "Logs" tab
+   - Chercher erreurs de build
+
+4. Vérifier build command:
+   - Doit être: npm ci && npm run build
+   - Vérifier que vite.config.ts est correct
+
+================================================================================
+SUCCÈS ATTENDU
+================================================================================
+
+✓ Frontend charge avec tous les changements
+✓ Sidebar affiche 9 menu items
+✓ Pricing page affiche plans
+✓ Models page affiche "Coming Soon"
+✓ Collecte API page fonctionne
+✓ Import CSV fonctionne
+✓ Analyse fonctionne
+✓ Pas d'erreurs console
+
+================================================================================

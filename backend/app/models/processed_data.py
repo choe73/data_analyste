@@ -12,13 +12,13 @@ class ProcessedData(Base):
     __tablename__ = "processed_data"
 
     id = Column(Integer, primary_key=True, index=True)
-    domain = Column(String(50), nullable=False, index=True)  # economy, health, education, environment, demography, meteo, agriculture
+    domain = Column(String(50), nullable=False, index=True)
     indicator = Column(String(255), nullable=False, index=True)
-    region = Column(String(100), nullable=True, index=True)  # For regional data
+    region = Column(String(100), nullable=True, index=True)
     date_value = Column(DateTime(timezone=True), nullable=False, index=True)
     numeric_value = Column(Float, nullable=True)
     text_value = Column(Text, nullable=True)
-    metadata = Column(JSON, default={})  # Additional context
+    meta_info = Column(JSON, default={})
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     def __repr__(self):
