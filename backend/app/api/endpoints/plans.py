@@ -10,7 +10,7 @@ from app.models.plan import Plan
 router = APIRouter()
 
 
-@router.get("/plans")
+@router.get("")
 async def list_plans(db: AsyncSession = Depends(get_db)):
     """List all available plans (public endpoint)."""
     try:
@@ -31,7 +31,7 @@ async def list_plans(db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Failed to fetch plans: {str(e)}")
 
 
-@router.get("/plans/{plan_id}")
+@router.get("/{plan_id}")
 async def get_plan(plan_id: int, db: AsyncSession = Depends(get_db)):
     """Get plan details."""
     try:
