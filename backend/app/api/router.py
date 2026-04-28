@@ -19,6 +19,7 @@ from app.api.endpoints import (
     smart_analysis,
     diagnostics,
     public_auth,
+    debug_auth,
 )
 
 # Main API router
@@ -45,3 +46,4 @@ api_router.include_router(public_forms.router, prefix="/public/forms", tags=["Pu
 api_router.include_router(imports.router, prefix="/imports", tags=["Data Import"])
 api_router.include_router(diagnostics.router, prefix="/diagnostics", tags=["Diagnostics"])
 api_router.include_router(public_auth.router, tags=["Public Auth"])
+api_router.include_router(debug_auth.router, prefix="/debug", tags=["Debug"])
