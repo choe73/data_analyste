@@ -86,14 +86,16 @@ class SubscriptionQuotaMiddleware(BaseHTTPMiddleware):
         await db.commit()
 
         # Check quota based on plan
-        if plan == "free":
+        if not plan:
             return subscription.analyses_used_this_month < 10
-        elif plan == "standard":
-            return True  # Unlimited
-        elif plan == "premium":
-            return True  # Unlimited
-
-        return True
+            
+        max_analyses = plan.features.get("max_analyses", 10) if plan.features else 10
+        # Unlimited if max_analyses is very high or not present in a premium-like plan
+        if plan.name in ["standard", "advanced", "premium", "enterprise"]:
+             # If it's a paid plan, we allow the usage but still track it
+             return True
+             
+        return subscription.analyses_used_this_month < max_analyses
 
 
 class AnalyticsMiddleware(BaseHTTPMiddleware):

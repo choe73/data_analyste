@@ -23,16 +23,46 @@ class DatasetService:
         domain: Optional[str] = None,
         source: Optional[str] = None,
     ) -> List[Dataset]:
-        """List all available datasets: user imports + collected data domains."""
+        """List all available datasets: user imports + registered datasets + collected domains."""
         datasets = []
 
-        # 1. User-uploaded imports
+        # 1. Registered Datasets (including API collections)
+        q_reg = select(DatasetModel)
+        if domain:
+            q_reg = q_reg.where(DatasetModel.domain == domain)
+        result_reg = await self.db.execute(q_reg)
+        reg_datasets = result_reg.scalars().all()
+        for ds in reg_datasets:
+            if source and source == "import":
+                continue
+            datasets.append(Dataset(
+                id=ds.id,
+                name=ds.name,
+                description=ds.description or f"Dataset {ds.name}",
+                source="api_collection" if ds.source_type and "api" in ds.source_type else "other",
+                domain=ds.domain or "general",
+                row_count=ds.row_count or 0,
+                columns=[col["name"] for col in (ds.columns_info or [])] if ds.columns_info else [],
+                last_updated=ds.updated_at or ds.created_at or datetime.utcnow(),
+                created_at=ds.created_at or datetime.utcnow(),
+                schema={col["name"]: col["type"] for col in (ds.columns_info or [])} if ds.columns_info else {},
+            ))
+
+        # 2. User-uploaded imports (from DataImport table)
         q = select(DataImport).where(DataImport.analysis_status.in_(["confirmed", "completed", "uploaded"]))
         result = await self.db.execute(q)
         imports = result.scalars().all()
+        
+        # Avoid ID collision with registered datasets
+        existing_ids = {ds.id for ds in datasets}
+        
         for imp in imports:
             if source and source != "import":
                 continue
+            # If this import is already registered as a Dataset, skip it
+            if imp.id in existing_ids:
+                continue
+                
             datasets.append(Dataset(
                 id=imp.id,
                 name=imp.original_filename or f"Import #{imp.id}",
@@ -46,7 +76,7 @@ class DatasetService:
                 schema={col: (imp.column_types or {}).get(col, "text") for col in (imp.column_names or [])},
             ))
 
-        # 2. Collected data grouped by domain
+        # 3. Collected data grouped by domain (fallback)
         q2 = select(
             ProcessedData.domain,
             func.count(ProcessedData.id).label("cnt"),
@@ -57,15 +87,20 @@ class DatasetService:
         result2 = await self.db.execute(q2)
         rows = result2.all()
 
-        domain_id_offset = 10000  # offset to avoid collision with import IDs
+        domain_id_offset = 20000  # higher offset
         for i, row in enumerate(rows):
             dom = row.domain or "unknown"
             if source and source != "collected":
                 continue
+            
+            # Skip if we already have a dataset for this domain
+            if any(ds.domain == dom and ds.source == "api_collection" for ds in datasets):
+                continue
+                
             datasets.append(Dataset(
                 id=domain_id_offset + i,
-                name=f"Données {dom.capitalize()} (collectées)",
-                description=f"{row.cnt} enregistrements collectés depuis APIs officielles",
+                name=f"Données {dom.capitalize()} (archives)",
+                description=f"{row.cnt} enregistrements collectés au total dans ce domaine",
                 source="collected",
                 domain=dom,
                 row_count=row.cnt,

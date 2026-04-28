@@ -17,6 +17,7 @@ router = APIRouter()
 
 
 @router.get("/status", response_model=ConsentStatus)
+@router.get("/status/", response_model=ConsentStatus)
 async def get_consent_status(
     request: Request,
     current_user: Optional[User] = Depends(get_current_active_user),

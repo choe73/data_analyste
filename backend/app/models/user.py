@@ -53,8 +53,10 @@ class User(Base):
                 (s for s in self.subscriptions if s.status == "active"),
                 self.subscriptions[0] if self.subscriptions else None
             )
-            return active_sub.plan if active_sub else "gratuit"
-        return "gratuit"
+            if active_sub and active_sub.plan:
+                return active_sub.plan.name
+            return active_sub.plan_id if active_sub else "free"
+        return "free"
     
     @property
     def analysis_quota(self) -> int:
@@ -64,9 +66,8 @@ class User(Base):
                 (s for s in self.subscriptions if s.status == "active"),
                 None
             )
-            if active_sub:
-                quota_map = {"gratuit": 10, "standard": 50, "premium": 500}
-                max_quota = quota_map.get(active_sub.plan, 10)
+            if active_sub and active_sub.plan:
+                max_quota = active_sub.plan.features.get("max_analyses", 10) if active_sub.plan.features else 10
                 return max(0, max_quota - active_sub.analyses_used_this_month)
         return 10  # Default free tier
 
