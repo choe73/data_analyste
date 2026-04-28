@@ -34,7 +34,7 @@ function App() {
         {/* Public routes - no layout */}
         <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LandingPage />} />
         <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
-        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/pricing" element={isAuthenticated ? <Navigate to="/dashboard/pricing" replace /> : <Pricing />} />
         <Route path="/f/:shareToken" element={<PublicForm />} />
 
         {/* Protected app routes */}
@@ -53,6 +53,7 @@ function App() {
                   <Route path="/forms/new" element={<FormBuilder />} />
                   <Route path="/import" element={<DataImportPage />} />
                   <Route path="/import/:importId" element={<ImportResults />} />
+                  <Route path="/pricing" element={<Pricing />} />
                 </Routes>
               </MainLayout>
               <CookieConsent />
@@ -77,6 +78,7 @@ function App() {
                   <Route path="/forms/new" element={<FormBuilder />} />
                   <Route path="/import" element={<DataImportPage />} />
                   <Route path="/import/:importId" element={<ImportResults />} />
+                  <Route path="/pricing" element={<Pricing />} />
                 </Routes>
               </MainLayout>
               <CookieConsent />

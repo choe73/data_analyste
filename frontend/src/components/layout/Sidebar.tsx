@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard, Database, BarChart3, Upload,
-  Brain, Settings, PieChart, FileText, Activity, TrendingUp,
+  Brain, Settings, PieChart, FileText, Activity, TrendingUp, CreditCard,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Logo } from './Logo'
@@ -11,6 +11,7 @@ const navItems = [
   { label: 'Datasets', href: '/datasets', icon: Database },
   { label: 'Import de données', href: '/import', icon: Upload },
   { label: 'Formulaires', href: '/forms', icon: FileText },
+  { label: 'Tarification', href: '/pricing', icon: CreditCard },
   { label: 'Analyse', href: '/analysis', icon: BarChart3,
     sub: [
       { label: 'Statistiques', href: '/analysis', icon: Activity },
