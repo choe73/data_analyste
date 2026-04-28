@@ -78,10 +78,10 @@ class Subscription(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    plan = Column(String(20), nullable=False)  # free, standard, premium
+    plan_id = Column(Integer, ForeignKey("plans.id"), nullable=True)
     status = Column(String(20), default="active")  # active, expired, cancelled, pending
-    start_date = Column(Date, nullable=True)
-    end_date = Column(Date, nullable=True)
+    start_date = Column(DateTime(timezone=True), server_default=func.now())
+    end_date = Column(DateTime(timezone=True), nullable=True)
     payment_provider = Column(String(50), nullable=True)  # paypal, mtn, orange
     provider_subscription_id = Column(String(255), nullable=True)
     amount_paid = Column(Numeric(10, 2), nullable=True)
@@ -93,12 +93,16 @@ class Subscription(Base):
 
     # Quota tracking
     analyses_used_this_month = Column(Integer, default=0)
+    datasets_created_this_month = Column(Integer, default=0)
+    forms_created_this_month = Column(Integer, default=0)
+    gemini_calls_this_month = Column(Integer, default=0)
     api_calls_used_this_month = Column(Integer, default=0)
     exports_used_this_month = Column(Integer, default=0)
     quota_reset_date = Column(Date, nullable=True)
 
     # Relationships
     user = relationship("User", back_populates="subscriptions")
+    plan = relationship("Plan", back_populates="subscriptions", lazy="select")
 
 
 class AnalyticsEvent(Base):
