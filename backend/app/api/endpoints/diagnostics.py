@@ -65,6 +65,30 @@ async def db_diagnostics(db: AsyncSession = Depends(get_db)):
         }
 
 
+@router.post("/migrate-schema")
+async def migrate_schema(db: AsyncSession = Depends(get_db)):
+    """Add missing columns to tables."""
+    try:
+        logger.info("Running schema migration...")
+        
+        # Add role column to users if missing
+        try:
+            await db.execute(text("""
+                ALTER TABLE users ADD COLUMN role VARCHAR(20) DEFAULT 'user';
+            """))
+            logger.info("Added role column to users")
+        except Exception as e:
+            if "already exists" not in str(e):
+                logger.warning(f"Could not add role: {e}")
+        
+        await db.commit()
+        return {"status": "ok", "message": "Schema migration completed"}
+        
+    except Exception as e:
+        logger.error(f"Migration failed: {e}")
+        return {"status": "error", "error": str(e)}
+
+
 @router.get("/config")
 async def config_diagnostics():
     """Check configuration."""
