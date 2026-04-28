@@ -32,10 +32,10 @@ class Form(Base):
         "FormField",
         back_populates="form",
         cascade="all, delete-orphan",
-        lazy="selectin",
+        lazy="select",
     )
     responses = relationship(
-        "FormResponse", back_populates="form", cascade="all, delete-orphan"
+        "FormResponse", back_populates="form", cascade="all, delete-orphan", lazy="select"
     )
 
 

@@ -34,16 +34,16 @@ class User(Base):
     last_login = Column(DateTime(timezone=True), nullable=True)
 
     # Relationships
-    subscriptions = relationship("Subscription", back_populates="user", lazy="selectin")
+    subscriptions = relationship("Subscription", back_populates="user", lazy="select")
     analytics_events = relationship(
-        "AnalyticsEvent", back_populates="user", lazy="selectin"
+        "AnalyticsEvent", back_populates="user", lazy="select"
     )
-    feedbacks = relationship("UserFeedback", back_populates="user", lazy="selectin")
+    feedbacks = relationship("UserFeedback", back_populates="user", lazy="select")
     consents = relationship(
-        "UserConsent", back_populates="user", lazy="selectin", uselist=False
+        "UserConsent", back_populates="user", lazy="select", uselist=False
     )
-    forms = relationship("Form", back_populates="owner", lazy="selectin")
-    data_imports = relationship("DataImport", back_populates="owner", lazy="selectin")
+    forms = relationship("Form", back_populates="owner", lazy="select")
+    data_imports = relationship("DataImport", back_populates="owner", lazy="select")
     
     @property
     def subscription_plan(self) -> str:
