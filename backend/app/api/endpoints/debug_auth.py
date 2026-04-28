@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from app.core.database import get_db
-from app.models.user import User
+from app.models.user import User as UserModel
 
 router = APIRouter()
 
@@ -14,7 +14,7 @@ router = APIRouter()
 async def debug_users(db: AsyncSession = Depends(get_db)):
     """List all users for debugging."""
     try:
-        query = select(User)
+        query = select(UserModel)
         result = await db.execute(query)
         users = result.scalars().all()
         
@@ -39,7 +39,7 @@ async def debug_users(db: AsyncSession = Depends(get_db)):
 async def debug_user(email: str, db: AsyncSession = Depends(get_db)):
     """Get user details for debugging."""
     try:
-        query = select(User).where(User.email == email)
+        query = select(UserModel).where(UserModel.email == email)
         result = await db.execute(query)
         user = result.scalar_one_or_none()
         

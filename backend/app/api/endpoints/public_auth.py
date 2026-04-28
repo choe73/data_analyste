@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from app.core.database import get_db
-from app.models.user import User
+from app.models.user import User as UserModel
 from app.schemas.user import UserCreate
 from app.utils.security import get_password_hash
 
@@ -17,13 +17,13 @@ async def public_register(user_data: UserCreate, db: AsyncSession = Depends(get_
     """Public registration endpoint (for testing)."""
     try:
         # Check if user exists
-        query = select(User).where(User.email == user_data.email)
+        query = select(UserModel).where(UserModel.email == user_data.email)
         result = await db.execute(query)
         if result.scalar_one_or_none():
             raise HTTPException(status_code=400, detail="Email already registered")
 
         # Create user
-        user = User(
+        user = UserModel(
             email=user_data.email,
             hashed_password=get_password_hash(user_data.password),
             full_name=user_data.full_name,

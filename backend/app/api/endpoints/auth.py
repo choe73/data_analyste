@@ -11,10 +11,10 @@ from sqlalchemy import select
 from app.core.database import get_db
 from app.core.config import settings
 from app.core.auth import get_current_user, get_current_active_user
-from app.models.user import User, UserConsent
+from app.models.user import User as UserModel, UserConsent
 from app.schemas.user import (
     UserCreate,
-    User,
+    User as UserSchema,
     Token,
     LoginRequest,
     UserUpdate,
@@ -30,18 +30,18 @@ from app.utils.security import (
 router = APIRouter()
 
 
-@router.post("/register", response_model=User, status_code=status.HTTP_201_CREATED)
+@router.post("/register", response_model=UserSchema, status_code=status.HTTP_201_CREATED)
 async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)) -> Any:
     """Register a new user."""
     try:
         # Check if user exists
-        query = select(User).where(User.email == user_data.email)
+        query = select(UserModel).where(UserModel.email == user_data.email)
         result = await db.execute(query)
         if result.scalar_one_or_none():
             raise HTTPException(status_code=400, detail="Email already registered")
 
         # Create user
-        user = User(
+        user = UserModel(
             email=user_data.email,
             hashed_password=get_password_hash(user_data.password),
             full_name=user_data.full_name,
@@ -79,7 +79,7 @@ async def login(
     """Login and get tokens."""
     try:
         # Find user
-        query = select(User).where(User.email == form_data.username)
+        query = select(UserModel).where(UserModel.email == form_data.username)
         result = await db.execute(query)
         user = result.scalar_one_or_none()
 
@@ -140,16 +140,16 @@ async def logout(response: Response) -> Any:
     return {"message": "Successfully logged out"}
 
 
-@router.get("/me", response_model=User)
-async def get_me(current_user: User = Depends(get_current_active_user)) -> Any:
+@router.get("/me", response_model=UserSchema)
+async def get_me(current_user: UserModel = Depends(get_current_active_user)) -> Any:
     """Get current user info."""
     return current_user
 
 
-@router.put("/me", response_model=User)
+@router.put("/me", response_model=UserSchema)
 async def update_me(
     user_update: UserUpdate,
-    current_user: User = Depends(get_current_active_user),
+    current_user: UserModel = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ) -> Any:
     """Update current user info."""
@@ -157,8 +157,8 @@ async def update_me(
         current_user.full_name = user_update.full_name
     if user_update.email:
         # Check if email is taken
-        query = select(User).where(
-            User.email == user_update.email, User.id != current_user.id
+        query = select(UserModel).where(
+            UserModel.email == user_update.email, UserModel.id != current_user.id
         )
         result = await db.execute(query)
         if result.scalar_one_or_none():
@@ -180,7 +180,7 @@ async def update_me(
 
 @router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_me(
-    current_user: User = Depends(get_current_active_user),
+    current_user: UserModel = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ) -> None:
     """Delete current user account (GDPR right to be forgotten)."""
