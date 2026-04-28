@@ -71,27 +71,34 @@ async def migrate_schema(db: AsyncSession = Depends(get_db)):
     try:
         logger.info("Running schema migration...")
         
-        migrations = [
-            ("ALTER TABLE users ADD COLUMN role VARCHAR(20) DEFAULT 'user'", "role"),
-            ("ALTER TABLE users ADD COLUMN is_verified BOOLEAN DEFAULT FALSE", "is_verified"),
-            ("ALTER TABLE users ADD COLUMN created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()", "created_at"),
-            ("ALTER TABLE users ADD COLUMN updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()", "updated_at"),
-            ("ALTER TABLE users ADD COLUMN last_login TIMESTAMP WITH TIME ZONE", "last_login"),
+        # Add columns one by one with proper handling
+        columns_to_add = [
+            ("role", "VARCHAR(20) DEFAULT 'user'"),
+            ("is_verified", "BOOLEAN DEFAULT FALSE"),
+            ("created_at", "TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP"),
+            ("updated_at", "TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP"),
+            ("last_login", "TIMESTAMP WITH TIME ZONE"),
         ]
         
-        for sql, col_name in migrations:
+        for col_name, col_type in columns_to_add:
             try:
+                sql = f"ALTER TABLE users ADD COLUMN {col_name} {col_type}"
                 await db.execute(text(sql))
-                logger.info(f"Added {col_name} column to users")
+                logger.info(f"✓ Added {col_name} column")
             except Exception as e:
-                if "already exists" not in str(e):
-                    logger.warning(f"Could not add {col_name}: {e}")
+                error_str = str(e).lower()
+                if "already exists" in error_str or "duplicate" in error_str:
+                    logger.info(f"✓ {col_name} already exists")
+                else:
+                    logger.warning(f"⚠ Could not add {col_name}: {e}")
         
         await db.commit()
+        logger.info("✓ Schema migration completed")
         return {"status": "ok", "message": "Schema migration completed"}
         
     except Exception as e:
-        logger.error(f"Migration failed: {e}")
+        logger.error(f"✗ Migration failed: {e}")
+        await db.rollback()
         return {"status": "error", "error": str(e)}
 
 
