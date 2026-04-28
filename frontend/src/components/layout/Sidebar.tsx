@@ -2,24 +2,20 @@ import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard, Database, BarChart3, Upload,
   Brain, Settings, PieChart, FileText, Activity, TrendingUp, CreditCard,
+  CloudDownload, Cpu,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Logo } from './Logo'
 
 const navItems = [
   { label: 'Tableau de bord', href: '/', icon: LayoutDashboard, exact: true },
-  { label: 'Datasets', href: '/datasets', icon: Database },
-  { label: 'Import de données', href: '/import', icon: Upload },
-  { label: 'Formulaires', href: '/forms', icon: FileText },
-  { label: 'Tarification', href: '/pricing', icon: CreditCard },
-  { label: 'Analyse', href: '/analysis', icon: BarChart3,
-    sub: [
-      { label: 'Statistiques', href: '/analysis', icon: Activity },
-      { label: 'Régression', href: '/analysis', icon: TrendingUp },
-      { label: 'ACP', href: '/analysis', icon: PieChart },
-      { label: 'Classification', href: '/analysis', icon: Brain },
-    ]
-  },
+  { label: 'Collecte API (Officiel)', href: '/collection', icon: CloudDownload },
+  { label: 'Datasets & Sources', href: '/datasets', icon: Database },
+  { label: 'Import Fichiers', href: '/import', icon: Upload },
+  { label: 'Formulaires Terrain', href: '/forms', icon: FileText },
+  { label: 'Analyses & Gemini IA', href: '/analysis', icon: BarChart3 },
+  { label: 'Modèles ML', href: '/models', icon: Cpu },
+  { label: 'Abonnements', href: '/pricing', icon: CreditCard },
   { label: 'Paramètres', href: '/settings', icon: Settings },
 ]
 
