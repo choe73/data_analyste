@@ -22,6 +22,7 @@ from app.api.endpoints import (
     debug_auth,
     plans,
     subscriptions_v2,
+    imports_v2,
 )
 
 # Main API router
@@ -51,3 +52,4 @@ api_router.include_router(public_auth.router, tags=["Public Auth"])
 api_router.include_router(debug_auth.router, prefix="/debug", tags=["Debug"])
 api_router.include_router(plans.router, prefix="/plans", tags=["Plans"])
 api_router.include_router(subscriptions_v2.router, prefix="/subscriptions", tags=["Subscriptions"])
+api_router.include_router(imports_v2.router, prefix="/imports", tags=["Imports"])

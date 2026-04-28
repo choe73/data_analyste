@@ -5,13 +5,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
 import { authFetch } from '@/store/auth'
+import { Upload, AlertCircle, CheckCircle, Database } from 'lucide-react'
+
+interface ColumnInfo {
+  name: string
+  type: string
+  non_null_count: number
+  null_count: number
+  unique_count: number
+}
 
 interface DataImportItem {
   id: number
-  original_filename: string
-  file_format: string
+  name: string
   row_count: number
-  analysis_status: string
+  column_count: number
+  columns?: ColumnInfo[]
   created_at: string
 }
 
@@ -19,6 +28,8 @@ export default function DataImportPage() {
   const [imports, setImports] = useState<DataImportItem[]>([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [uploadResult, setUploadResult] = useState<DataImportItem | null>(null)
   const { toast } = useToast()
 
   const fetchImports = () => {
@@ -31,119 +42,226 @@ export default function DataImportPage() {
 
   useEffect(() => { fetchImports() }, [])
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+    
     const ext = file.name.split('.').pop()?.toLowerCase()
-    if (!['csv', 'xlsx', 'xls', 'json', 'geojson'].includes(ext || '')) {
-      toast({ title: 'Format non supporte', description: 'Utilisez CSV, Excel, JSON ou GeoJSON', variant: 'destructive' })
+    if (!['csv', 'xlsx', 'xls'].includes(ext || '')) {
+      toast({ 
+        title: 'Format non supporté', 
+        description: 'Utilisez CSV ou Excel', 
+        variant: 'destructive' 
+      })
       return
     }
+    setSelectedFile(file)
+  }
+
+  const handleUpload = async () => {
+    if (!selectedFile) return
+    
     setUploading(true)
     const formData = new FormData()
-    formData.append('file', file)
+    formData.append('file', selectedFile)
+    
     try {
-      const res = await authFetch('/api/v1/imports/upload', { method: 'POST', body: formData })
+      const res = await authFetch('/api/v1/imports/upload', { 
+        method: 'POST', 
+        body: formData 
+      })
+      
       if (res.ok) {
         const data = await res.json()
-        toast({ title: 'Fichier importe !', description: `${data.row_count} lignes detectees` })
+        setUploadResult(data)
+        toast({ 
+          title: 'Fichier importé !', 
+          description: `${data.row_count} lignes détectées` 
+        })
         fetchImports()
+        setSelectedFile(null)
       } else {
         const err = await res.json().catch(() => ({}))
-        toast({ title: 'Erreur', description: err.detail || 'Import echoue', variant: 'destructive' })
+        toast({ 
+          title: 'Erreur', 
+          description: err.detail || 'Import échoué', 
+          variant: 'destructive' 
+        })
       }
-    } catch {
-      toast({ title: 'Erreur reseau', variant: 'destructive' })
+    } catch (error) {
+      toast({ title: 'Erreur réseau', variant: 'destructive' })
     } finally {
       setUploading(false)
-      e.target.value = ''
     }
   }
 
   const handleAnalyze = async (importId: number) => {
     try {
       const res = await authFetch(`/api/v1/imports/${importId}/analyze`, { method: 'POST' })
-      if (res.ok) { toast({ title: 'Analyse lancee !' }); fetchImports() }
+      if (res.ok) { 
+        toast({ title: 'Analyse lancée !' })
+        fetchImports() 
+      }
       else toast({ title: 'Erreur', variant: 'destructive' })
-    } catch { toast({ title: 'Erreur reseau', variant: 'destructive' }) }
+    } catch { 
+      toast({ title: 'Erreur réseau', variant: 'destructive' }) 
+    }
   }
 
-  const handleDelete = async (importId: number) => {
-    await authFetch(`/api/v1/imports/${importId}`, { method: 'DELETE' })
-    fetchImports()
-  }
-
-  const statusLabel: Record<string, { text: string; variant: 'default' | 'secondary' | 'destructive' }> = {
-    uploaded: { text: 'Uploade', variant: 'secondary' },
-    confirmed: { text: 'Confirme', variant: 'default' },
-    pending: { text: 'En attente', variant: 'secondary' },
-    completed: { text: 'Analyse', variant: 'default' },
-    failed: { text: 'Echoue', variant: 'destructive' },
+  const getTypeColor = (type: string) => {
+    switch(type) {
+      case 'numeric': return 'bg-blue-100 text-blue-800'
+      case 'categorical': return 'bg-purple-100 text-purple-800'
+      case 'text': return 'bg-green-100 text-green-800'
+      case 'datetime': return 'bg-orange-100 text-orange-800'
+      default: return 'bg-gray-100 text-gray-800'
+    }
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Import de Données</h1>
-          <p className="text-muted-foreground">Importez vos données et obtenez une analyse automatique</p>
-        </div>
-        <label>
-          <Button asChild disabled={uploading}>
-            <span>{uploading ? 'Upload en cours...' : '+ Importer un fichier'}</span>
-          </Button>
-          <input type="file" className="hidden" accept=".csv,.xlsx,.xls,.json,.geojson" onChange={handleUpload} />
-        </label>
+      <div>
+        <h1 className="text-3xl font-bold">Import de Données</h1>
+        <p className="text-gray-600 mt-2">
+          Importez vos fichiers CSV ou Excel pour une analyse automatique
+        </p>
       </div>
 
+      {/* Upload Area */}
+      <Card className="p-8">
+        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+          <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <p className="text-gray-600 mb-4">
+            Glissez-déposez votre fichier ou cliquez pour sélectionner
+          </p>
+          <input
+            type="file"
+            accept=".csv,.xlsx,.xls"
+            onChange={handleFileChange}
+            className="hidden"
+            id="file-input"
+          />
+          <label htmlFor="file-input">
+            <Button as="span" variant="outline">
+              Sélectionner un fichier
+            </Button>
+          </label>
+        </div>
+
+        {selectedFile && (
+          <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+            <p className="text-sm font-medium text-blue-900">
+              Fichier sélectionné: {selectedFile.name}
+            </p>
+          </div>
+        )}
+
+        {selectedFile && !uploadResult && (
+          <Button
+            onClick={handleUpload}
+            disabled={uploading}
+            className="w-full mt-4 bg-green-600"
+          >
+            {uploading ? 'Téléchargement...' : 'Télécharger et analyser'}
+          </Button>
+        )}
+      </Card>
+
+      {/* Upload Results */}
+      {uploadResult && (
+        <Card className="p-6 border-green-200 bg-green-50">
+          <div className="flex items-start mb-4">
+            <CheckCircle className="w-6 h-6 text-green-600 mr-3 flex-shrink-0" />
+            <div>
+              <h2 className="text-xl font-bold">{uploadResult.name}</h2>
+              <p className="text-gray-600">
+                {uploadResult.row_count} lignes × {uploadResult.column_count} colonnes
+              </p>
+            </div>
+          </div>
+
+          {/* Columns Info */}
+          {uploadResult.columns && uploadResult.columns.length > 0 && (
+            <div className="mt-6">
+              <h3 className="font-semibold mb-4">Colonnes détectées</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {uploadResult.columns.map((col) => (
+                  <div key={col.name} className="p-4 border rounded-lg bg-white">
+                    <div className="flex items-start justify-between mb-2">
+                      <p className="font-medium">{col.name}</p>
+                      <Badge className={getTypeColor(col.type)}>
+                        {col.type}
+                      </Badge>
+                    </div>
+                    <div className="text-sm text-gray-600 space-y-1">
+                      <p>Non-null: {col.non_null_count}</p>
+                      <p>Unique: {col.unique_count}</p>
+                      {col.null_count > 0 && (
+                        <p className="text-orange-600">Null: {col.null_count}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <Button
+            onClick={() => {
+              setUploadResult(null)
+              setSelectedFile(null)
+            }}
+            className="w-full mt-6"
+            variant="outline"
+          >
+            Importer un autre fichier
+          </Button>
+        </Card>
+      )}
+
+      {/* Imports List */}
       {loading ? (
-        <p className="text-muted-foreground">Chargement...</p>
+        <p className="text-gray-600">Chargement...</p>
       ) : imports.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground mb-2">Aucune donnée importée</p>
-            <p className="text-sm text-muted-foreground">Importez un fichier CSV, Excel ou JSON pour commencer</p>
+            <Database className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <p className="text-gray-600 mb-2">Aucune donnée importée</p>
+            <p className="text-sm text-gray-500">
+              Importez un fichier CSV ou Excel pour commencer
+            </p>
           </CardContent>
         </Card>
       ) : (
         <div className="grid gap-4">
-          {imports.map(imp => {
-            const st = statusLabel[imp.analysis_status] || statusLabel.pending
-            return (
-              <Card key={imp.id}>
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-base">{imp.original_filename}</CardTitle>
-                    <Badge variant={st.variant}>{st.text}</Badge>
-                  </div>
-                  <CardDescription>
-                    {imp.file_format.toUpperCase()} · {imp.row_count.toLocaleString()} lignes
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex gap-2">
-                    {imp.analysis_status === 'uploaded' && (
-                      <Button size="sm" onClick={() => handleAnalyze(imp.id)}>
-                        Lancer l'analyse
-                      </Button>
-                    )}
-                    {imp.analysis_status === 'completed' && (
-                      <Link to={`/import/${imp.id}`}>
-                        <Button size="sm" variant="outline">Voir les résultats</Button>
-                      </Link>
-                    )}
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleDelete(imp.id)}
-                    >
-                      Supprimer
+          {imports.map(imp => (
+            <Card key={imp.id}>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base">{imp.name}</CardTitle>
+                </div>
+                <CardDescription>
+                  {imp.row_count.toLocaleString()} lignes × {imp.column_count} colonnes
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex gap-2">
+                  <Button 
+                    size="sm" 
+                    onClick={() => handleAnalyze(imp.id)}
+                    className="bg-green-600"
+                  >
+                    Analyser
+                  </Button>
+                  <Link to={`/import/${imp.id}`}>
+                    <Button size="sm" variant="outline">
+                      Voir les détails
                     </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )
-          })}
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       )}
     </div>
