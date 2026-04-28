@@ -33,28 +33,34 @@ router = APIRouter()
 @router.post("/register", response_model=User, status_code=status.HTTP_201_CREATED)
 async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)) -> Any:
     """Register a new user."""
-    # Check if user exists
-    query = select(User).where(User.email == user_data.email)
-    result = await db.execute(query)
-    if result.scalar_one_or_none():
-        raise HTTPException(status_code=400, detail="Email already registered")
+    try:
+        # Check if user exists
+        query = select(User).where(User.email == user_data.email)
+        result = await db.execute(query)
+        if result.scalar_one_or_none():
+            raise HTTPException(status_code=400, detail="Email already registered")
 
-    # Create user
-    user = User(
-        email=user_data.email,
-        hashed_password=get_password_hash(user_data.password),
-        full_name=user_data.full_name,
-    )
-    db.add(user)
-    await db.commit()
-    await db.refresh(user)
+        # Create user
+        user = User(
+            email=user_data.email,
+            hashed_password=get_password_hash(user_data.password),
+            full_name=user_data.full_name,
+        )
+        db.add(user)
+        await db.commit()
+        await db.refresh(user)
 
-    # Create default consent record
-    consent = UserConsent(user_id=user.id)
-    db.add(consent)
-    await db.commit()
+        # Create default consent record
+        consent = UserConsent(user_id=user.id)
+        db.add(consent)
+        await db.commit()
 
-    return user
+        return user
+    except HTTPException:
+        raise
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=500, detail=f"Registration failed: {str(e)}")
 
 
 @router.post("/login", response_model=Token)
