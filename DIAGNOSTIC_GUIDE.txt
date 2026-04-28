@@ -1,0 +1,116 @@
+================================================================================
+GUIDE DE DIAGNOSTIC - COLLECTEURS DE DONNÉES
+================================================================================
+
+PROBLÈME IDENTIFIÉ:
+- Les collecteurs (World Bank, NASA POWER, FAO) ne stockent pas les données
+- La base de données reste vide après les collectes
+- Les APIs externes peuvent être down ou changées
+
+================================================================================
+SOLUTION FOURNIE: OUTILS DE DIAGNOSTIC
+================================================================================
+
+1. PAGE DE DEBUG FRONTEND
+   URL: http://localhost:3000/dashboard/debug/collectors
+   
+   Permet de:
+   - Tester chaque collecteur individuellement
+   - Voir les logs détaillés en temps réel
+   - Identifier exactement où ça casse
+
+2. ENDPOINTS DE DIAGNOSTIC BACKEND
+   
+   a) Test rapide des APIs:
+      GET /api/v1/diagnostics/test/world-bank
+      GET /api/v1/diagnostics/test/nasa-power
+      GET /api/v1/diagnostics/test/fao
+      GET /api/v1/diagnostics/test/all
+   
+   b) Collecte avec logs détaillés:
+      POST /api/v1/collect/collect-debug/{source_id}
+      GET /api/v1/collect/collect-debug-logs/{task_id}
+      GET /api/v1/collect/collect-debug-all
+   
+   c) Vérifier les données stockées:
+      GET /api/v1/data/data-status
+      GET /api/v1/data/raw-data-sample
+      GET /api/v1/data/processed-data-sample
+
+3. SCRIPT DE TEST LOCAL
+   bash backend/run_collector_test.sh
+   
+   Teste tous les collecteurs via curl
+
+================================================================================
+ÉTAPES POUR DIAGNOSTIQUER
+================================================================================
+
+ÉTAPE 1: Vérifier les APIs externes
+   - Allez sur http://localhost:3000/dashboard/debug/collectors
+   - Cliquez sur "Test World Bank"
+   - Regardez les logs pour voir si l'API répond
+   - Répétez pour NASA POWER et FAO
+
+ÉTAPE 2: Identifier le problème
+   Les logs vous montreront:
+   - Si l'API est accessible
+   - Si les données sont reçues
+   - Si le stockage en base de données fonctionne
+   - Quel est le message d'erreur exact
+
+ÉTAPE 3: Corriger selon le problème
+   
+   Si "API not accessible":
+   - L'API externe est down ou bloquée
+   - Vérifier la connexion internet
+   - Vérifier les pare-feu
+   
+   Si "No data received":
+   - L'API a changé de format
+   - Les paramètres sont incorrects
+   - Vérifier la documentation de l'API
+   
+   Si "Database error":
+   - Les tables n'existent pas
+   - Les permissions sont insuffisantes
+   - Vérifier la connexion Supabase
+
+================================================================================
+FICHIERS CRÉÉS
+================================================================================
+
+Backend:
+- backend/test_collectors.py - Script de test local
+- backend/app/models/raw_data.py - Modèle pour données brutes
+- backend/app/models/processed_data.py - Modèle pour données traitées
+- backend/app/api/endpoints/diagnostics_collectors.py - Tests des APIs
+- backend/app/api/endpoints/data_status.py - Vérification des données
+- backend/app/api/endpoints/collection_debug.py - Collecte avec logs
+- backend/run_collector_test.sh - Script de test
+
+Frontend:
+- frontend/src/pages/CollectorDebug.tsx - Page de diagnostic
+
+================================================================================
+PROCHAINES ÉTAPES
+================================================================================
+
+1. Déployer les changements sur Render
+2. Accéder à la page de debug: /dashboard/debug/collectors
+3. Tester chaque collecteur
+4. Analyser les logs pour identifier le problème
+5. Corriger le problème identifié
+6. Relancer les tests
+
+================================================================================
+NOTES IMPORTANTES
+================================================================================
+
+- Les collecteurs utilisent des APIs externes qui peuvent être instables
+- Les données ne sont stockées que si les APIs répondent correctement
+- Les tables raw_data et processed_data doivent exister dans Supabase
+- Les collecteurs utilisent AsyncSession pour la base de données
+- Les logs détaillés aident à identifier exactement où ça casse
+
+================================================================================

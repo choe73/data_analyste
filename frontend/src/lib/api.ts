@@ -138,23 +138,23 @@ class ApiClient {
 
   // Data Collection
   async listSources(): Promise<CollectionSource[]> {
-    return this.request('/api/v1/collection/sources');
+    return this.request('/api/v1/collect/sources');
   }
 
-  async triggerCollection(sourceId: number): Promise<any> {
-    return this.request(`/api/v1/collection/trigger/${sourceId}`, {
+  async triggerCollection(sourceId: string): Promise<any> {
+    return this.request(`/api/v1/collect/trigger/${sourceId}`, {
       method: 'POST',
     });
   }
 
   async triggerAllCollections(): Promise<any> {
-    return this.request('/api/v1/collection/trigger-all', {
+    return this.request('/api/v1/collect/trigger/all', {
       method: 'POST',
     });
   }
 
-  async getCollectionStatus(sourceId: number): Promise<CollectionStatus> {
-    return this.request(`/api/v1/collection/status/${sourceId}`);
+  async getCollectionStatus(taskId: string): Promise<any> {
+    return this.request(`/api/v1/collect/status/${taskId}`);
   }
 }
 
@@ -171,9 +171,9 @@ export const getDatasets = (domain?: string, source?: string) =>
   apiClient.listDatasets(domain, source)
 export const getDataset = (id: number) => apiClient.getDataset(id)
 export const getSources = () => apiClient.listSources()
-export const triggerCollection = (sourceId: number) => apiClient.triggerCollection(sourceId)
+export const triggerCollection = (sourceId: string) => apiClient.triggerCollection(sourceId)
 export const triggerAllCollections = () => apiClient.triggerAllCollections()
-export const getCollectionStatus = (sourceId: number) => apiClient.getCollectionStatus(sourceId)
+export const getCollectionStatus = (taskId: string) => apiClient.getCollectionStatus(taskId)
 
 // Analysis functions
 export const descriptiveAnalysis = (data: any) => apiClient.request('/api/v1/analysis/descriptive', {

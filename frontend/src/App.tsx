@@ -7,6 +7,7 @@ import { Analysis } from '@/pages/Analysis'
 import { DataCollection } from '@/pages/DataCollection'
 import { Models } from '@/pages/Models'
 import { Settings } from '@/pages/Settings'
+import { CollectorDebug } from '@/pages/CollectorDebug'
 import { CookieConsent } from '@/components/CookieConsent'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { useAuth } from '@/store/auth'
@@ -32,8 +33,8 @@ function App() {
     <ErrorBoundary>
       <Routes>
         {/* Public routes - no layout */}
-        <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LandingPage />} />
-        <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
+        <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard/" replace /> : <LandingPage />} />
+        <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard/" replace /> : <LoginPage />} />
         <Route path="/pricing" element={isAuthenticated ? <Navigate to="/dashboard/pricing" replace /> : <Pricing />} />
         <Route path="/f/:shareToken" element={<PublicForm />} />
 
@@ -54,6 +55,7 @@ function App() {
                   <Route path="/import" element={<DataImportPage />} />
                   <Route path="/import/:importId" element={<ImportResults />} />
                   <Route path="/pricing" element={<Pricing />} />
+                  <Route path="/debug/collectors" element={<CollectorDebug />} />
                 </Routes>
               </MainLayout>
               <CookieConsent />
@@ -79,6 +81,7 @@ function App() {
                   <Route path="/import" element={<DataImportPage />} />
                   <Route path="/import/:importId" element={<ImportResults />} />
                   <Route path="/pricing" element={<Pricing />} />
+                  <Route path="/debug/collectors" element={<CollectorDebug />} />
                 </Routes>
               </MainLayout>
               <CookieConsent />

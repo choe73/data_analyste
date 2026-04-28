@@ -28,15 +28,24 @@ async def _run_collection(task_id: str, source_id: str, db: AsyncSession):
         if source_id == "world_bank":
             collector = WorldBankCollector(db)
             result = await collector.collect_all_indicators()
-            await collector.client.aclose()
+            try:
+                await collector.client.aclose()
+            except:
+                pass
         elif source_id == "nasa_power":
             collector = NASAPowerCollector(db)
             result = await collector.collect_meteo_data()
-            await collector.client.aclose()
+            try:
+                await collector.client.aclose()
+            except:
+                pass
         elif source_id == "fao":
             collector = FAOCollector(db)
             result = await collector.collect_agricultural_data()
-            await collector.client.aclose()
+            try:
+                await collector.client.aclose()
+            except:
+                pass
         else:
             result = {"error": f"Unknown source: {source_id}"}
 
@@ -76,7 +85,7 @@ async def trigger_collection(
     return {"message": f"Collection triggered for {source_id}", "task_id": task_id, "status": "pending"}
 
 
-@router.post("/trigger/all")
+@router.post("/trigger-all")
 async def trigger_all_collections(
     background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db),

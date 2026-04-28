@@ -1,40 +1,25 @@
-"""Processed data model."""
+"""Processed data model for storing structured data from external sources."""
 
-from datetime import datetime
-from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    DateTime,
-    Numeric,
-    Text,
-    BigInteger,
-    ForeignKey,
-)
-from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, Float, DateTime, JSON, Text
+from sqlalchemy.sql import func
 
 from app.core.database import Base
 
 
 class ProcessedData(Base):
-    """Processed and structured data."""
+    """Store processed data from external sources."""
 
     __tablename__ = "processed_data"
 
-    id = Column(BigInteger, primary_key=True, index=True)
-    raw_data_id = Column(BigInteger, ForeignKey("raw_data.id"))
-    domain = Column(String(50), index=True)  # agriculture, sante, education...
-    indicator = Column(String(100), index=True)
-    region = Column(String(50), index=True)
-    date_value = Column(DateTime, index=True)
-    numeric_value = Column(Numeric(15, 5))
-    string_value = Column(Text)
-    meta_data = Column(JSONB)
-    created_at = Column(DateTime, default=datetime.utcnow)
-
-    # Relationships
-    # raw_data = relationship("RawData", back_populates="processed_data")
+    id = Column(Integer, primary_key=True, index=True)
+    domain = Column(String(50), nullable=False, index=True)  # economy, health, education, environment, demography, meteo, agriculture
+    indicator = Column(String(255), nullable=False, index=True)
+    region = Column(String(100), nullable=True, index=True)  # For regional data
+    date_value = Column(DateTime(timezone=True), nullable=False, index=True)
+    numeric_value = Column(Float, nullable=True)
+    text_value = Column(Text, nullable=True)
+    metadata = Column(JSON, default={})  # Additional context
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     def __repr__(self):
-        return f"<ProcessedData(id={self.id}, domain={self.domain}, indicator={self.indicator})>"
+        return f"<ProcessedData {self.domain}/{self.indicator}>"

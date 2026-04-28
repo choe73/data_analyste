@@ -18,6 +18,9 @@ from app.api.endpoints import (
     cache,
     smart_analysis,
     diagnostics,
+    diagnostics_collectors,
+    data_status,
+    collection_debug,
     public_auth,
     debug_auth,
     plans,
@@ -48,6 +51,9 @@ api_router.include_router(forms.router, prefix="/forms", tags=["Forms"])
 api_router.include_router(public_forms.router, prefix="/public/forms", tags=["Public Forms"])
 api_router.include_router(imports.router, prefix="/imports", tags=["Data Import"])
 api_router.include_router(diagnostics.router, prefix="/diagnostics", tags=["Diagnostics"])
+api_router.include_router(diagnostics_collectors.router, prefix="/diagnostics", tags=["Diagnostics"])
+api_router.include_router(collection_debug.router, prefix="/collect", tags=["Collection Debug"])
+api_router.include_router(data_status.router, prefix="/data", tags=["Data Status"])
 api_router.include_router(public_auth.router, tags=["Public Auth"])
 api_router.include_router(debug_auth.router, prefix="/debug", tags=["Debug"])
 api_router.include_router(plans.router, prefix="/plans", tags=["Plans"])

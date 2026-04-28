@@ -15,7 +15,7 @@ const navItems = [
   { label: 'Formulaires Terrain', href: '/forms', icon: FileText },
   { label: 'Analyses & Gemini IA', href: '/analysis', icon: BarChart3 },
   { label: 'Modèles ML', href: '/models', icon: Cpu },
-  { label: 'Abonnements', href: '/pricing', icon: CreditCard },
+  { label: 'Abonnements', href: '/dashboard/pricing', icon: CreditCard },
   { label: 'Paramètres', href: '/settings', icon: Settings },
 ]
 

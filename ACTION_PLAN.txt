@@ -1,0 +1,118 @@
+================================================================================
+PLAN D'ACTION IMMÉDIAT
+================================================================================
+
+SITUATION ACTUELLE:
+- ✓ 2/3 APIs externes fonctionnent (World Bank, NASA)
+- ✓ Frontend déployé et accessible
+- ✓ Authentification fonctionne
+- ✓ Données locales disponibles (23 MB)
+- ✗ Gemini API Key expirée
+- ✗ FAO API DOWN
+- ⚠️ Backend Render version ancienne
+
+================================================================================
+ÉTAPE 1: RENOUVELER GEMINI API KEY (5 min)
+================================================================================
+
+1. Aller sur: https://console.cloud.google.com/
+2. Sélectionner le projet "DataCollect"
+3. Aller à: APIs & Services → Credentials
+4. Créer une nouvelle API Key (ou régénérer l'existante)
+5. Copier la nouvelle clé
+6. Aller sur Render: https://dashboard.render.com/
+7. Sélectionner service "datacollect-cameroun-prod"
+8. Aller à: Environment
+9. Mettre à jour GEMINI_API_KEY avec la nouvelle clé
+10. Sauvegarder (redéploiement automatique)
+
+================================================================================
+ÉTAPE 2: TESTER AVEC DONNÉES LOCALES (10 min)
+================================================================================
+
+Pendant que Render redéploie:
+
+1. Aller sur: https://datacollect-cameroun-frontend.onrender.com
+2. Login: demo@datacollect.cm / Password123
+3. Cliquer: "Import Fichiers"
+4. Télécharger: /home/morningstar/Musique/tp_stat/cameroon_data/BASE_UNIFIEE_CAMEROUN.csv
+5. Attendre import
+6. Aller à: "Analyses & Gemini IA"
+7. Sélectionner le dataset importé
+8. Tester "Descriptif" tab
+9. Tester "Regression" tab
+10. Vérifier que Gemini fonctionne (après redéploiement)
+
+================================================================================
+ÉTAPE 3: VÉRIFIER COLLECTEURS API (5 min)
+================================================================================
+
+Une fois backend redéployé:
+
+1. Aller sur: https://datacollect-cameroun-frontend.onrender.com/dashboard/debug/collectors
+2. Cliquer: "Test World Bank"
+3. Vérifier les logs
+4. Cliquer: "Test NASA POWER"
+5. Vérifier les logs
+6. Cliquer: "Test FAO" (s'attend à échouer - API DOWN)
+
+================================================================================
+ÉTAPE 4: TESTER PIPELINE COMPLET (15 min)
+================================================================================
+
+1. Aller à: "Collecte API (Officiel)"
+2. Cliquer: "Collecter toutes les sources"
+3. Attendre que World Bank et NASA se terminent
+4. Vérifier les données dans "Datasets & Sources"
+5. Aller à: "Analyses & Gemini IA"
+6. Sélectionner dataset World Bank
+7. Tester analyse descriptive
+8. Tester régression
+9. Vérifier interprétation Gemini
+
+================================================================================
+RÉSULTATS ATTENDUS
+================================================================================
+
+✓ Import CSV fonctionne
+✓ Analyse descriptive affiche statistiques
+✓ Régression affiche scatter plot et coefficients
+✓ Gemini fournit interprétations
+✓ Collecteurs World Bank et NASA collectent données
+✓ Données stockées dans base de données
+✓ Sidebar affiche 9 menu items
+✓ Pas d'erreurs console (F12)
+
+================================================================================
+SI QUELQUE CHOSE NE FONCTIONNE PAS
+================================================================================
+
+1. Vérifier console (F12 → Console) pour erreurs
+2. Vérifier Network tab pour requêtes échouées
+3. Vérifier que Gemini API Key est bien mise à jour
+4. Vérifier que backend a redéployé (attendre 5-10 min)
+5. Forcer refresh: Ctrl+Shift+R (hard refresh)
+6. Vérifier que données locales existent: /home/morningstar/Musique/tp_stat/cameroon_data/
+
+================================================================================
+TIMELINE ESTIMÉE
+================================================================================
+
+- Renouveler Gemini: 5 min
+- Redéploiement Render: 5-10 min
+- Tests locaux: 10 min
+- Tests collecteurs: 5 min
+- Tests complets: 15 min
+- TOTAL: ~40 min
+
+================================================================================
+CONTACTS/RESSOURCES
+================================================================================
+
+- Google Cloud Console: https://console.cloud.google.com/
+- Render Dashboard: https://dashboard.render.com/
+- Frontend: https://datacollect-cameroun-frontend.onrender.com
+- Backend: https://datacollect-cameroun-prod.onrender.com
+- Données locales: /home/morningstar/Musique/tp_stat/cameroon_data/
+
+================================================================================
