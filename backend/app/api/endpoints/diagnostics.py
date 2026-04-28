@@ -71,15 +71,21 @@ async def migrate_schema(db: AsyncSession = Depends(get_db)):
     try:
         logger.info("Running schema migration...")
         
-        # Add role column to users if missing
-        try:
-            await db.execute(text("""
-                ALTER TABLE users ADD COLUMN role VARCHAR(20) DEFAULT 'user';
-            """))
-            logger.info("Added role column to users")
-        except Exception as e:
-            if "already exists" not in str(e):
-                logger.warning(f"Could not add role: {e}")
+        migrations = [
+            ("ALTER TABLE users ADD COLUMN role VARCHAR(20) DEFAULT 'user'", "role"),
+            ("ALTER TABLE users ADD COLUMN is_verified BOOLEAN DEFAULT FALSE", "is_verified"),
+            ("ALTER TABLE users ADD COLUMN created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()", "created_at"),
+            ("ALTER TABLE users ADD COLUMN updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()", "updated_at"),
+            ("ALTER TABLE users ADD COLUMN last_login TIMESTAMP WITH TIME ZONE", "last_login"),
+        ]
+        
+        for sql, col_name in migrations:
+            try:
+                await db.execute(text(sql))
+                logger.info(f"Added {col_name} column to users")
+            except Exception as e:
+                if "already exists" not in str(e):
+                    logger.warning(f"Could not add {col_name}: {e}")
         
         await db.commit()
         return {"status": "ok", "message": "Schema migration completed"}
