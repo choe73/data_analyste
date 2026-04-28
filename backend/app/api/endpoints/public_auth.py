@@ -30,8 +30,9 @@ async def public_register(user_data: UserCreate, db: AsyncSession = Depends(get_
         )
         db.add(user)
         await db.commit()
-        await db.refresh(user)
-
+        # Don't refresh - avoid loading relationships that may have missing columns
+        # Just return the user data we know is valid
+        
         return {
             "id": user.id,
             "email": user.email,

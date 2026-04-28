@@ -48,14 +48,21 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)) ->
         )
         db.add(user)
         await db.commit()
-        await db.refresh(user)
-
+        # Don't refresh - avoid loading relationships that may have missing columns
+        
         # Create default consent record
         consent = UserConsent(user_id=user.id)
         db.add(consent)
         await db.commit()
 
-        return user
+        return {
+            "id": user.id,
+            "email": user.email,
+            "full_name": user.full_name,
+            "role": user.role,
+            "is_active": user.is_active,
+            "is_verified": user.is_verified,
+        }
     except HTTPException:
         raise
     except Exception as e:
@@ -153,8 +160,16 @@ async def update_me(
         current_user.email = user_update.email
 
     await db.commit()
-    await db.refresh(current_user)
-    return current_user
+    # Don't refresh - avoid loading relationships
+    
+    return {
+        "id": current_user.id,
+        "email": current_user.email,
+        "full_name": current_user.full_name,
+        "role": current_user.role,
+        "is_active": current_user.is_active,
+        "is_verified": current_user.is_verified,
+    }
 
 
 @router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
