@@ -18,46 +18,36 @@ from app.api.endpoints import (
     cache,
     smart_analysis,
     diagnostics,
-    diagnostics_collectors,
     data_status,
     collection_debug,
     public_auth,
     debug_auth,
     plans,
-    subscriptions_v2,
-    imports_v2,
+    models,
     init_tables,
 )
 
-# Main API router
 api_router = APIRouter()
 
-# Include endpoint routers
 api_router.include_router(health.router, prefix="/health", tags=["Health"])
 api_router.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+api_router.include_router(public_auth.router, tags=["Public Auth"])
+api_router.include_router(debug_auth.router, prefix="/debug", tags=["Debug"])
 api_router.include_router(datasets.router, prefix="/datasets", tags=["Datasets"])
 api_router.include_router(analysis.router, prefix="/analysis", tags=["Analysis"])
 api_router.include_router(smart_analysis.router, prefix="/smart-analysis", tags=["Smart Analysis"])
-api_router.include_router(
-    data_collection.router, prefix="/collect", tags=["Data Collection"]
-)
+api_router.include_router(data_collection.router, prefix="/collect", tags=["Data Collection"])
+api_router.include_router(collection_debug.router, prefix="/collect", tags=["Collection Debug"])
 api_router.include_router(cache.router, prefix="/cache", tags=["Cache"])
-api_router.include_router(
-    subscriptions.router, prefix="/subscriptions", tags=["Subscriptions"]
-)
+api_router.include_router(subscriptions.router, prefix="/subscriptions", tags=["Subscriptions"])
+api_router.include_router(plans.router, prefix="/plans", tags=["Plans"])
 api_router.include_router(analytics.router, prefix="/analytics", tags=["Analytics"])
 api_router.include_router(consent.router, prefix="/consent", tags=["Consent"])
 api_router.include_router(feedback.router, prefix="/feedback", tags=["Feedback"])
 api_router.include_router(forms.router, prefix="/forms", tags=["Forms"])
 api_router.include_router(public_forms.router, prefix="/public/forms", tags=["Public Forms"])
 api_router.include_router(imports.router, prefix="/imports", tags=["Data Import"])
+api_router.include_router(models.router, prefix="/models", tags=["ML Models"])
 api_router.include_router(diagnostics.router, prefix="/diagnostics", tags=["Diagnostics"])
-api_router.include_router(diagnostics_collectors.router, prefix="/diagnostics", tags=["Diagnostics"])
-api_router.include_router(collection_debug.router, prefix="/collect", tags=["Collection Debug"])
 api_router.include_router(data_status.router, prefix="/data", tags=["Data Status"])
-api_router.include_router(public_auth.router, tags=["Public Auth"])
-api_router.include_router(debug_auth.router, prefix="/debug", tags=["Debug"])
-api_router.include_router(plans.router, prefix="/plans", tags=["Plans"])
-api_router.include_router(subscriptions_v2.router, prefix="/subscriptions", tags=["Subscriptions"])
-api_router.include_router(imports_v2.router, prefix="/imports", tags=["Imports"])
 api_router.include_router(init_tables.router, prefix="/admin", tags=["Admin"])
