@@ -2,14 +2,14 @@ import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard, Database, BarChart3, Upload,
   Brain, Settings, PieChart, FileText, Activity, TrendingUp, CreditCard,
-  CloudDownload, Cpu,
+  Download, Cpu,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Logo } from './Logo'
 
 const navItems = [
   { label: 'Tableau de bord', href: '/', icon: LayoutDashboard, exact: true },
-  { label: 'Collecte API (Officiel)', href: '/collection', icon: CloudDownload },
+  { label: 'Collecte API (Officiel)', href: '/collection', icon: Download },
   { label: 'Datasets & Sources', href: '/datasets', icon: Database },
   { label: 'Import Fichiers', href: '/import', icon: Upload },
   { label: 'Formulaires Terrain', href: '/forms', icon: FileText },
