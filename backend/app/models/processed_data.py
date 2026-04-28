@@ -34,7 +34,7 @@ class ProcessedData(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationships
-    raw_data = relationship("RawData", back_populates="processed_data")
+    # raw_data = relationship("RawData", back_populates="processed_data")
 
     def __repr__(self):
         return f"<ProcessedData(id={self.id}, domain={self.domain}, indicator={self.indicator})>"
