@@ -17,6 +17,7 @@ import ImportResults from '@/pages/ImportResults'
 import PublicForm from '@/pages/PublicForm'
 import LoginPage from '@/pages/Login'
 import { LandingPage } from '@/pages/LandingPage'
+import Pricing from '@/pages/Pricing'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth()
@@ -33,6 +34,7 @@ function App() {
         {/* Public routes - no layout */}
         <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LandingPage />} />
         <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
+        <Route path="/pricing" element={<Pricing />} />
         <Route path="/f/:shareToken" element={<PublicForm />} />
 
         {/* Protected app routes */}
