@@ -1,25 +1,31 @@
 """Diagnostic endpoints for debugging."""
 
+import logging
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 
-from app.core.database import get_db, init_db
+from app.core.database import get_db, init_db, async_engine, Base
 from app.core.config import settings
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
 @router.post("/init-db")
 async def init_db_endpoint():
-    """Initialize database tables (for emergency use only)."""
+    """Initialize database tables (emergency endpoint)."""
     try:
-        await init_db()
+        logger.info("Initializing database tables...")
+        async with async_engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        logger.info("✓ Database tables initialized")
         return {
             "status": "ok",
-            "message": "Database initialized successfully",
+            "message": "Database tables initialized successfully",
         }
     except Exception as e:
+        logger.error(f"Failed to initialize DB: {e}")
         return {
             "status": "error",
             "error": str(e),

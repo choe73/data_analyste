@@ -3,6 +3,7 @@
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime, Text, BigInteger
 from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.orm import relationship
 
 from app.core.database import Base
 
@@ -20,6 +21,9 @@ class RawData(Base):
     hash = Column(String(64), unique=True, index=True)
     status = Column(String(20), default="pending")  # pending, processed, error
     error_message = Column(Text)
+
+    # Relationships
+    processed_data = relationship("ProcessedData", back_populates="raw_data")
 
     def __repr__(self):
         return f"<RawData(id={self.id}, source={self.source}, status={self.status})>"
