@@ -65,14 +65,17 @@ class Settings(BaseSettings):
 
     @property
     def CORS_ORIGINS(self) -> List[str]:
-        """Build CORS origins from FRONTEND_URL. Always includes localhost for dev."""
+        """Build CORS origins. Always permissive for onrender.com deployments."""
         origins = [
             self.FRONTEND_URL,
             "http://localhost:3000",
             "http://localhost:5173",
+            "https://datacollect-cameroun-frontend.onrender.com",
+            "https://datacollect-cameroun-prod.onrender.com",
         ]
-        # Also allow any onrender.com subdomain
-        return list(set(origins))
+        if self.RENDER_EXTERNAL_URL:
+            origins.append(self.RENDER_EXTERNAL_URL)
+        return list(set(o for o in origins if o))
 
     @property
     def ALLOWED_HOSTS(self) -> List[str]:

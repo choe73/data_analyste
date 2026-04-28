@@ -1,4 +1,5 @@
 import { useQuery, useMutation } from '@tanstack/react-query'
+import { useState } from 'react'
 import { getSources, triggerCollection, triggerAllCollections, getCollectionStatus } from '@/lib/api'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -9,6 +10,8 @@ import type { DataSource } from '@/types'
 
 export function DataCollection() {
   const { toast } = useToast()
+  const [taskHistory, setTaskHistory] = useState<Record<string, any>>({})
+
   const { data: sources, isLoading } = useQuery<DataSource[]>({
     queryKey: ['sources'],
     queryFn: getSources,
@@ -16,28 +19,32 @@ export function DataCollection() {
 
   const collectMutation = useMutation({
     mutationFn: (sourceId: string) => triggerCollection(sourceId, false),
-    onSuccess: (data) => {
-      toast({
-        title: 'Collecte démarrée',
-        description: `Tâche ID: ${data.task_id}`,
-      })
+    onSuccess: (data, sourceId) => {
+      toast({ title: 'Collecte démarrée', description: `Tâche ID: ${data.task_id}` })
+      setTaskHistory(prev => ({ ...prev, [data.task_id]: { status: 'pending', source: sourceId, result: null } }))
+      // Poll status every 5s
+      const interval = setInterval(async () => {
+        try {
+          const status = await getCollectionStatus(data.task_id)
+          setTaskHistory(prev => ({ ...prev, [data.task_id]: status }))
+          if (status.status === 'completed' || status.status === 'failed') {
+            clearInterval(interval)
+          }
+        } catch { clearInterval(interval) }
+      }, 5000)
     },
-    onError: () => {
-      toast({
-        title: 'Erreur',
-        description: 'Impossible de démarrer la collecte',
-        variant: 'destructive',
-      })
-    },
+    onError: () => toast({ title: 'Erreur', description: 'Impossible de démarrer la collecte', variant: 'destructive' }),
   })
 
   const collectAllMutation = useMutation({
     mutationFn: () => triggerAllCollections(false),
-    onSuccess: () => {
-      toast({
-        title: 'Collecte globale démarrée',
-        description: 'Toutes les sources sont en cours de collecte',
-      })
+    onSuccess: (data) => {
+      toast({ title: 'Collecte globale démarrée', description: 'Toutes les sources sont en cours de collecte' })
+      if (data.tasks) {
+        data.tasks.forEach((t: any) => {
+          setTaskHistory(prev => ({ ...prev, [t.task_id]: { status: 'pending', source: t.source, result: null } }))
+        })
+      }
     },
   })
 
@@ -122,34 +129,39 @@ export function DataCollection() {
         </div>
       )}
 
-      {/* Collection History */}
+      {/* Collection History - real tasks */}
       <Card>
         <CardHeader>
-          <CardTitle>Historique des collectes</CardTitle>
+          <CardTitle>Tâches récentes</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-              <div className="flex items-center gap-3">
-                <CheckCircle className="w-5 h-5 text-green-500" />
-                <div>
-                  <p className="text-sm font-medium">World Bank API</p>
-                  <p className="text-xs text-muted-foreground">Il y a 2 heures</p>
+          {Object.keys(taskHistory).length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-4">
+              Aucune collecte lancée dans cette session.
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {Object.entries(taskHistory).map(([taskId, task]: [string, any]) => (
+                <div key={taskId} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                  <div className="flex items-center gap-3">
+                    {task.status === 'completed' && <CheckCircle className="w-5 h-5 text-green-500" />}
+                    {task.status === 'failed' && <XCircle className="w-5 h-5 text-red-500" />}
+                    {task.status === 'running' && <RefreshCw className="w-5 h-5 text-blue-500 animate-spin" />}
+                    {task.status === 'pending' && <Clock className="w-5 h-5 text-yellow-500" />}
+                    <div>
+                      <p className="text-sm font-medium">{task.source}</p>
+                      <p className="text-xs text-muted-foreground font-mono">{taskId.slice(0, 8)}...</p>
+                    </div>
+                  </div>
+                  <Badge variant={task.status === 'completed' ? 'default' : 'secondary'}>
+                    {task.status === 'completed' && task.result?.records_collected != null
+                      ? `${task.result.records_collected} enregistrements`
+                      : task.status}
+                  </Badge>
                 </div>
-              </div>
-              <Badge variant="outline">1,245 enregistrements</Badge>
+              ))}
             </div>
-            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-              <div className="flex items-center gap-3">
-                <CheckCircle className="w-5 h-5 text-green-500" />
-                <div>
-                  <p className="text-sm font-medium">NASA POWER (Météo)</p>
-                  <p className="text-xs text-muted-foreground">Il y a 5 heures</p>
-                </div>
-              </div>
-              <Badge variant="outline">8,760 enregistrements</Badge>
-            </div>
-          </div>
+          )}
         </CardContent>
       </Card>
     </div>

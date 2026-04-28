@@ -114,11 +114,11 @@ export function LandingPage() {
               </div>
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-[1.1]">
                 De la donnée brute à{' '}
-                <span className="text-[#007A5E]">l\'action</span>
+                <span className="text-[#007A5E]">l'action</span>
               </h2>
               <p className="text-lg text-gray-600 mb-8 leading-relaxed max-w-lg">
                 Collectez, analysez et obtenez des recommandations contextuelles.
-                Régression, ACP, clustering et classification, interprétés par l\'IA Gemini.
+                Régression, ACP, clustering et classification, interprétés par l'IA Gemini.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button
@@ -211,7 +211,7 @@ export function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
             <p className="text-sm font-semibold text-[#007A5E] mb-2">Comment ça marche</p>
-            <h3 className="text-3xl font-bold text-gray-900">Trois étapes vers l\'insight</h3>
+            <h3 className="text-3xl font-bold text-gray-900">Trois étapes vers l'insight</h3>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             {steps.map((step) => {
@@ -242,7 +242,7 @@ export function LandingPage() {
             <p className="text-sm font-semibold text-[#007A5E] mb-2">Fonctionnalités</p>
             <h3 className="text-3xl font-bold text-gray-900">Tout ce dont vous avez besoin</h3>
             <p className="text-gray-500 mt-3 max-w-2xl mx-auto">
-              Une plateforme complète pour la collecte, l\'analyse et l\'interprétation des données camerounaises.
+              Une plateforme complète pour la collecte, l'analyse et l'interprétation des données camerounaises.
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

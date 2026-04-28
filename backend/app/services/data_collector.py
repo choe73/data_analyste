@@ -13,6 +13,8 @@ from app.models.raw_data import RawData
 from app.models.processed_data import ProcessedData
 
 
+from app.models.dataset import Dataset
+
 class WorldBankCollector:
     """Collector for World Bank Open Data API."""
 
@@ -75,6 +77,14 @@ class WorldBankCollector:
                         },
                     )
 
+                    # Create a Dataset entry for visibility
+                    await self._create_visibility_dataset(
+                        name=f"Banque Mondiale: {indicator_name}",
+                        domain="economy",
+                        source_type="api_worldbank",
+                        row_count=len(data)
+                    )
+
                     # Process and store structured data
                     for item in data:
                         if item.get("value") is not None:
@@ -119,6 +129,29 @@ class WorldBankCollector:
                 )
 
         return results
+
+    async def _create_visibility_dataset(self, name: str, domain: str, source_type: str, row_count: int):
+        """Register the collection as a visible Dataset."""
+        # Check if already exists to avoid duplicates
+        q = select(Dataset).where(Dataset.name == name)
+        res = await self.db.execute(q)
+        if res.scalar_one_or_none():
+            return
+
+        dataset = Dataset(
+            name=name,
+            description=f"Données collectées via l'API officielle {source_type}.",
+            domain=domain,
+            source_type=source_type,
+            row_count=row_count,
+            column_count=2,
+            columns_info=[
+                {"name": "date", "type": "datetime"},
+                {"name": "value", "type": "numeric"}
+            ]
+        )
+        self.db.add(dataset)
+        await self.db.commit()
 
     async def _fetch_indicator(
         self,
@@ -231,6 +264,14 @@ class NASAPowerCollector:
             "errors": [],
         }
 
+        # Create a Dataset entry for the entire collection
+        await self._create_visibility_dataset(
+            name=f"NASA POWER: Météorologie Régionale",
+            domain="meteo",
+            source_type="api_nasa",
+            row_count=0 # Updated later
+        )
+
         for region_name, coords in self.REGIONS.items():
             try:
                 data = await self._fetch_region_data(
@@ -271,6 +312,32 @@ class NASAPowerCollector:
                 )
 
         return results
+
+    async def _create_visibility_dataset(self, name: str, domain: str, source_type: str, row_count: int):
+        """Register the collection as a visible Dataset."""
+        q = select(Dataset).where(Dataset.name == name)
+        res = await self.db.execute(q)
+        if res.scalar_one_or_none():
+            return
+
+        dataset = Dataset(
+            name=name,
+            description=f"Données météorologiques collectées via {source_type}.",
+            domain=domain,
+            source_type=source_type,
+            row_count=row_count,
+            column_count=6,
+            columns_info=[
+                {"name": "date", "type": "datetime"},
+                {"name": "region", "type": "string"},
+                {"name": "temp", "type": "numeric"},
+                {"name": "precip", "type": "numeric"},
+                {"name": "humidity", "type": "numeric"},
+                {"name": "wind", "type": "numeric"}
+            ]
+        )
+        self.db.add(dataset)
+        await self.db.commit()
 
     async def _fetch_region_data(
         self,
@@ -357,6 +424,14 @@ class FAOCollector:
 
         for dataset_code, dataset_name in self.DATASETS.items():
             try:
+                # Create a Dataset entry for visibility
+                await self._create_visibility_dataset(
+                    name=f"FAOSTAT: {dataset_name}",
+                    domain="agriculture",
+                    source_type="api_fao",
+                    row_count=0
+                )
+
                 data = await self._fetch_dataset(
                     dataset_code,
                     self.COUNTRY_CODE,
@@ -379,6 +454,30 @@ class FAOCollector:
                 )
 
         return results
+
+    async def _create_visibility_dataset(self, name: str, domain: str, source_type: str, row_count: int):
+        """Register the collection as a visible Dataset."""
+        q = select(Dataset).where(Dataset.name == name)
+        res = await self.db.execute(q)
+        if res.scalar_one_or_none():
+            return
+
+        dataset = Dataset(
+            name=name,
+            description=f"Données agricoles collectées via l'API officielle {source_type}.",
+            domain=domain,
+            source_type=source_type,
+            row_count=row_count,
+            column_count=4,
+            columns_info=[
+                {"name": "year", "type": "integer"},
+                {"name": "item", "type": "string"},
+                {"name": "element", "type": "string"},
+                {"name": "value", "type": "numeric"}
+            ]
+        )
+        self.db.add(dataset)
+        await self.db.commit()
 
     async def _fetch_dataset(
         self,
@@ -416,3 +515,4 @@ class FAOCollector:
         )
         self.db.add(processed)
         await self.db.commit()
+

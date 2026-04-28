@@ -21,6 +21,8 @@ async def _run_collection(task_id: str, source_id: str, db: AsyncSession):
     _tasks[task_id]["status"] = "running"
     try:
         from app.services.data_collector import WorldBankCollector, NASAPowerCollector, FAOCollector
+        from app.models.dataset import Dataset
+        from datetime import datetime
 
         if source_id == "world_bank":
             collector = WorldBankCollector(db)
@@ -45,6 +47,26 @@ async def _run_collection(task_id: str, source_id: str, db: AsyncSession):
                 pass
         else:
             result = {"error": f"Unknown source: {source_id}"}
+
+        # Create a Dataset entry so data appears in Datasets page
+        records = result.get("records_collected", 0)
+        if records > 0:
+            source_labels = {
+                "world_bank": "Banque Mondiale — Indicateurs Cameroun",
+                "nasa_power": "NASA POWER — Météo Cameroun",
+                "fao": "FAOSTAT — Agriculture Cameroun",
+            }
+            dataset = Dataset(
+                name=source_labels.get(source_id, source_id),
+                description=f"Collecté automatiquement le {datetime.utcnow().strftime('%d/%m/%Y %H:%M')} UTC. {records} enregistrements.",
+                source_type=source_id,
+                domain="api_collection",
+                row_count=records,
+                column_count=0,
+                columns_info=[],
+            )
+            db.add(dataset)
+            await db.commit()
 
         _tasks[task_id]["status"] = "completed"
         _tasks[task_id]["result"] = result

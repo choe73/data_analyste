@@ -14,7 +14,7 @@ class Dataset(Base):
     __tablename__ = "datasets"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)  # nullable for API-collected datasets
     name = Column(String(200), nullable=False, index=True)
     description = Column(Text, nullable=True)
     domain = Column(String(50), nullable=True, index=True)

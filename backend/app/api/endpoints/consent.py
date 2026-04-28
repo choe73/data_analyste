@@ -43,12 +43,11 @@ async def get_consent_status(
 
     # Try to get from Redis (for anonymous users)
     if session_id:
-        cache_key = f"consent:{session_id}"
-        cached = await redis_client.get(cache_key)
-        if cached:
-            try:
+        try:
+            cache_key = f"consent:{session_id}"
+            cached = await redis_client.get(cache_key)
+            if cached:
                 import json
-
                 data = json.loads(cached)
                 return ConsentStatus(
                     cookie_consent=data.get("cookie_consent", False),
@@ -61,8 +60,8 @@ async def get_consent_status(
                     ),
                     consent_version=data.get("consent_version", "1.0"),
                 )
-            except:
-                pass
+        except Exception:
+            pass
 
     # Return default (no consent)
     return ConsentStatus(
@@ -122,23 +121,23 @@ async def update_consent(
 
         await db.commit()
 
-    # Store in Redis for quick access
-    cache_key = f"consent:{user_id or session_id}"
-    import json
-
-    await redis_client.set(
-        cache_key,
-        json.dumps(
-            {
+    # Store in Redis for quick access (optional, skip if Redis unavailable)
+    try:
+        cache_key = f"consent:{user_id or session_id}"
+        import json
+        await redis_client.set(
+            cache_key,
+            json.dumps({
                 "cookie_consent": consent.cookie_consent,
                 "analytics_consent": consent.analytics_consent,
                 "marketing_consent": consent.marketing_consent or False,
                 "consented_at": datetime.utcnow().isoformat(),
                 "consent_version": "1.0",
-            }
-        ),
-        expire=86400 * 180,  # 6 months
-    )
+            }),
+            expire=86400 * 180,
+        )
+    except Exception:
+        pass
 
     # Set consent cookie
     response.set_cookie(
