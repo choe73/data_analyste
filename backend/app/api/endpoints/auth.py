@@ -77,53 +77,59 @@ async def login(
     db: AsyncSession = Depends(get_db),
 ) -> Any:
     """Login and get tokens."""
-    # Find user
-    query = select(User).where(User.email == form_data.username)
-    result = await db.execute(query)
-    user = result.scalar_one_or_none()
+    try:
+        # Find user
+        query = select(User).where(User.email == form_data.username)
+        result = await db.execute(query)
+        user = result.scalar_one_or_none()
 
-    if not user or not verify_password(form_data.password, user.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-            headers={"WWW-Authenticate": "Bearer"},
+        if not user or not verify_password(form_data.password, user.hashed_password):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect email or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        if not user.is_active:
+            raise HTTPException(status_code=400, detail="Inactive user")
+
+        # Update last login
+        user.last_login = datetime.utcnow()
+        await db.commit()
+
+        # Create tokens
+        access_token = create_access_token(data={"sub": str(user.id)})
+        refresh_token = create_refresh_token(data={"sub": str(user.id)})
+
+        # Set cookies
+        response.set_cookie(
+            key="session_id",
+            value=access_token,
+            httponly=True,
+            secure=True,
+            samesite="strict",
+            max_age=1800,  # 30 minutes
+        )
+        response.set_cookie(
+            key="refresh_token",
+            value=refresh_token,
+            httponly=True,
+            secure=True,
+            samesite="strict",
+            max_age=604800,  # 7 days
         )
 
-    if not user.is_active:
-        raise HTTPException(status_code=400, detail="Inactive user")
-
-    # Update last login
-    user.last_login = datetime.utcnow()
-    await db.commit()
-
-    # Create tokens
-    access_token = create_access_token(data={"sub": str(user.id)})
-    refresh_token = create_refresh_token(data={"sub": str(user.id)})
-
-    # Set cookies
-    response.set_cookie(
-        key="session_id",
-        value=access_token,
-        httponly=True,
-        secure=True,
-        samesite="strict",
-        max_age=1800,  # 30 minutes
-    )
-    response.set_cookie(
-        key="refresh_token",
-        value=refresh_token,
-        httponly=True,
-        secure=True,
-        samesite="strict",
-        max_age=604800,  # 7 days
-    )
-
-    return {
-        "access_token": access_token,
-        "refresh_token": refresh_token,
-        "token_type": "bearer",
-        "expires_in": 1800,
-    }
+        return {
+            "access_token": access_token,
+            "refresh_token": refresh_token,
+            "token_type": "bearer",
+            "expires_in": 1800,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=500, detail=f"Login failed: {str(e)}")
 
 
 @router.post("/logout")
