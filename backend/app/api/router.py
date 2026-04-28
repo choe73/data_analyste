@@ -20,6 +20,8 @@ from app.api.endpoints import (
     diagnostics,
     public_auth,
     debug_auth,
+    plans,
+    subscriptions_v2,
 )
 
 # Main API router
@@ -47,3 +49,5 @@ api_router.include_router(imports.router, prefix="/imports", tags=["Data Import"
 api_router.include_router(diagnostics.router, prefix="/diagnostics", tags=["Diagnostics"])
 api_router.include_router(public_auth.router, tags=["Public Auth"])
 api_router.include_router(debug_auth.router, prefix="/debug", tags=["Debug"])
+api_router.include_router(plans.router, prefix="/plans", tags=["Plans"])
+api_router.include_router(subscriptions_v2.router, prefix="/subscriptions", tags=["Subscriptions"])
