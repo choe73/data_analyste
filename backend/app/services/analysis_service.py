@@ -133,13 +133,41 @@ class AnalysisService:
             if rows:
                 data_list = []
                 for row in rows:
-                    data_list.append({
+                    # Build base record
+                    record = {
                         "region": row.region,
                         "indicator": row.indicator,
                         "value": float(row.numeric_value) if row.numeric_value else None,
                         "date": row.date_value,
                         "text_value": row.text_value,
-                    })
+                    }
+                    
+                    # Extract meta_info fields if available (for meteorological data)
+                    if row.meta_info and isinstance(row.meta_info, dict):
+                        # Map common meteorological fields
+                        if "temperature" in row.meta_info:
+                            record["temp"] = row.meta_info["temperature"]
+                        if "T2M" in row.meta_info:
+                            record["temp"] = row.meta_info["T2M"]
+                        if "precipitation" in row.meta_info:
+                            record["precip"] = row.meta_info["precipitation"]
+                        if "PRECTOTCORR" in row.meta_info:
+                            record["precip"] = row.meta_info["PRECTOTCORR"]
+                        if "humidity" in row.meta_info:
+                            record["humidity"] = row.meta_info["humidity"]
+                        if "RH2M" in row.meta_info:
+                            record["humidity"] = row.meta_info["RH2M"]
+                        if "wind_speed" in row.meta_info:
+                            record["wind"] = row.meta_info["wind_speed"]
+                        if "WS10M" in row.meta_info:
+                            record["wind"] = row.meta_info["WS10M"]
+                        # Add any other meta fields
+                        for key, val in row.meta_info.items():
+                            if key not in record and isinstance(val, (int, float)):
+                                record[key] = val
+                    
+                    data_list.append(record)
+                
                 if data_list:
                     df = pd.DataFrame(data_list)
                     # Ensure date column is datetime
