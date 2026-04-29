@@ -30,7 +30,10 @@ async_engine = create_async_engine(
     echo=False,
     poolclass=NullPool,
     future=True,
-    connect_args={"ssl": _ssl_ctx},
+    connect_args={
+        "ssl": _ssl_ctx,
+        "statement_cache_size": 0,
+    },
 )
 
 AsyncSessionLocal = async_sessionmaker(
