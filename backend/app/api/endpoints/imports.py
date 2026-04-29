@@ -52,44 +52,16 @@ async def upload_file(
     current_user: User = Depends(get_current_user),
 ):
     """Upload a data file for import."""
-    # Check extension
     ext = os.path.splitext(file.filename or "")[1].lower()
     if ext not in ALLOWED_EXTENSIONS:
         raise HTTPException(
             status_code=400,
-            detail=f"Unsupported format: {ext}. Allowed: {', '.join(ALLOWED_EXTENSIONS)}",
+            detail=f"Format non supporté: {ext}. Formats acceptés: {', '.join(ALLOWED_EXTENSIONS)}",
         )
 
-    # Check quota
-    plan = "free"
-    if current_user.subscriptions:
-        active = [s for s in current_user.subscriptions if s.status == "active"]
-        if active:
-            plan = active[0].plan
-    limit = PLAN_LIMITS.get(plan, PLAN_LIMITS["free"])["imports_daily"][0]
-
-    from datetime import date
-
-    result = await db.execute(
-        select(DataImport).where(
-            DataImport.user_id == current_user.id,
-        )
-    )
-    today_imports = [
-        i
-        for i in result.scalars().all()
-        if i.created_at and i.created_at.date() == date.today()
-    ]
-    if len(today_imports) >= limit:
-        raise HTTPException(
-            status_code=403,
-            detail=f"Daily import limit reached ({limit}). Upgrade your plan.",
-        )
-
-    # Read file content
     content = await file.read()
     if len(content) > MAX_FILE_SIZE:
-        raise HTTPException(status_code=400, detail="File too large (max 50 MB)")
+        raise HTTPException(status_code=400, detail="Fichier trop volumineux (max 50 MB)")
 
     # Save to disk
     file_id = str(uuid.uuid4())
@@ -97,26 +69,26 @@ async def upload_file(
     with open(storage_path, "wb") as f:
         f.write(content)
 
-    # Read with pandas for metadata
+    # Parse with pandas
     try:
         if ext == ".csv":
-            df = pd.read_csv(storage_path, nrows=100)
+            df = pd.read_csv(storage_path, nrows=1000)
         elif ext in (".xlsx", ".xls"):
-            df = pd.read_excel(storage_path, nrows=100)
+            df = pd.read_excel(storage_path, nrows=1000)
         elif ext in (".json", ".geojson"):
             df = pd.read_json(storage_path)
-            if isinstance(df, dict):
+            if not isinstance(df, pd.DataFrame):
                 df = pd.DataFrame(df)
         else:
             df = pd.DataFrame()
     except Exception as e:
         os.remove(storage_path)
-        raise HTTPException(status_code=400, detail=f"Error reading file: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Erreur de lecture: {str(e)}")
 
     column_names = list(df.columns)
     column_types = _detect_column_types(df)
 
-    # Get full row count
+    # Full row count
     try:
         if ext == ".csv":
             row_count = sum(1 for _ in open(storage_path)) - 1
@@ -126,14 +98,6 @@ async def upload_file(
             row_count = len(df)
     except Exception:
         row_count = len(df)
-
-    row_limit = PLAN_LIMITS.get(plan, PLAN_LIMITS["free"])["rows_per_import"][0]
-    if row_count > row_limit:
-        os.remove(storage_path)
-        raise HTTPException(
-            status_code=403,
-            detail=f"Row limit exceeded ({row_count} > {row_limit}). Upgrade your plan.",
-        )
 
     data_import = DataImport(
         user_id=current_user.id,

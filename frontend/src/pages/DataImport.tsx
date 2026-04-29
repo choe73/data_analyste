@@ -141,10 +141,11 @@ export default function DataImportPage() {
             className="hidden"
             id="file-input"
           />
-          <label htmlFor="file-input">
-            <Button as="span" variant="outline">
-              Sélectionner un fichier
-            </Button>
+          <label
+            htmlFor="file-input"
+            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm hover:bg-accent hover:text-accent-foreground cursor-pointer transition-colors"
+          >
+            Sélectionner un fichier
           </label>
         </div>
 
