@@ -1,8 +1,11 @@
 /**
  * API Client for DataCollect Pro Cameroun
+ * Supporte les déploiements multi-sites avec variables d'environnement
  */
 
-const API_URL = (import.meta.env.VITE_API_URL as string) || 'http://localhost:8000';
+import { getApiUrl } from '../config'
+
+const API_URL = getApiUrl()
 
 export interface Analysis {
   id: number;

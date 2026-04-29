@@ -21,6 +21,20 @@ services:
     envVars:
       - key: VITE_API_URL
         value: https://datacollect-cameroun-prod.onrender.com
+      - key: VITE_SECONDARY_SITE_URL
+        value: https://datacollect-cameroun-prod.onrender.com
+    plan: free
+    region: oregon
+
+  - type: static
+    name: datacollect-frontend-secondary
+    buildCommand: cd frontend && npm ci --legacy-peer-deps && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://datacollect-cameroun-prod.onrender.com
+      - key: VITE_SECONDARY_SITE_URL
+        value: https://sdfsd-qdfsd-22.onrender.com
     plan: free
     region: oregon
 
