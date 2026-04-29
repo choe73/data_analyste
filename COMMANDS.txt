@@ -1,0 +1,186 @@
+═══════════════════════════════════════════════════════════════════════════════
+                    DATACOLLECT PRO CAMEROUN - TEST COMMANDS
+═══════════════════════════════════════════════════════════════════════════════
+
+🔗 GITHUB: https://github.com/choe73/data_analyste
+🌐 FRONTEND: https://datacollect-cameroun-prod.onrender.com
+🔐 LOGIN: demo@datacollect.cm / Password123
+
+═══════════════════════════════════════════════════════════════════════════════
+
+1️⃣  RUN ALL TESTS AT ONCE
+────────────────────────────────────────────────────────────────────────────
+
+bash datacollect-pro-cameroun/TEST_COMMANDS.sh
+
+═══════════════════════════════════════════════════════════════════════════════
+
+2️⃣  GET LOGIN TOKEN
+────────────────────────────────────────────────────────────────────────────
+
+TOKEN=$(curl -s -X POST https://datacollect-cameroun-prod.onrender.com/api/v1/auth/login \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d 'username=demo@datacollect.cm&password=Password123' | python3 -c "import sys,json; print(json.load(sys.stdin)['access_token'])")
+
+echo $TOKEN
+
+═══════════════════════════════════════════════════════════════════════════════
+
+3️⃣  TEST DESCRIPTIVE ANALYSIS
+────────────────────────────────────────────────────────────────────────────
+
+curl -X POST https://datacollect-cameroun-prod.onrender.com/api/v1/analysis/descriptive/ \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"dataset_id": 29, "columns": ["value"], "confidence_level": 0.95}' | python3 -m json.tool
+
+═══════════════════════════════════════════════════════════════════════════════
+
+4️⃣  TEST REGRESSION ANALYSIS
+────────────────────────────────────────────────────────────────────────────
+
+curl -X POST https://datacollect-cameroun-prod.onrender.com/api/v1/analysis/regression/ \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"dataset_id": 29, "target_column": "value", "feature_columns": ["value"], "method": "linear"}' | python3 -m json.tool
+
+═══════════════════════════════════════════════════════════════════════════════
+
+5️⃣  TEST CLASSIFICATION ANALYSIS
+────────────────────────────────────────────────────────────────────────────
+
+curl -X POST https://datacollect-cameroun-prod.onrender.com/api/v1/analysis/classification/ \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"dataset_id": 29, "target_column": "value", "feature_columns": ["value"], "algorithm": "logistic"}' | python3 -m json.tool
+
+═══════════════════════════════════════════════════════════════════════════════
+
+6️⃣  TEST CLUSTERING ANALYSIS
+────────────────────────────────────────────────────────────────────────────
+
+curl -X POST https://datacollect-cameroun-prod.onrender.com/api/v1/analysis/clustering/ \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"dataset_id": 31, "columns": ["temp", "precip"], "algorithm": "kmeans", "n_clusters": 3}' | python3 -m json.tool
+
+═══════════════════════════════════════════════════════════════════════════════
+
+7️⃣  TEST PCA ANALYSIS
+────────────────────────────────────────────────────────────────────────────
+
+curl -X POST https://datacollect-cameroun-prod.onrender.com/api/v1/analysis/pca/ \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"dataset_id": 31, "columns": ["temp", "precip", "humidity"], "n_components": 2}' | python3 -m json.tool
+
+═══════════════════════════════════════════════════════════════════════════════
+
+8️⃣  TEST AI INTERPRETATION
+────────────────────────────────────────────────────────────────────────────
+
+curl -X POST https://datacollect-cameroun-prod.onrender.com/api/v1/analysis/interpret \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"analysis_type": "descriptive", "analysis_data": {"mean": 100, "std": 15, "min": 50, "max": 150}, "user_question": "What does this data tell us?"}' | python3 -m json.tool
+
+═══════════════════════════════════════════════════════════════════════════════
+
+9️⃣  CHECK API DOCUMENTATION
+────────────────────────────────────────────────────────────────────────────
+
+https://datacollect-cameroun-prod.onrender.com/docs
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🔟  CHECK HEALTH STATUS
+────────────────────────────────────────────────────────────────────────────
+
+curl -s https://datacollect-cameroun-prod.onrender.com/api/v1/health/ | python3 -m json.tool
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📊 DATASETS AVAILABLE
+
+Dataset 29: World Bank (349 rows)
+  - Columns: date, value
+  - Use for: Descriptive, Regression, Classification
+
+Dataset 31: NASA POWER (8,766 rows)
+  - Columns: date, region, temp, precip, humidity, wind
+  - Use for: Clustering, PCA, Multivariate Analysis
+
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ WHAT EACH OPERATION RETURNS
+
+DESCRIPTIVE:
+  - Mean, Median, Mode, Std Dev, Variance, IQR
+  - Min, Max, Percentiles (25, 50, 75, 95, 99)
+  - Confidence Intervals, Skewness, Kurtosis
+  - Correlation Matrix, Plot Data
+
+REGRESSION:
+  - R² Score, Adjusted R², RMSE, MAE, MSE
+  - Coefficients with p-values
+  - VIF (multicollinearity), Durbin-Watson
+  - F-statistic, Predictions, Residuals
+  - Scatter & Residual plots
+
+CLASSIFICATION:
+  - Accuracy, Precision, Recall, F1-Score
+  - ROC-AUC, Confusion Matrix
+  - Per-class metrics
+  - Feature Importances
+  - Cross-validation scores
+
+CLUSTERING:
+  - Cluster Assignments
+  - Silhouette Score
+  - Calinski-Harabasz Index
+  - Davies-Bouldin Index
+  - Cluster Visualization Data
+
+PCA:
+  - Principal Components
+  - Variance Explained
+  - Component Loadings
+  - Correlation Circle
+  - Biplot Data
+
+AI INTERPRETATION:
+  - Natural Language Interpretation
+  - Key Findings
+  - Recommendations
+  - Warnings
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🎯 FRONTEND TESTING CHECKLIST
+
+□ Login successfully
+□ Dashboard loads
+□ Select World Bank dataset
+□ Run Descriptive Analysis → Verify results
+□ Run Regression Analysis → Check R², RMSE
+□ Run Classification → Check Accuracy, F1
+□ Select NASA POWER dataset
+□ Run Clustering → Check Silhouette Score
+□ Run PCA → Check Variance Explained
+□ Verify AI Interpretation appears
+□ Check results are coherent
+□ Check no console errors
+
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ SYSTEM STATUS
+
+✓ All technical issues fixed
+✓ Redis configured
+✓ Authentication working (120 min token)
+✓ All endpoints accessible
+✓ Documentation available
+✓ AI Interpretation enabled
+✓ Results returned for all operations
+
+═══════════════════════════════════════════════════════════════════════════════
