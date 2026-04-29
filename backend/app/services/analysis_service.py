@@ -149,18 +149,25 @@ class AnalysisService:
                             record["temp"] = row.meta_info["temperature"]
                         if "T2M" in row.meta_info:
                             record["temp"] = row.meta_info["T2M"]
+                        # Temperature is in value column, so map it
+                        if record.get("value") is not None:
+                            record["temp"] = record["value"]
+                        
                         if "precipitation" in row.meta_info:
                             record["precip"] = row.meta_info["precipitation"]
                         if "PRECTOTCORR" in row.meta_info:
                             record["precip"] = row.meta_info["PRECTOTCORR"]
+                        
                         if "humidity" in row.meta_info:
                             record["humidity"] = row.meta_info["humidity"]
                         if "RH2M" in row.meta_info:
                             record["humidity"] = row.meta_info["RH2M"]
+                        
                         if "wind_speed" in row.meta_info:
                             record["wind"] = row.meta_info["wind_speed"]
                         if "WS10M" in row.meta_info:
                             record["wind"] = row.meta_info["WS10M"]
+                        
                         # Add any other meta fields
                         for key, val in row.meta_info.items():
                             if key not in record and isinstance(val, (int, float)):
