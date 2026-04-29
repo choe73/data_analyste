@@ -1,8 +1,7 @@
 """ML models storage."""
 
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, JSON
 from sqlalchemy.orm import relationship
 
 from app.core.database import Base
@@ -19,8 +18,8 @@ class MLModel(Base):
         String(50), nullable=False
     )  # regression, classification, clustering
     algorithm = Column(String(50), nullable=False)
-    hyperparameters = Column(JSONB)
-    metrics = Column(JSONB)  # R2, accuracy, silhouette...
+    hyperparameters = Column(JSON)
+    metrics = Column(JSON)  # R2, accuracy, silhouette...
     model_file_path = Column(String(500))
     training_data_query = Column(String)
     dataset_id = Column(Integer, ForeignKey("datasets.id"))

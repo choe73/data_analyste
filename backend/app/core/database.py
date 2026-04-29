@@ -25,15 +25,24 @@ _ssl_ctx = ssl.create_default_context()
 _ssl_ctx.check_hostname = False
 _ssl_ctx.verify_mode = ssl.CERT_NONE  # Supabase uses self-signed on free tier
 
+# Base engine args
+engine_args = {
+    "echo": False,
+    "poolclass": NullPool,
+    "future": True,
+}
+
+# Add connect_args for PostgreSQL (SSL and PgBouncer fix)
+if "postgresql" in settings.DATABASE_URL or "postgres" in settings.DATABASE_URL:
+    engine_args["connect_args"] = {
+        "ssl": _ssl_ctx,
+        "prepared_statement_cache_size": 0,
+        "statement_cache_size": 0
+    }
+
 async_engine = create_async_engine(
     _make_async_url(settings.DATABASE_URL),
-    echo=False,
-    poolclass=NullPool,
-    future=True,
-    connect_args={
-        "ssl": _ssl_ctx,
-        "statement_cache_size": 0,
-    },
+    **engine_args
 )
 
 AsyncSessionLocal = async_sessionmaker(

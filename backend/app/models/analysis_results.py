@@ -1,8 +1,7 @@
 """Analysis results model."""
 
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, BigInteger
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, BigInteger, JSON
 from sqlalchemy.orm import relationship
 
 from app.core.database import Base
@@ -19,9 +18,9 @@ class AnalysisResult(Base):
     )  # descriptive, regression, pca, classification
     model_id = Column(Integer, ForeignKey("ml_models.id"), nullable=True)
     dataset_id = Column(Integer, ForeignKey("datasets.id"))
-    input_params = Column(JSONB)
-    results = Column(JSONB)
-    visualizations = Column(JSONB)  # URLs or plot data
+    input_params = Column(JSON)
+    results = Column(JSON)
+    visualizations = Column(JSON)  # URLs or plot data
     created_by = Column(String(100))
     created_at = Column(DateTime, default=datetime.utcnow)
 

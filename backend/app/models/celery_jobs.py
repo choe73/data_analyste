@@ -1,8 +1,7 @@
 """Celery jobs tracking model."""
 
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, DateTime, Text
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import Column, Integer, String, DateTime, Text, JSON
 
 from app.core.database import Base
 
@@ -17,8 +16,8 @@ class CeleryJob(Base):
     status = Column(
         String(20), default="pending"
     )  # pending, running, completed, failed
-    params = Column(JSONB)
-    result = Column(JSONB)
+    params = Column(JSON)
+    result = Column(JSON)
     started_at = Column(DateTime)
     completed_at = Column(DateTime)
     error_message = Column(Text)

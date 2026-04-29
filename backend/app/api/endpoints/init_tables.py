@@ -27,14 +27,14 @@ async def init_tables():
             migrations = [
                 "ALTER TABLE datasets ALTER COLUMN user_id DROP NOT NULL",
                 "ALTER TABLE datasets ADD COLUMN IF NOT EXISTS column_count INTEGER DEFAULT 0",
-                "ALTER TABLE datasets ADD COLUMN IF NOT EXISTS columns_info JSONB DEFAULT '[]'",
+                "ALTER TABLE datasets ADD COLUMN IF NOT EXISTS columns_info JSON DEFAULT '[]'",
                 "ALTER TABLE datasets ADD COLUMN IF NOT EXISTS source_type VARCHAR(100)",
                 "ALTER TABLE datasets ADD COLUMN IF NOT EXISTS file_path VARCHAR(500)",
                 "ALTER TABLE datasets ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP",
-                "ALTER TABLE data_imports ADD COLUMN IF NOT EXISTS data_json JSONB",
+                "ALTER TABLE data_imports ADD COLUMN IF NOT EXISTS data_json JSON",
                 "ALTER TABLE raw_data ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()",
                 "ALTER TABLE processed_data ADD COLUMN IF NOT EXISTS text_value TEXT",
-                "ALTER TABLE processed_data ADD COLUMN IF NOT EXISTS meta_info JSONB DEFAULT '{}'",
+                "ALTER TABLE processed_data ADD COLUMN IF NOT EXISTS meta_info JSON DEFAULT '{}'",
             ]
             for sql in migrations:
                 try:
