@@ -9,7 +9,7 @@ from jose import JWTError, jwt
 
 from app.core.config import settings
 from app.core.database import get_db
-from app.models.user import User
+from app.models.user import User, Subscription
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
@@ -35,8 +35,13 @@ async def get_current_user(
     except JWTError:
         raise credentials_exception
 
-    query = select(User).where(User.id == int(user_id)).options(
-        selectinload(User.subscriptions).selectinload(User.subscriptions.property.mapper.class_.plan)
+    # Use standard selectinload chaining for better reliability
+    query = (
+        select(User)
+        .where(User.id == int(user_id))
+        .options(
+            selectinload(User.subscriptions).selectinload(Subscription.plan)
+        )
     )
     result = await db.execute(query)
     user = result.scalar_one_or_none()

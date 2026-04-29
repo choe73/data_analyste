@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from sqlalchemy.orm import selectinload
 from app.core.auth import get_current_user
 from app.core.database import get_db
 from app.models.form import Form, FormField, FormResponse
@@ -69,8 +70,12 @@ async def create_form(
         db.add(field)
 
     await db.commit()
-    await db.refresh(form)
-    return form
+    
+    # Re-fetch with fields loaded to avoid lazy-loading issues in response
+    result = await db.execute(
+        select(Form).where(Form.id == form.id).options(selectinload(Form.fields))
+    )
+    return result.scalar_one()
 
 
 @router.get("", response_model=list[FormOut])
@@ -84,6 +89,7 @@ async def list_forms(
     result = await db.execute(
         select(Form)
         .where(Form.user_id == current_user.id)
+        .options(selectinload(Form.fields))
         .order_by(Form.created_at.desc())
         .offset(skip)
         .limit(limit)
@@ -99,7 +105,9 @@ async def get_form(
 ):
     """Get a form by ID."""
     result = await db.execute(
-        select(Form).where(Form.id == form_id, Form.user_id == current_user.id)
+        select(Form)
+        .where(Form.id == form_id, Form.user_id == current_user.id)
+        .options(selectinload(Form.fields))
     )
     form = result.scalar_one_or_none()
     if not form:
