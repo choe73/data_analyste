@@ -270,7 +270,7 @@ class NASAPowerCollector:
             name=f"NASA POWER: Météorologie Régionale",
             domain="meteo",
             source_type="api_nasa",
-            row_count=0 # Updated later
+            row_count=0  # Updated later
         )
 
         for region_name, coords in self.REGIONS.items():
@@ -311,6 +311,17 @@ class NASAPowerCollector:
                         "error": str(e),
                     }
                 )
+
+        # Update dataset row count
+        try:
+            q = select(Dataset).where(Dataset.name == "NASA POWER: Météorologie Régionale")
+            res = await self.db.execute(q)
+            ds = res.scalar_one_or_none()
+            if ds:
+                ds.row_count = results["records_collected"]
+                await self.db.flush()
+        except Exception:
+            pass
 
         # Commit all changes at the end
         try:
@@ -459,6 +470,14 @@ class FAOCollector:
                         results["records_collected"] += 1
 
                     results["datasets_processed"] += 1
+                    
+                    # Update dataset row count
+                    q = select(Dataset).where(Dataset.name == f"FAOSTAT: {dataset_name}")
+                    res = await self.db.execute(q)
+                    ds = res.scalar_one_or_none()
+                    if ds:
+                        ds.row_count = len(data["data"])
+                        await self.db.flush()
 
             except Exception as e:
                 results["errors"].append(
