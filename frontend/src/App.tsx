@@ -7,7 +7,6 @@ import { Analysis } from '@/pages/Analysis'
 import { DataCollection } from '@/pages/DataCollection'
 import { Models } from '@/pages/Models'
 import { Settings } from '@/pages/Settings'
-import { CollectorDebug } from '@/pages/CollectorDebug'
 import { CookieConsent } from '@/components/CookieConsent'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { useAuth } from '@/store/auth'
@@ -26,69 +25,54 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }
 
+function AppShell({ children }: { children: React.ReactNode }) {
+  return (
+    <ProtectedRoute>
+      <MainLayout>
+        {children}
+      </MainLayout>
+      <CookieConsent />
+      <Toaster />
+    </ProtectedRoute>
+  )
+}
+
 function App() {
   const { isAuthenticated } = useAuth()
 
   return (
     <ErrorBoundary>
       <Routes>
-        {/* Public routes - no layout */}
-        <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard/" replace /> : <LandingPage />} />
-        <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard/" replace /> : <LoginPage />} />
-        <Route path="/pricing" element={isAuthenticated ? <Navigate to="/dashboard/pricing" replace /> : <Pricing />} />
+        {/* Public routes */}
+        <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LandingPage />} />
+        <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
         <Route path="/f/:shareToken" element={<PublicForm />} />
 
-        {/* Protected app routes */}
-        <Route path="/dashboard" element={
-          <ProtectedRoute>
-            <>
-              <MainLayout>
-                <Routes>
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/datasets" element={<Datasets />} />
-                  <Route path="/analysis" element={<Analysis />} />
-                  <Route path="/collection" element={<DataCollection />} />
-                  <Route path="/models" element={<Models />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/forms" element={<FormsList />} />
-                  <Route path="/forms/new" element={<FormBuilder />} />
-                  <Route path="/import" element={<DataImportPage />} />
-                  <Route path="/import/:importId" element={<ImportResults />} />
-                  <Route path="/pricing" element={<Pricing />} />
-                  <Route path="/debug/collectors" element={<CollectorDebug />} />
-                </Routes>
-              </MainLayout>
-              <CookieConsent />
-              <Toaster />
-            </>
-          </ProtectedRoute>
-        } />
+        {/* Protected routes - flat structure so direct URLs work */}
+        <Route path="/dashboard" element={<AppShell><Dashboard /></AppShell>} />
+        <Route path="/collection" element={<AppShell><DataCollection /></AppShell>} />
+        <Route path="/datasets" element={<AppShell><Datasets /></AppShell>} />
+        <Route path="/import" element={<AppShell><DataImportPage /></AppShell>} />
+        <Route path="/import/:importId" element={<AppShell><ImportResults /></AppShell>} />
+        <Route path="/forms" element={<AppShell><FormsList /></AppShell>} />
+        <Route path="/forms/new" element={<AppShell><FormBuilder /></AppShell>} />
+        <Route path="/analysis" element={<AppShell><Analysis /></AppShell>} />
+        <Route path="/models" element={<AppShell><Models /></AppShell>} />
+        <Route path="/pricing" element={<AppShell><Pricing /></AppShell>} />
+        <Route path="/settings" element={<AppShell><Settings /></AppShell>} />
 
-        {/* Catch-all for protected routes */}
-        <Route path="/*" element={
-          <ProtectedRoute>
-            <>
-              <MainLayout>
-                <Routes>
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/datasets" element={<Datasets />} />
-                  <Route path="/analysis" element={<Analysis />} />
-                  <Route path="/collection" element={<DataCollection />} />
-                  <Route path="/models" element={<Models />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/forms" element={<FormsList />} />
-                  <Route path="/forms/new" element={<FormBuilder />} />
-                  <Route path="/import" element={<DataImportPage />} />
-                  <Route path="/import/:importId" element={<ImportResults />} />
-                  <Route path="/pricing" element={<Pricing />} />
-                  <Route path="/debug/collectors" element={<CollectorDebug />} />
-                </Routes>
-              </MainLayout>
-              <CookieConsent />
-              <Toaster />
-            </>
-          </ProtectedRoute>
-        } />
+        {/* Legacy /dashboard/* redirects */}
+        <Route path="/dashboard/pricing" element={<Navigate to="/pricing" replace />} />
+        <Route path="/dashboard/analysis" element={<Navigate to="/analysis" replace />} />
+        <Route path="/dashboard/collection" element={<Navigate to="/collection" replace />} />
+        <Route path="/dashboard/datasets" element={<Navigate to="/datasets" replace />} />
+        <Route path="/dashboard/import" element={<Navigate to="/import" replace />} />
+        <Route path="/dashboard/forms" element={<Navigate to="/forms" replace />} />
+        <Route path="/dashboard/models" element={<Navigate to="/models" replace />} />
+        <Route path="/dashboard/settings" element={<Navigate to="/settings" replace />} />
+
+        {/* Catch-all */}
+        <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/"} replace />} />
       </Routes>
     </ErrorBoundary>
   )

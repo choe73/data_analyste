@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils'
 import { Logo } from './Logo'
 
 const navItems = [
-  { label: 'Tableau de bord', href: '/', icon: LayoutDashboard, exact: true },
+  { label: 'Tableau de bord', href: '/dashboard', icon: LayoutDashboard, exact: true },
   { label: 'Collecte API (Officiel)', href: '/collection', icon: Download },
   { label: 'Datasets & Sources', href: '/datasets', icon: Database },
   { label: 'Import Fichiers', href: '/import', icon: Upload },
