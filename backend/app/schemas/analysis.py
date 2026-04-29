@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field, validator
 class AnalysisRequest(BaseModel):
     """Base schema for analysis requests."""
 
-    dataset_id: int = Field(..., gt=0)
+    dataset_id: int = Field(...)
     columns: List[str] = Field(..., min_items=1)
 
 
@@ -60,7 +60,7 @@ class DescriptiveAnalysisResponse(BaseModel):
 class RegressionRequest(BaseModel):
     """Request for regression analysis."""
 
-    dataset_id: int = Field(..., gt=0)
+    dataset_id: int = Field(...)
     target_column: str = Field(..., min_length=1)
     feature_columns: List[str] = Field(..., min_items=1)
     test_size: float = Field(0.2, ge=0.1, le=0.4)
@@ -131,7 +131,7 @@ class RegressionResult(BaseModel):
 class PCARequest(BaseModel):
     """Request for PCA analysis."""
 
-    dataset_id: int = Field(..., gt=0)
+    dataset_id: int = Field(...)
     columns: List[str] = Field(..., min_items=2)
     n_components: Optional[int] = Field(None, ge=1)
     standardize: bool = True
@@ -173,7 +173,7 @@ class PCAResult(BaseModel):
 class ClassificationRequest(BaseModel):
     """Request for classification."""
 
-    dataset_id: int = Field(..., gt=0)
+    dataset_id: int = Field(...)
     target_column: str = Field(..., min_length=1)
     feature_columns: List[str] = Field(..., min_items=1)
     algorithm: Literal[
@@ -231,7 +231,7 @@ class ClassificationResult(BaseModel):
 class ClusteringRequest(BaseModel):
     """Request for clustering."""
 
-    dataset_id: int = Field(..., gt=0)
+    dataset_id: int = Field(...)
     columns: List[str] = Field(..., min_items=2)
     algorithm: Literal["kmeans", "dbscan", "hierarchical", "gmm", "spectral"] = "kmeans"
     n_clusters: Optional[int] = Field(None, ge=2, le=20)
