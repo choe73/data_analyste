@@ -34,6 +34,7 @@ async def init_tables():
                 "ALTER TABLE data_imports ADD COLUMN IF NOT EXISTS data_json JSONB",
                 "ALTER TABLE raw_data ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()",
                 "ALTER TABLE processed_data ADD COLUMN IF NOT EXISTS text_value TEXT",
+                "ALTER TABLE processed_data ADD COLUMN IF NOT EXISTS meta_info JSONB DEFAULT '{}'",
             ]
             for sql in migrations:
                 try:
