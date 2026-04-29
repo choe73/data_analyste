@@ -47,22 +47,33 @@ class AnalysisService:
                 select(DataImport).where(DataImport.id == real_id)
             )
             imp = result.scalar_one_or_none()
-            if imp and imp.storage_path:
-                import os
-                if os.path.exists(imp.storage_path):
-                    ext = os.path.splitext(imp.storage_path)[1].lower()
+            if imp:
+                # Try data_json first (persistent, survives restarts)
+                if imp.data_json:
                     try:
-                        if ext == ".csv":
-                            df = pd.read_csv(imp.storage_path)
-                        elif ext in (".xlsx", ".xls"):
-                            df = pd.read_excel(imp.storage_path)
-                        else:
-                            df = pd.read_json(imp.storage_path)
+                        df = pd.DataFrame(imp.data_json)
                         if len(df) > MAX_ROWS:
                             df = df.sample(n=MAX_ROWS, random_state=42)
                         return df
                     except Exception:
                         pass
+                # Fallback: try file on disk
+                if imp.storage_path:
+                    import os
+                    if os.path.exists(imp.storage_path):
+                        ext = os.path.splitext(imp.storage_path)[1].lower()
+                        try:
+                            if ext == ".csv":
+                                df = pd.read_csv(imp.storage_path)
+                            elif ext in (".xlsx", ".xls"):
+                                df = pd.read_excel(imp.storage_path)
+                            else:
+                                df = pd.read_json(imp.storage_path)
+                            if len(df) > MAX_ROWS:
+                                df = df.sample(n=MAX_ROWS, random_state=42)
+                            return df
+                        except Exception:
+                            pass
             return None
 
         # Positive ID = Dataset table (API-collected data)

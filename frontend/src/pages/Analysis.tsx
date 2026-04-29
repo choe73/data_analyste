@@ -14,10 +14,21 @@ import type { Dataset } from '@/types'
 
 const API = (import.meta.env.VITE_API_URL as string) || 'http://localhost:8000'
 
+function getToken() {
+  try {
+    const s = localStorage.getItem('auth-storage')
+    return s ? JSON.parse(s)?.state?.token : null
+  } catch { return null }
+}
+
 async function apiFetch(path: string, body?: object) {
+  const token = getToken()
   const r = await fetch(`${API}${path}`, {
     method: body ? 'POST' : 'GET',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     body: body ? JSON.stringify(body) : undefined,
   })
   if (!r.ok) throw new Error(await r.text())
@@ -570,13 +581,13 @@ export function Analysis() {
     queryKey: ['datasets'],
     queryFn: () => apiFetch('/api/v1/datasets'),
   })
-  const { data: datasetInfo } = useQuery({
-    queryKey: ['dataset-stats', datasetId],
-    queryFn: () => apiFetch(`/api/v1/datasets/${datasetId}/stats`),
-    enabled: !!datasetId,
-  })
-  const columns: string[] = datasetInfo?.numeric_columns || []
-  const allColumns: string[] = [...(datasetInfo?.numeric_columns || []), ...(datasetInfo?.categorical_columns || [])]
+  // Use columns directly from the dataset — no /stats endpoint needed
+  const selectedDataset: any = datasets.find((d: any) => String(d.id) === String(datasetId))
+  const colTypes: Record<string, string> = selectedDataset?.column_types || {}
+  const allColumns: string[] = selectedDataset?.columns || []
+  const columns: string[] = allColumns.length > 0 && Object.keys(colTypes).length > 0
+    ? allColumns.filter((c: string) => ['number', 'numeric', 'float', 'int', 'integer'].includes(colTypes[c]))
+    : allColumns
 
   return (
     <div className="space-y-6">
@@ -598,11 +609,10 @@ export function Analysis() {
                 ))}
               </SelectContent>
             </Select>
-            {datasetInfo && (
+            {selectedDataset && (
               <div className="flex gap-2 text-xs text-muted-foreground">
-                <Badge variant="outline">{datasetInfo.total_rows} lignes</Badge>
-                <Badge variant="outline">{columns.length} num.</Badge>
-                <Badge variant="outline">{datasetInfo.categorical_columns?.length || 0} cat.</Badge>
+                <Badge variant="outline">{selectedDataset.row_count?.toLocaleString()} lignes</Badge>
+                <Badge variant="outline">{allColumns.length} colonnes</Badge>
               </div>
             )}
           </div>
@@ -615,14 +625,14 @@ export function Analysis() {
           </CardContent>
         </Card>
       )}
-      {datasetId && columns.length === 0 && (
+      {datasetId && allColumns.length === 0 && (
         <Card className="border-orange-200 bg-orange-50">
           <CardContent className="p-4 text-orange-700 text-sm">
-            Aucune colonne numerique detectee. Verifiez votre fichier dans l'import.
+            Aucune colonne détectée. Vérifiez l'import ou sélectionnez un autre dataset.
           </CardContent>
         </Card>
       )}
-      {datasetId && columns.length > 0 && (
+      {datasetId && allColumns.length > 0 && (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5">
             <TabsTrigger value="descriptive"><BarChart3 className="w-4 h-4 mr-1" />Descriptif</TabsTrigger>

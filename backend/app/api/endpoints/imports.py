@@ -109,6 +109,7 @@ async def upload_file(
         column_names=column_names,
         column_types=column_types,
         storage_path=storage_path,
+        data_json=df.to_dict(orient='records'),  # Store data in DB for persistence
         analysis_status="uploaded",
     )
     db.add(data_import)

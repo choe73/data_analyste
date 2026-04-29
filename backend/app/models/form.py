@@ -91,6 +91,7 @@ class DataImport(Base):
     column_names = Column(JSON, nullable=True)
     column_types = Column(JSON, nullable=True)
     storage_path = Column(String(500), nullable=True)
+    data_json = Column(JSON, nullable=True)  # Store CSV data directly in DB (survives restarts)
     analysis_status = Column(String(20), default="pending")
     analysis_results = Column(JSON, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
