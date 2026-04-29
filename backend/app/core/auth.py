@@ -4,6 +4,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from jose import JWTError, jwt
 
 from app.core.config import settings
@@ -34,7 +35,9 @@ async def get_current_user(
     except JWTError:
         raise credentials_exception
 
-    query = select(User).where(User.id == int(user_id))
+    query = select(User).where(User.id == int(user_id)).options(
+        selectinload(User.subscriptions).selectinload(User.subscriptions.property.mapper.class_.plan)
+    )
     result = await db.execute(query)
     user = result.scalar_one_or_none()
 

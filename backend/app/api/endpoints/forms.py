@@ -27,8 +27,8 @@ async def create_form(
     plan = "free"
     if current_user.subscriptions:
         active = [s for s in current_user.subscriptions if s.status == "active"]
-        if active:
-            plan = active[0].plan
+        if active and active[0].plan:
+            plan = active[0].plan.name
 
     limit = PLAN_LIMITS.get(plan, PLAN_LIMITS["free"])["forms"][0]
     result = await db.execute(

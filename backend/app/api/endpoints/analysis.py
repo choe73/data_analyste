@@ -125,8 +125,8 @@ async def interpret_analysis(
     is_premium = getattr(current_user, 'subscription_type', None) == 'premium'
     if not is_premium and current_user.subscriptions:
         active = [s for s in current_user.subscriptions if s.status == "active"]
-        if active:
-            is_premium = active[0].plan in ("standard", "premium")
+        if active and active[0].plan:
+            is_premium = active[0].plan.name in ("standard", "premium")
 
     current_count, remaining = await check_gemini_quota(user_id, is_premium, db)
 
