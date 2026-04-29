@@ -91,4 +91,11 @@ async def submit_form_response(
     form.response_count = (form.response_count or 0) + 1
     await db.commit()
     await db.refresh(response)
-    return response
+    
+    # Manually construct response to ensure proper serialization
+    return FormResponseOut(
+        id=response.id,
+        form_id=response.form_id,
+        responses=response.responses,
+        submitted_at=response.submitted_at,
+    )
