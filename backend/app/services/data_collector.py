@@ -150,8 +150,10 @@ class WorldBankCollector:
                 ]
             )
             self.db.add(dataset)
-            await self.db.flush()  # Use flush instead of commit
-        except Exception:
+            await self.db.flush()
+            await self.db.commit()  # Commit to persist columns_info
+        except Exception as e:
+            await self.db.rollback()
             pass  # Dataset may already exist
 
     async def _fetch_indicator(
@@ -347,8 +349,10 @@ class NASAPowerCollector:
                 ]
             )
             self.db.add(dataset)
-            await self.db.flush()  # Use flush instead of commit to avoid transaction issues
-        except Exception:
+            await self.db.flush()
+            await self.db.commit()  # Commit to persist columns_info
+        except Exception as e:
+            await self.db.rollback()
             pass  # Dataset may already exist
 
     async def _fetch_region_data(
@@ -499,8 +503,10 @@ class FAOCollector:
                 ]
             )
             self.db.add(dataset)
-            await self.db.flush()  # Use flush instead of commit
-        except Exception:
+            await self.db.flush()
+            await self.db.commit()  # Commit to persist columns_info
+        except Exception as e:
+            await self.db.rollback()
             pass  # Dataset may already exist
 
     async def _fetch_dataset(

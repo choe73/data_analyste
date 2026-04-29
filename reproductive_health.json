@@ -1,0 +1,20 @@
+{
+  "title": "Santé Reproductive Cameroun 2026",
+  "description": "Enquête nationale sur l'accès aux soins de santé reproductive.",
+  "domain": "Santé",
+  "fields": [
+    {
+      "field_type": "select",
+      "label": "Accès aux contraceptifs",
+      "required": true,
+      "options": [{"label": "Facile", "value": "facile"}, {"label": "Difficile", "value": "difficile"}],
+      "order": 1
+    },
+    {
+      "field_type": "rating",
+      "label": "Qualité de l'accueil en clinique",
+      "required": true,
+      "order": 2
+    }
+  ]
+}

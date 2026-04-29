@@ -1,0 +1,13 @@
+{
+  "title": "Sensibilisation Hygiène Publique",
+  "description": "Mesurer l'impact des campagnes d'hygiène dans les zones rurales.",
+  "domain": "Sensibilisation",
+  "fields": [
+    {
+      "field_type": "text",
+      "label": "Principale source d'eau potable",
+      "required": true,
+      "order": 1
+    }
+  ]
+}
