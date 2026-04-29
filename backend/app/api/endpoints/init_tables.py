@@ -32,6 +32,7 @@ async def init_tables():
                 "ALTER TABLE datasets ADD COLUMN IF NOT EXISTS file_path VARCHAR(500)",
                 "ALTER TABLE datasets ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP",
                 "ALTER TABLE data_imports ADD COLUMN IF NOT EXISTS data_json JSONB",
+                "ALTER TABLE raw_data ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()",
             ]
             for sql in migrations:
                 try:
