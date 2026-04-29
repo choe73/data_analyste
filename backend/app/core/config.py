@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     # Security
     SECRET_KEY: str = "change-me-in-production"
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 120  # Increased from 30 to 120 minutes
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
     # Rate Limiting

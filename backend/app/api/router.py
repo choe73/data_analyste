@@ -49,5 +49,5 @@ api_router.include_router(public_forms.router, prefix="/public/forms", tags=["Pu
 api_router.include_router(imports.router, prefix="/imports", tags=["Data Import"])
 api_router.include_router(models.router, prefix="/models", tags=["ML Models"])
 api_router.include_router(diagnostics.router, prefix="/diagnostics", tags=["Diagnostics"])
-api_router.include_router(data_status.router, prefix="/data", tags=["Data Status"])
+api_router.include_router(data_status.router, prefix="/data-status", tags=["Data Status"])
 api_router.include_router(init_tables.router, prefix="/admin", tags=["Admin"])

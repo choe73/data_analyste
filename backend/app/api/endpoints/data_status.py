@@ -9,7 +9,7 @@ from app.core.database import get_db
 router = APIRouter()
 
 
-@router.get("/data-status")
+@router.get("")
 async def get_data_status(db: AsyncSession = Depends(get_db)):
     """Get status of data in database."""
     try:

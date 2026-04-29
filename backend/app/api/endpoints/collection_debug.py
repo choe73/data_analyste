@@ -13,7 +13,7 @@ router = APIRouter()
 _collection_logs = {}
 
 
-@router.post("/collect-debug/{source_id}")
+@router.post("/debug/{source_id}")
 async def collect_debug(
     source_id: str,
     background_tasks: BackgroundTasks,
@@ -110,7 +110,7 @@ async def collect_debug(
     }
 
 
-@router.get("/collect-debug-logs/{task_id}")
+@router.get("/debug-logs/{task_id}")
 async def get_debug_logs(task_id: str):
     """Get debug logs for a collection task."""
     if task_id not in _collection_logs:
@@ -119,7 +119,7 @@ async def get_debug_logs(task_id: str):
     return _collection_logs[task_id]
 
 
-@router.get("/collect-debug-all")
+@router.get("/debug-all")
 async def get_all_debug_logs():
     """Get all debug logs."""
     return {

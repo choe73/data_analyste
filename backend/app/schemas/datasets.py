@@ -17,7 +17,7 @@ class DatasetBase(BaseModel):
 class DatasetCreate(DatasetBase):
     """Schema for creating a dataset."""
 
-    schema: Dict[str, str] = Field(default_factory=dict)
+    columns_info: Dict[str, str] = Field(default_factory=dict, alias="schema")
     metadata: Optional[Dict[str, Any]] = None
 
 
@@ -37,11 +37,12 @@ class Dataset(DatasetBase):
     columns: List[str] = Field(default_factory=list)
     last_updated: datetime
     created_at: datetime
-    schema: Dict[str, str] = Field(default_factory=dict)
+    columns_info: Dict[str, str] = Field(default_factory=dict, alias="schema")
     metadata: Optional[Dict[str, Any]] = None
 
     class Config:
         from_attributes = True
+        populate_by_name = True  # Allow both 'schema' and 'columns_info'
 
 
 class DatasetStats(BaseModel):

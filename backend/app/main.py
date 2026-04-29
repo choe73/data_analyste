@@ -57,8 +57,8 @@ app = FastAPI(
     description="Plateforme intelligente de collecte et analyse de données",
     version="1.0.0",
     lifespan=lifespan,
-    docs_url="/docs" if settings.DEBUG else None,
-    redoc_url="/redoc" if settings.DEBUG else None,
+    docs_url="/docs",  # Always enable documentation
+    redoc_url="/redoc",  # Always enable ReDoc
 )
 
 # CORS
