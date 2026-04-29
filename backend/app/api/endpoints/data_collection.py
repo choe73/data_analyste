@@ -3,8 +3,10 @@
 import uuid
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 
 from app.core.database import get_db
+from app.models.raw_data import RawData
 
 router = APIRouter()
 
@@ -48,7 +50,7 @@ async def _run_collection(task_id: str, source_id: str, db: AsyncSession):
         else:
             result = {"error": f"Unknown source: {source_id}"}
 
-        # Create a Dataset entry so data appears in Datasets page
+        # Update existing Dataset with proper columns_info from raw data
         records = result.get("records_collected", 0)
         if records > 0:
             source_labels = {
@@ -56,17 +58,44 @@ async def _run_collection(task_id: str, source_id: str, db: AsyncSession):
                 "nasa_power": "NASA POWER — Météo Cameroun",
                 "fao": "FAOSTAT — Agriculture Cameroun",
             }
-            dataset = Dataset(
-                name=source_labels.get(source_id, source_id),
-                description=f"Collecté automatiquement le {datetime.utcnow().strftime('%d/%m/%Y %H:%M')} UTC. {records} enregistrements.",
-                source_type=source_id,
-                domain="api_collection",
-                row_count=records,
-                column_count=0,
-                columns_info=[],
-            )
-            db.add(dataset)
-            await db.commit()
+            dataset_name = source_labels.get(source_id, source_id)
+            
+            # Find existing dataset created by collector
+            q = select(Dataset).where(Dataset.name == dataset_name)
+            existing = (await db.execute(q)).scalar_one_or_none()
+            
+            if existing:
+                # Extract columns from raw data
+                columns_info = []
+                raw_data_query = select(RawData).where(
+                    RawData.dataset_name == dataset_name
+                ).limit(1)
+                raw_result = await db.execute(raw_data_query)
+                raw_record = raw_result.scalar_one_or_none()
+                
+                if raw_record and raw_record.data:
+                    if isinstance(raw_record.data, dict):
+                        for key in raw_record.data.keys():
+                            columns_info.append({"name": key, "type": "string"})
+                
+                # Update existing dataset
+                existing.row_count = records
+                existing.column_count = len(columns_info)
+                existing.columns_info = columns_info
+                await db.commit()
+            else:
+                # Create new dataset if not found
+                dataset = Dataset(
+                    name=dataset_name,
+                    description=f"Collecté automatiquement le {datetime.utcnow().strftime('%d/%m/%Y %H:%M')} UTC. {records} enregistrements.",
+                    source_type=source_id,
+                    domain="api_collection",
+                    row_count=records,
+                    column_count=0,
+                    columns_info=[],
+                )
+                db.add(dataset)
+                await db.commit()
 
         _tasks[task_id]["status"] = "completed"
         _tasks[task_id]["result"] = result
