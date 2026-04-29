@@ -17,11 +17,13 @@ async def get_public_form(
     db: AsyncSession = Depends(get_db),
 ):
     """Access a published form via its share token."""
+    from sqlalchemy.orm import selectinload
+    
     result = await db.execute(
         select(Form).where(
             Form.share_token == share_token,
             Form.is_published == True,
-        )
+        ).options(selectinload(Form.fields))
     )
     form = result.scalar_one_or_none()
     if not form:
