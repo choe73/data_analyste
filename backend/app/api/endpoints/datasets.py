@@ -13,6 +13,18 @@ from app.models.form import DataImport
 router = APIRouter()
 
 
+@router.get("/debug-error")
+async def debug_datasets_error(db: AsyncSession = Depends(get_db)):
+    """Debug endpoint to expose the real error."""
+    try:
+        from app.models.dataset import Dataset as DatasetModel
+        q = select(DatasetModel).limit(1)
+        rows = (await db.execute(q)).scalars().all()
+        return {"step": "datasets_ok", "count": len(rows)}
+    except Exception as e:
+        return {"step": "datasets_failed", "error": str(e), "type": type(e).__name__}
+
+
 @router.get("")
 async def list_datasets(
     domain: Optional[str] = None,
