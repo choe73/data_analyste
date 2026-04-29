@@ -28,7 +28,30 @@ async def get_public_form(
     form = result.scalar_one_or_none()
     if not form:
         raise HTTPException(status_code=404, detail="Form not found or not published")
-    return form
+    
+    # Manually construct response to ensure proper serialization
+    return FormPublicOut(
+        title=form.title,
+        description=form.description,
+        domain=form.domain,
+        fields=[
+            {
+                "id": f.id,
+                "form_id": f.form_id,
+                "field_type": f.field_type,
+                "label": f.label,
+                "placeholder": f.placeholder,
+                "required": f.required,
+                "options": f.options,
+                "validation": f.validation,
+                "conditional": f.conditional,
+                "order": f.order,
+                "created_at": f.created_at,
+            }
+            for f in (form.fields or [])
+        ],
+        closes_at=form.closes_at,
+    )
 
 
 @router.post("/{share_token}/submit", response_model=FormResponseOut, status_code=201)
