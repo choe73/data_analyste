@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Check, X } from 'lucide-react'
-import { authFetch } from '@/store/auth'
 
 interface Plan {
   id: number
@@ -17,7 +16,8 @@ export default function Pricing() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    authFetch('/api/v1/plans')
+    const API = (import.meta.env.VITE_API_URL as string) || ''
+    fetch(`${API}/api/v1/plans`)
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         return res.json()
