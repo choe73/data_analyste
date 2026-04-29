@@ -65,18 +65,6 @@ class WorldBankCollector:
                 )
 
                 if data:
-                    # Store raw data
-                    await self._store_raw_data(
-                        source="world_bank",
-                        dataset_name=f"wb_{indicator_code}",
-                        data={
-                            "indicator": indicator_code,
-                            "indicator_name": indicator_name,
-                            "country": country_code,
-                            "data": data,
-                        },
-                    )
-
                     # Create a Dataset entry for visibility
                     await self._create_visibility_dataset(
                         name=f"Banque Mondiale: {indicator_name}",
@@ -131,8 +119,12 @@ class WorldBankCollector:
         # Commit all changes at the end
         try:
             await self.db.commit()
-        except Exception:
-            pass
+        except Exception as e:
+            try:
+                await self.db.rollback()
+            except Exception:
+                pass
+            results["errors"].append({"stage": "commit", "error": str(e)})
 
         return results
 
@@ -321,8 +313,12 @@ class NASAPowerCollector:
         # Commit all changes at the end
         try:
             await self.db.commit()
-        except Exception:
-            pass
+        except Exception as e:
+            try:
+                await self.db.rollback()
+            except Exception:
+                pass
+            results["errors"].append({"stage": "commit", "error": str(e)})
 
         return results
 
@@ -471,8 +467,12 @@ class FAOCollector:
         # Commit all changes at the end
         try:
             await self.db.commit()
-        except Exception:
-            pass
+        except Exception as e:
+            try:
+                await self.db.rollback()
+            except Exception:
+                pass
+            results["errors"].append({"stage": "commit", "error": str(e)})
 
         return results
 
