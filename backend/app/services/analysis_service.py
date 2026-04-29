@@ -28,6 +28,7 @@ from app.schemas.analysis import (
     ClusteringRequest, ClusteringResult, ClusteringMetrics, ClusterInfo,
 )
 from app.models.processed_data import ProcessedData
+from app.models.raw_data import RawData
 from app.models.form import DataImport
 
 warnings.filterwarnings("ignore")
@@ -77,38 +78,74 @@ class AnalysisService:
             return None
 
         # Positive ID = Dataset table (API-collected data)
-        # Try ProcessedData grouped by domain
         from app.models.dataset import Dataset as DatasetModel
         ds_result = await self.db.execute(
             select(DatasetModel).where(DatasetModel.id == dataset_id)
         )
         ds = ds_result.scalar_one_or_none()
-        if ds:
-            # Try to load from file_path if available
-            if ds.file_path:
-                import os
-                if os.path.exists(ds.file_path):
-                    try:
-                        return pd.read_csv(ds.file_path)
-                    except Exception:
-                        pass
-            # Fallback: load from ProcessedData by domain
-            if ds.domain:
-                result = await self.db.execute(
-                    select(ProcessedData).where(ProcessedData.domain == ds.domain).limit(MAX_ROWS)
-                )
-                rows = result.scalars().all()
-                if rows:
-                    data_list = [
-                        {
-                            "region": row.region,
-                            "indicator": row.indicator,
-                            "value": float(row.numeric_value) if row.numeric_value else None,
-                            "date": str(row.date_value) if row.date_value else None,
-                        }
-                        for row in rows
-                    ]
-                    return pd.DataFrame(data_list)
+        if not ds:
+            return None
+
+        # Try to load from file_path if available
+        if ds.file_path:
+            import os
+            if os.path.exists(ds.file_path):
+                try:
+                    return pd.read_csv(ds.file_path)
+                except Exception:
+                    pass
+
+        # Load from RawData (JSON) by dataset name
+        result = await self.db.execute(
+            select(RawData).where(RawData.dataset_name == ds.name).limit(MAX_ROWS)
+        )
+        raw_rows = result.scalars().all()
+        if raw_rows:
+            try:
+                # Combine all raw data
+                all_data = []
+                for row in raw_rows:
+                    if isinstance(row.data, list):
+                        all_data.extend(row.data)
+                    elif isinstance(row.data, dict):
+                        all_data.append(row.data)
+                if all_data:
+                    df = pd.DataFrame(all_data)
+                    # Convert date columns to datetime
+                    for col in df.columns:
+                        if 'date' in col.lower():
+                            try:
+                                df[col] = pd.to_datetime(df[col])
+                            except Exception:
+                                pass
+                    if len(df) > MAX_ROWS:
+                        df = df.sample(n=MAX_ROWS, random_state=42)
+                    return df
+            except Exception:
+                pass
+
+        # Fallback: load from ProcessedData by domain
+        if ds.domain:
+            result = await self.db.execute(
+                select(ProcessedData).where(ProcessedData.domain == ds.domain).limit(MAX_ROWS)
+            )
+            rows = result.scalars().all()
+            if rows:
+                data_list = []
+                for row in rows:
+                    data_list.append({
+                        "region": row.region,
+                        "indicator": row.indicator,
+                        "value": float(row.numeric_value) if row.numeric_value else None,
+                        "date": row.date_value,
+                        "text_value": row.text_value,
+                    })
+                if data_list:
+                    df = pd.DataFrame(data_list)
+                    # Ensure date column is datetime
+                    if 'date' in df.columns:
+                        df['date'] = pd.to_datetime(df['date'], errors='coerce')
+                    return df
 
         return None
 
