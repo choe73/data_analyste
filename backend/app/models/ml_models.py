@@ -28,7 +28,7 @@ class MLModel(Base):
     is_active = Column(Boolean, default=False)
 
     # Relationships
-    dataset = relationship("Dataset", back_populates="ml_models")
+    dataset = relationship("Dataset", back_populates="ml_models", lazy="noload")
 
     def __repr__(self):
         return (

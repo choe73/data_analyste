@@ -27,15 +27,15 @@ class Form(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     # Relationships
-    owner = relationship("User", back_populates="forms")
+    owner = relationship("User", back_populates="forms", lazy="noload")
     fields = relationship(
         "FormField",
         back_populates="form",
         cascade="all, delete-orphan",
-        lazy="select",
+        lazy="noload",
     )
     responses = relationship(
-        "FormResponse", back_populates="form", cascade="all, delete-orphan", lazy="select"
+        "FormResponse", back_populates="form", cascade="all, delete-orphan", lazy="noload"
     )
 
 
@@ -57,7 +57,7 @@ class FormField(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Relationships
-    form = relationship("Form", back_populates="fields")
+    form = relationship("Form", back_populates="fields", lazy="noload")
 
 
 class FormResponse(Base):
@@ -73,7 +73,7 @@ class FormResponse(Base):
     submitted_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Relationships
-    form = relationship("Form", back_populates="responses")
+    form = relationship("Form", back_populates="responses", lazy="noload")
 
 
 class DataImport(Base):

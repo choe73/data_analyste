@@ -26,7 +26,7 @@ class AnalysisResult(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationships
-    model = relationship("MLModel")
+    model = relationship("MLModel", lazy="noload")
 
     def __repr__(self):
         return f"<AnalysisResult(id={self.id}, type={self.analysis_type})>"
