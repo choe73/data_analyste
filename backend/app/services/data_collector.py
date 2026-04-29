@@ -137,17 +137,33 @@ class WorldBankCollector:
             if res.scalar_one_or_none():
                 return
 
+            # Extract actual columns from raw data
+            columns_info = []
+            raw_data_query = select(RawData).where(RawData.dataset_name == name).limit(1)
+            raw_result = await self.db.execute(raw_data_query)
+            raw_record = raw_result.scalar_one_or_none()
+            
+            if raw_record and raw_record.data:
+                # Get columns from first raw data record
+                if isinstance(raw_record.data, dict):
+                    for key in raw_record.data.keys():
+                        columns_info.append({"name": key, "type": "string"})
+            
+            # Fallback to generic columns if no raw data found
+            if not columns_info:
+                columns_info = [
+                    {"name": "date", "type": "datetime"},
+                    {"name": "value", "type": "numeric"}
+                ]
+
             dataset = Dataset(
                 name=name,
                 description=f"Données collectées via l'API officielle {source_type}.",
                 domain=domain,
                 source_type=source_type,
                 row_count=row_count,
-                column_count=2,
-                columns_info=[
-                    {"name": "date", "type": "datetime"},
-                    {"name": "value", "type": "numeric"}
-                ]
+                column_count=len(columns_info),
+                columns_info=columns_info
             )
             self.db.add(dataset)
             await self.db.flush()
