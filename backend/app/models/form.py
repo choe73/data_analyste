@@ -97,7 +97,7 @@ class DataImport(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     # Relationships
-    owner = relationship("User", back_populates="data_imports")
+    owner = relationship("User", back_populates="data_imports", lazy="noload")
 
 
 class QuotaUsage(Base):

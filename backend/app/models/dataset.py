@@ -26,9 +26,9 @@ class Dataset(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-    # Relationships
-    user = relationship("User", lazy="select")
-    ml_models = relationship("MLModel", back_populates="dataset", lazy="select")
+    # Relationships - noload to prevent async lazy-load errors
+    user = relationship("User", lazy="noload")
+    ml_models = relationship("MLModel", back_populates="dataset", lazy="noload")
 
     def __repr__(self):
         return f"<Dataset(id={self.id}, name={self.name}, rows={self.row_count})>"
