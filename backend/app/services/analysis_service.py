@@ -39,50 +39,67 @@ class AnalysisService:
         self.db = db
 
     async def _load_dataset(self, dataset_id: int) -> Optional[pd.DataFrame]:
-        """Load dataset - supports both ProcessedData and user imports."""
-        # Try user import first (DataImport table)
-        result = await self.db.execute(
-            select(DataImport).where(DataImport.id == dataset_id)
-        )
-        imp = result.scalar_one_or_none()
-        if imp and imp.storage_path:
-            import os
-            if os.path.exists(imp.storage_path):
-                ext = os.path.splitext(imp.storage_path)[1].lower()
-                try:
-                    if ext == ".csv":
-                        df = pd.read_csv(imp.storage_path)
-                    elif ext in (".xlsx", ".xls"):
-                        df = pd.read_excel(imp.storage_path)
-                    else:
-                        df = pd.read_json(imp.storage_path)
-                    if len(df) > MAX_ROWS:
-                        df = df.sample(n=MAX_ROWS, random_state=42)
-                    return df
-                except Exception:
-                    pass
-
-        # Fallback: ProcessedData table (collected data)
-        result = await self.db.execute(
-            select(ProcessedData).where(ProcessedData.domain == str(dataset_id)).limit(MAX_ROWS)
-        )
-        rows = result.scalars().all()
-        if not rows:
-            # Try by domain name from datasets
+        """Load dataset - negative IDs = user imports, positive IDs = datasets table."""
+        # Negative ID = user import (DataImport table)
+        if dataset_id < 0:
+            real_id = -dataset_id
+            result = await self.db.execute(
+                select(DataImport).where(DataImport.id == real_id)
+            )
+            imp = result.scalar_one_or_none()
+            if imp and imp.storage_path:
+                import os
+                if os.path.exists(imp.storage_path):
+                    ext = os.path.splitext(imp.storage_path)[1].lower()
+                    try:
+                        if ext == ".csv":
+                            df = pd.read_csv(imp.storage_path)
+                        elif ext in (".xlsx", ".xls"):
+                            df = pd.read_excel(imp.storage_path)
+                        else:
+                            df = pd.read_json(imp.storage_path)
+                        if len(df) > MAX_ROWS:
+                            df = df.sample(n=MAX_ROWS, random_state=42)
+                        return df
+                    except Exception:
+                        pass
             return None
 
-        data_list = []
-        for row in rows:
-            record = {
-                "region": row.region,
-                "indicator": row.indicator,
-                "value": float(row.numeric_value) if row.numeric_value else None,
-                "date": str(row.date_value) if row.date_value else None,
-            }
-            if row.meta_data:
-                record.update(row.meta_data)
-            data_list.append(record)
-        return pd.DataFrame(data_list)
+        # Positive ID = Dataset table (API-collected data)
+        # Try ProcessedData grouped by domain
+        from app.models.dataset import Dataset as DatasetModel
+        ds_result = await self.db.execute(
+            select(DatasetModel).where(DatasetModel.id == dataset_id)
+        )
+        ds = ds_result.scalar_one_or_none()
+        if ds:
+            # Try to load from file_path if available
+            if ds.file_path:
+                import os
+                if os.path.exists(ds.file_path):
+                    try:
+                        return pd.read_csv(ds.file_path)
+                    except Exception:
+                        pass
+            # Fallback: load from ProcessedData by domain
+            if ds.domain:
+                result = await self.db.execute(
+                    select(ProcessedData).where(ProcessedData.domain == ds.domain).limit(MAX_ROWS)
+                )
+                rows = result.scalars().all()
+                if rows:
+                    data_list = [
+                        {
+                            "region": row.region,
+                            "indicator": row.indicator,
+                            "value": float(row.numeric_value) if row.numeric_value else None,
+                            "date": str(row.date_value) if row.date_value else None,
+                        }
+                        for row in rows
+                    ]
+                    return pd.DataFrame(data_list)
+
+        return None
 
     async def descriptive_analysis(self, request: DescriptiveRequest) -> DescriptiveAnalysisResponse:
         df = await self._load_dataset(request.dataset_id)

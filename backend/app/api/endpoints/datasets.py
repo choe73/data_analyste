@@ -40,12 +40,13 @@ async def list_datasets(
             "created_at": ds.created_at.isoformat() if ds.created_at else None,
         })
 
-    # 2. User file imports
+    # 2. User file imports - use offset IDs to avoid collision with datasets table
     q2 = select(DataImport).order_by(DataImport.created_at.desc())
     imports = (await db.execute(q2)).scalars().all()
     for imp in imports:
+        # Use negative IDs for imports to distinguish from dataset table IDs
         results.append({
-            "id": f"import_{imp.id}",
+            "id": -imp.id,
             "name": imp.original_filename or f"Import #{imp.id}",
             "description": f"Fichier importé — {imp.row_count or 0} lignes",
             "source": "import",
@@ -53,6 +54,7 @@ async def list_datasets(
             "row_count": imp.row_count or 0,
             "column_count": len(imp.column_names or []),
             "columns": imp.column_names or [],
+            "column_types": imp.column_types or {},
             "created_at": imp.created_at.isoformat() if imp.created_at else None,
         })
 
