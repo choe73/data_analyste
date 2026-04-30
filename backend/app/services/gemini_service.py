@@ -171,12 +171,14 @@ async def interpret_with_gemini(
     domain = domain_hint or _detect_domain(analysis_data, user_question)
     persona = PERSONAS.get(domain, PERSONAS["general"])
 
-    data_str = json.dumps(analysis_data, ensure_ascii=False, default=str)
-    if len(data_str) > 3000:
-        truncated = {k: analysis_data[k] for k in ["metrics","coefficients","algorithm",
-            "n_clusters","n_components","confusion_matrix","feature_importances",
-            "explained_variance","statistics","correlations"] if k in analysis_data}
-        data_str = json.dumps(truncated, ensure_ascii=False, default=str)[:3000]
+    # Prepare structured data for Gemini with better context
+    structured_data = _prepare_structured_data(analysis_type, analysis_data)
+    data_str = json.dumps(structured_data, ensure_ascii=False, default=str)
+    
+    # Truncate if too large, but keep important metrics
+    if len(data_str) > 4000:
+        truncated = _extract_key_metrics(analysis_type, analysis_data)
+        data_str = json.dumps(truncated, ensure_ascii=False, default=str)[:4000]
 
     prompt = f"""Tu es {persona['role']}.
 
@@ -184,18 +186,26 @@ CONTEXTE: {persona['context']}
 
 TYPE D'ANALYSE: {analysis_type.upper()} | DOMAINE: {domain.upper()}
 
-RESULTATS:
+DONNEES STRUCTUREES:
 ```json
 {data_str}
 ```
-{f"QUESTION: {user_question}" if user_question else ""}
+
+{f"QUESTION UTILISATEUR: {user_question}" if user_question else ""}
 
 FOCUS: {persona['focus']}
 
+INSTRUCTIONS:
+1. Analyse les donnees avec precision
+2. Cite les chiffres exacts des resultats
+3. Fournis des recommandations concretes et actionnables
+4. Identifie les risques ou limitations
+5. Adapte ta reponse au domaine: {domain}
+
 Reponds UNIQUEMENT en JSON valide (pas de markdown):
 {{
-  "interpretation": "3-4 phrases avec chiffres precis",
-  "key_findings": ["finding 1 avec chiffre", "finding 2", "finding 3"],
+  "interpretation": "3-4 phrases avec chiffres precis et contexte",
+  "key_findings": ["finding 1 avec chiffre exact", "finding 2", "finding 3"],
   "recommendations": ["recommandation concrete 1", "recommandation 2"],
   "warnings": ["limite ou mise en garde (si applicable)"]
 }}"""
@@ -224,6 +234,107 @@ Reponds UNIQUEMENT en JSON valide (pas de markdown):
     parsed["domain"] = domain
     parsed["persona"] = persona["role"]
     return parsed
+
+
+def _prepare_structured_data(analysis_type: str, data: Dict[str, Any]) -> Dict[str, Any]:
+    """Prepare structured data for Gemini with context and metadata."""
+    structured = {
+        "analysis_type": analysis_type,
+        "timestamp": datetime.now().isoformat(),
+        "data_summary": {}
+    }
+    
+    if analysis_type == "descriptive":
+        stats = data.get("statistics", [])
+        structured["data_summary"] = {
+            "num_variables": len(stats),
+            "statistics": [
+                {
+                    "variable": s.get("column"),
+                    "mean": s.get("mean"),
+                    "std": s.get("std"),
+                    "min": s.get("min"),
+                    "max": s.get("max"),
+                    "missing": s.get("missing_count"),
+                } for s in stats[:10]
+            ],
+            "correlations": data.get("correlations", {})
+        }
+    
+    elif analysis_type == "regression":
+        structured["data_summary"] = {
+            "r2_score": data.get("metrics", {}).get("r2_score"),
+            "rmse": data.get("metrics", {}).get("rmse"),
+            "mae": data.get("metrics", {}).get("mae"),
+            "coefficients": [
+                {"name": c.get("name"), "value": c.get("value")}
+                for c in data.get("coefficients", [])[:5]
+            ],
+            "method": data.get("method"),
+        }
+    
+    elif analysis_type == "pca":
+        structured["data_summary"] = {
+            "n_components": data.get("n_components"),
+            "explained_variance": data.get("explained_variance", {}).get("explained_variance_ratio", [])[:5],
+            "cumulative_variance": data.get("explained_variance", {}).get("cumulative", [])[:5],
+            "components": len(data.get("components", [])),
+        }
+    
+    elif analysis_type == "classification":
+        structured["data_summary"] = {
+            "accuracy": data.get("overall_metrics", {}).get("accuracy"),
+            "precision": data.get("overall_metrics", {}).get("precision"),
+            "recall": data.get("overall_metrics", {}).get("recall"),
+            "f1_score": data.get("overall_metrics", {}).get("f1_score"),
+            "algorithm": data.get("algorithm"),
+            "num_classes": len(data.get("class_metrics", [])),
+        }
+    
+    elif analysis_type == "clustering":
+        structured["data_summary"] = {
+            "n_clusters": data.get("n_clusters"),
+            "silhouette_score": data.get("metrics", {}).get("silhouette_score"),
+            "algorithm": data.get("algorithm"),
+            "num_individuals": len(data.get("clusters", [])),
+        }
+    
+    return structured
+
+
+def _extract_key_metrics(analysis_type: str, data: Dict[str, Any]) -> Dict[str, Any]:
+    """Extract only key metrics when data is too large."""
+    if analysis_type == "descriptive":
+        return {
+            "type": "descriptive",
+            "num_variables": len(data.get("statistics", [])),
+            "top_stats": data.get("statistics", [])[:3],
+        }
+    elif analysis_type == "regression":
+        return {
+            "type": "regression",
+            "metrics": data.get("metrics"),
+            "top_coefficients": data.get("coefficients", [])[:3],
+        }
+    elif analysis_type == "pca":
+        return {
+            "type": "pca",
+            "n_components": data.get("n_components"),
+            "variance_explained": data.get("explained_variance", {}).get("explained_variance_ratio", [])[:3],
+        }
+    elif analysis_type == "classification":
+        return {
+            "type": "classification",
+            "metrics": data.get("overall_metrics"),
+            "algorithm": data.get("algorithm"),
+        }
+    elif analysis_type == "clustering":
+        return {
+            "type": "clustering",
+            "n_clusters": data.get("n_clusters"),
+            "metrics": data.get("metrics"),
+        }
+    return {"type": analysis_type, "data": data}
 
 
 def _parse_gemini_response(text: str) -> Dict[str, Any]:

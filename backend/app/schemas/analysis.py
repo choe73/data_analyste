@@ -279,6 +279,7 @@ class ClusteringResult(BaseModel):
     elbow_plot_data: Optional[Dict[str, Any]] = None
     silhouette_plot_data: Optional[Dict[str, Any]] = None
     cluster_visualization: Optional[Dict[str, Any]] = None
+    average_profiles: Optional[Dict[str, Any]] = None  # Average profile per cluster
 
 
 class GeminiInterpretRequest(BaseModel):

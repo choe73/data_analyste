@@ -52,70 +52,80 @@ async def upload_file(
     current_user: User = Depends(get_current_user),
 ):
     """Upload a data file for import."""
-    ext = os.path.splitext(file.filename or "")[1].lower()
-    if ext not in ALLOWED_EXTENSIONS:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Format non supporté: {ext}. Formats acceptés: {', '.join(ALLOWED_EXTENSIONS)}",
-        )
-
-    content = await file.read()
-    if len(content) > MAX_FILE_SIZE:
-        raise HTTPException(status_code=400, detail="Fichier trop volumineux (max 50 MB)")
-
-    # Save to disk
-    file_id = str(uuid.uuid4())
-    storage_path = os.path.join(UPLOAD_DIR, f"{file_id}{ext}")
-    with open(storage_path, "wb") as f:
-        f.write(content)
-
-    # Parse with pandas
     try:
-        if ext == ".csv":
-            df = pd.read_csv(storage_path, nrows=1000)
-        elif ext in (".xlsx", ".xls"):
-            df = pd.read_excel(storage_path, nrows=1000)
-        elif ext in (".json", ".geojson"):
-            df = pd.read_json(storage_path)
-            if not isinstance(df, pd.DataFrame):
-                df = pd.DataFrame(df)
-        else:
-            df = pd.DataFrame()
-    except Exception as e:
-        os.remove(storage_path)
-        raise HTTPException(status_code=400, detail=f"Erreur de lecture: {str(e)}")
+        ext = os.path.splitext(file.filename or "")[1].lower()
+        if ext not in ALLOWED_EXTENSIONS:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Format non supporté: {ext}. Formats acceptés: {', '.join(ALLOWED_EXTENSIONS)}",
+            )
 
-    column_names = list(df.columns)
-    column_types = _detect_column_types(df)
+        content = await file.read()
+        if len(content) > MAX_FILE_SIZE:
+            raise HTTPException(status_code=400, detail="Fichier trop volumineux (max 50 MB)")
 
-    # Full row count
-    try:
-        if ext == ".csv":
-            row_count = sum(1 for _ in open(storage_path)) - 1
-        elif ext in (".xlsx", ".xls"):
-            row_count = len(pd.read_excel(storage_path))
-        else:
+        # Save to disk
+        file_id = str(uuid.uuid4())
+        storage_path = os.path.join(UPLOAD_DIR, f"{file_id}{ext}")
+        with open(storage_path, "wb") as f:
+            f.write(content)
+
+        # Parse with pandas
+        try:
+            if ext == ".csv":
+                df = pd.read_csv(storage_path, nrows=1000)
+            elif ext in (".xlsx", ".xls"):
+                df = pd.read_excel(storage_path, nrows=1000)
+            elif ext in (".json", ".geojson"):
+                df = pd.read_json(storage_path)
+                if not isinstance(df, pd.DataFrame):
+                    df = pd.DataFrame(df)
+            else:
+                df = pd.DataFrame()
+        except Exception as e:
+            os.remove(storage_path)
+            raise HTTPException(status_code=400, detail=f"Erreur de lecture: {str(e)}")
+
+        column_names = list(df.columns)
+        column_types = _detect_column_types(df)
+
+        # Full row count
+        try:
+            if ext == ".csv":
+                row_count = sum(1 for _ in open(storage_path)) - 1
+            elif ext in (".xlsx", ".xls"):
+                row_count = len(pd.read_excel(storage_path))
+            else:
+                row_count = len(df)
+        except Exception:
             row_count = len(df)
-    except Exception:
-        row_count = len(df)
 
-    data_import = DataImport(
-        user_id=current_user.id,
-        filename=f"{file_id}{ext}",
-        original_filename=file.filename or "unknown",
-        file_format=ext.lstrip("."),
-        file_size_bytes=len(content),
-        row_count=row_count,
-        column_names=column_names,
-        column_types=column_types,
-        storage_path=storage_path,
-        data_json=df.to_dict(orient='records'),  # Store data in DB for persistence
-        analysis_status="uploaded",
-    )
-    db.add(data_import)
-    await db.commit()
-    await db.refresh(data_import)
-    return data_import
+        # Limit JSON storage to first 1000 rows to prevent overflow
+        max_json_rows = min(1000, len(df))
+        data_json = df.head(max_json_rows).to_dict(orient='records') if len(df) > 0 else []
+        
+        data_import = DataImport(
+            user_id=current_user.id,
+            filename=f"{file_id}{ext}",
+            original_filename=file.filename or "unknown",
+            file_format=ext.lstrip("."),
+            file_size_bytes=len(content),
+            row_count=row_count,
+            column_names=column_names,
+            column_types=column_types,
+            storage_path=storage_path,
+            data_json=data_json,  # Store first 1000 rows in DB for persistence
+            analysis_status="uploaded",
+        )
+        db.add(data_import)
+        await db.commit()
+        await db.refresh(data_import)
+        return data_import
+    except HTTPException:
+        raise
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error uploading file: {str(e)}")
 
 
 @router.get("", response_model=list[DataImportOut])

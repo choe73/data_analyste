@@ -70,6 +70,6 @@ async def init_db():
         # Import models to register them with Base.metadata
         from app.models import (  # noqa: F401
             raw_data, processed_data, ml_models,
-            analysis_results, celery_jobs, user, form, plan,
+            analysis_results, celery_jobs, user, form, plan as plan_module,
         )
         await conn.run_sync(Base.metadata.create_all)

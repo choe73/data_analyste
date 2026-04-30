@@ -25,57 +25,63 @@ async def create_form(
     current_user: User = Depends(get_current_user),
 ):
     """Create a new form with fields."""
-    plan = "free"
-    if current_user.subscriptions:
-        active = [s for s in current_user.subscriptions if s.status == "active"]
-        if active and active[0].plan:
-            plan = active[0].plan.name
+    try:
+        plan = "free"
+        if current_user.subscriptions:
+            active = [s for s in current_user.subscriptions if s.status == "active"]
+            if active and active[0].plan:
+                plan = active[0].plan.name
 
-    limit = PLAN_LIMITS.get(plan, PLAN_LIMITS["free"])["forms"][0]
-    result = await db.execute(
-        select(func.count(Form.id)).where(Form.user_id == current_user.id)
-    )
-    count = result.scalar() or 0
-    if count >= limit:
-        raise HTTPException(
-            status_code=403,
-            detail=f"Form limit reached ({limit}). Upgrade your plan.",
+        limit = PLAN_LIMITS.get(plan, PLAN_LIMITS["free"])["forms"][0]
+        result = await db.execute(
+            select(func.count(Form.id)).where(Form.user_id == current_user.id)
         )
+        count = result.scalar() or 0
+        if count >= limit:
+            raise HTTPException(
+                status_code=403,
+                detail=f"Form limit reached ({limit}). Upgrade your plan.",
+            )
 
-    share_token = secrets.token_urlsafe(32)
-    form = Form(
-        user_id=current_user.id,
-        title=payload.title,
-        description=payload.description,
-        domain=payload.domain,
-        max_responses=payload.max_responses,
-        closes_at=payload.closes_at,
-        share_token=share_token,
-    )
-    db.add(form)
-    await db.flush()
-
-    for field_data in payload.fields:
-        field = FormField(
-            form_id=form.id,
-            field_type=field_data.field_type,
-            label=field_data.label,
-            placeholder=field_data.placeholder,
-            required=field_data.required,
-            options=field_data.options,
-            validation=field_data.validation,
-            conditional=field_data.conditional,
-            order=field_data.order,
+        share_token = secrets.token_urlsafe(32)
+        form = Form(
+            user_id=current_user.id,
+            title=payload.title,
+            description=payload.description,
+            domain=payload.domain,
+            max_responses=payload.max_responses,
+            closes_at=payload.closes_at,
+            share_token=share_token,
         )
-        db.add(field)
+        db.add(form)
+        await db.flush()
 
-    await db.commit()
-    
-    # Re-fetch with fields loaded to avoid lazy-loading issues in response
-    result = await db.execute(
-        select(Form).where(Form.id == form.id).options(selectinload(Form.fields))
-    )
-    return result.scalar_one()
+        for field_data in payload.fields:
+            field = FormField(
+                form_id=form.id,
+                field_type=field_data.field_type,
+                label=field_data.label,
+                placeholder=field_data.placeholder,
+                required=field_data.required,
+                options=field_data.options,
+                validation=field_data.validation,
+                conditional=field_data.conditional,
+                order=field_data.order,
+            )
+            db.add(field)
+
+        await db.commit()
+        
+        # Re-fetch with fields loaded to avoid lazy-loading issues in response
+        result = await db.execute(
+            select(Form).where(Form.id == form.id).options(selectinload(Form.fields))
+        )
+        return result.scalar_one()
+    except HTTPException:
+        raise
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error creating form: {str(e)}")
 
 
 @router.get("", response_model=list[FormOut])

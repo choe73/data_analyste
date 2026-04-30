@@ -629,6 +629,20 @@ class AnalysisService:
         else:
             X_2d = X
 
+        # Calculate average profiles per cluster
+        average_profiles = []
+        for cid in sorted(unique_labels):
+            if cid == -1:
+                continue
+            mask = labels == cid
+            cluster_data = df_clean[mask][cols].select_dtypes(include=[np.number])
+            if len(cluster_data) > 0:
+                avg_profile = cluster_data.mean().to_dict()
+                average_profiles.append({
+                    "cluster": int(cid),
+                    **{k: round(v, 2) if isinstance(v, float) else v for k, v in avg_profile.items()}
+                })
+
         return ClusteringResult(
             algorithm=request.algorithm,
             n_clusters=n_clusters,
@@ -646,6 +660,7 @@ class AnalysisService:
                 "y": X_2d[:500, 1].tolist(),
                 "labels": labels[:500].tolist(),
             },
+            average_profiles=average_profiles,
         )
 
     async def get_result(self, result_id: int) -> Optional[Dict[str, Any]]:
