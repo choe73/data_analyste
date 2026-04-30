@@ -648,31 +648,31 @@ export function Analysis() {
           </TabsList>
           <TabsContent value="descriptive">
             <Card><CardHeader><CardTitle>Statistiques descriptives</CardTitle></CardHeader>
-              <CardContent className="space-y-4"><DescriptivePanel datasetId={datasetId} columns={columns} />
+              <CardContent className="space-y-4"><DescriptivePanel datasetId={datasetId} columns={columns} onResult={setLastResult} />
                 <GeminiPanel analysisType="descriptive" analysisData={lastResult} /></CardContent>
             </Card>
           </TabsContent>
           <TabsContent value="regression">
             <Card><CardHeader><CardTitle>Regression lineaire</CardTitle></CardHeader>
-              <CardContent className="space-y-4"><RegressionPanel datasetId={datasetId} columns={columns} />
+              <CardContent className="space-y-4"><RegressionPanel datasetId={datasetId} columns={columns} onResult={setLastResult} />
                 <GeminiPanel analysisType="regression" analysisData={lastResult} /></CardContent>
             </Card>
           </TabsContent>
           <TabsContent value="pca">
             <Card><CardHeader><CardTitle>Analyse en Composantes Principales (ACP)</CardTitle></CardHeader>
-              <CardContent className="space-y-4"><PCAPanel datasetId={datasetId} columns={columns} />
+              <CardContent className="space-y-4"><PCAPanel datasetId={datasetId} columns={columns} onResult={setLastResult} />
                 <GeminiPanel analysisType="pca" analysisData={lastResult} /></CardContent>
             </Card>
           </TabsContent>
           <TabsContent value="classification">
             <Card><CardHeader><CardTitle>Classification supervisee</CardTitle></CardHeader>
-              <CardContent className="space-y-4"><ClassificationPanel datasetId={datasetId} columns={allColumns} />
+              <CardContent className="space-y-4"><ClassificationPanel datasetId={datasetId} columns={allColumns} onResult={setLastResult} />
                 <GeminiPanel analysisType="classification" analysisData={lastResult} /></CardContent>
             </Card>
           </TabsContent>
           <TabsContent value="clustering">
             <Card><CardHeader><CardTitle>Clustering non supervise</CardTitle></CardHeader>
-              <CardContent className="space-y-4"><ClusteringPanel datasetId={datasetId} columns={columns} />
+              <CardContent className="space-y-4"><ClusteringPanel datasetId={datasetId} columns={columns} onResult={setLastResult} />
                 <GeminiPanel analysisType="clustering" analysisData={lastResult} /></CardContent>
             </Card>
           </TabsContent>
