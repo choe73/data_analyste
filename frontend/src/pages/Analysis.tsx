@@ -54,12 +54,13 @@ function buildHistogram(values: number[], bins: number) {
   return counts.map((count, i) => ({ label: (min + i * step).toFixed(1), count }))
 }
 
-function DescriptivePanel({ datasetId, columns }: { datasetId: number; columns: string[] }) {
+function DescriptivePanel({ datasetId, columns, onResult }: { datasetId: number; columns: string[]; onResult?: (data: any) => void }) {
   const [selected, setSelected] = useState<string[]>(columns.slice(0, 6))
   const mut = useMutation({
     mutationFn: () => apiFetch('/api/v1/analysis/descriptive', {
       dataset_id: datasetId, columns: selected, confidence_level: 0.95,
     }),
+    onSuccess: (data) => onResult?.(data),
   })
   const stats: any[] = mut.data?.statistics || []
   const corr: any = mut.data?.correlations
@@ -148,7 +149,7 @@ function DescriptivePanel({ datasetId, columns }: { datasetId: number; columns: 
   )
 }
 
-function RegressionPanel({ datasetId, columns }: { datasetId: number; columns: string[] }) {
+function RegressionPanel({ datasetId, columns, onResult }: { datasetId: number; columns: string[]; onResult?: (data: any) => void }) {
   const [target, setTarget] = useState('')
   const [features, setFeatures] = useState<string[]>([])
   const [method, setMethod] = useState('linear')
@@ -156,6 +157,7 @@ function RegressionPanel({ datasetId, columns }: { datasetId: number; columns: s
     mutationFn: () => apiFetch('/api/v1/analysis/regression', {
       dataset_id: datasetId, target_column: target, feature_columns: features, method, test_size: 0.2, alpha: 1.0,
     }),
+    onSuccess: (data) => onResult?.(data),
   })
   const res: any = mut.data
   return (
@@ -244,11 +246,12 @@ function RegressionPanel({ datasetId, columns }: { datasetId: number; columns: s
   )
 }
 
-function PCAPanel({ datasetId, columns }: { datasetId: number; columns: string[] }) {
+function PCAPanel({ datasetId, columns, onResult }: { datasetId: number; columns: string[]; onResult?: (data: any) => void }) {
   const [selected, setSelected] = useState<string[]>(columns.slice(0, 5))
   const [method, setMethod] = useState('kaiser')
   const mut = useMutation({
     mutationFn: () => apiFetch('/api/v1/analysis/pca', { dataset_id: datasetId, columns: selected, standardize: true, method }),
+    onSuccess: (data) => onResult?.(data),
   })
   const res: any = mut.data
   return (
@@ -332,7 +335,7 @@ function PCAPanel({ datasetId, columns }: { datasetId: number; columns: string[]
   )
 }
 
-function ClassificationPanel({ datasetId, columns }: { datasetId: number; columns: string[] }) {
+function ClassificationPanel({ datasetId, columns, onResult }: { datasetId: number; columns: string[]; onResult?: (data: any) => void }) {
   const [target, setTarget] = useState('')
   const [features, setFeatures] = useState<string[]>([])
   const [algo, setAlgo] = useState('random_forest')
@@ -340,6 +343,7 @@ function ClassificationPanel({ datasetId, columns }: { datasetId: number; column
     mutationFn: () => apiFetch('/api/v1/analysis/classification', {
       dataset_id: datasetId, target_column: target, feature_columns: features, algorithm: algo, test_size: 0.2, cv_folds: 5,
     }),
+    onSuccess: (data) => onResult?.(data),
   })
   const res: any = mut.data
   return (
@@ -431,12 +435,13 @@ function ClassificationPanel({ datasetId, columns }: { datasetId: number; column
   )
 }
 
-function ClusteringPanel({ datasetId, columns }: { datasetId: number; columns: string[] }) {
+function ClusteringPanel({ datasetId, columns, onResult }: { datasetId: number; columns: string[]; onResult?: (data: any) => void }) {
   const [selected, setSelected] = useState<string[]>(columns.slice(0, 4))
   const [algo, setAlgo] = useState('kmeans')
   const [method, setMethod] = useState('auto')
   const mut = useMutation({
     mutationFn: () => apiFetch('/api/v1/analysis/clustering', { dataset_id: datasetId, columns: selected, algorithm: algo, method }),
+    onSuccess: (data) => onResult?.(data),
   })
   const res: any = mut.data
   return (
