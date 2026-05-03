@@ -1,0 +1,85 @@
+{
+  "sources": [
+    {
+      "name": "OpenAFRICA",
+      "url": "https://open.africa/api/3/action/package_search",
+      "api_type": "rest",
+      "category": "open_data",
+      "country": "Pan-Africa",
+      "auth_type": "none",
+      "collection_frequency": "0 0 * * 0"
+    },
+    {
+      "name": "Africa Data Hub",
+      "url": "https://africadatahub.org/api/v1/datasets",
+      "api_type": "rest",
+      "category": "open_data",
+      "country": "Pan-Africa",
+      "auth_type": "none"
+    },
+    {
+      "name": "Kenya Open Data Portal",
+      "url": "https://www.opendata.go.ke/api/3/action/package_search",
+      "api_type": "ckan",
+      "category": "government",
+      "country": "Kenya",
+      "auth_type": "none"
+    },
+    {
+      "name": "Nigeria Open Data Portal",
+      "url": "https://data.gov.ng/api/3/action/package_search",
+      "api_type": "ckan",
+      "category": "government",
+      "country": "Nigeria",
+      "auth_type": "none"
+    },
+    {
+      "name": "Ghana Open Data Portal",
+      "url": "https://data.gov.gh/api/3/action/package_search",
+      "api_type": "ckan",
+      "category": "government",
+      "country": "Ghana",
+      "auth_type": "none"
+    },
+    {
+      "name": "Rwanda Open Data Portal",
+      "url": "https://data.gov.rw/api/3/action/package_search",
+      "api_type": "ckan",
+      "category": "government",
+      "country": "Rwanda",
+      "auth_type": "none"
+    },
+    {
+      "name": "Morocco Open Data Portal",
+      "url": "https://data.gov.ma/api/3/action/package_search",
+      "api_type": "ckan",
+      "category": "government",
+      "country": "Morocco",
+      "auth_type": "none"
+    },
+    {
+      "name": "Tunisia Open Data Portal",
+      "url": "https://data.gov.tn/api/3/action/package_search",
+      "api_type": "ckan",
+      "category": "government",
+      "country": "Tunisia",
+      "auth_type": "none"
+    },
+    {
+      "name": "Senegal Open Data Portal",
+      "url": "https://data.gouv.sn/api/3/action/package_search",
+      "api_type": "ckan",
+      "category": "government",
+      "country": "Senegal",
+      "auth_type": "none"
+    },
+    {
+      "name": "Zimbabwe Open Data Portal",
+      "url": "https://data.gov.zw/api/3/action/package_search",
+      "api_type": "ckan",
+      "category": "government",
+      "country": "Zimbabwe",
+      "auth_type": "none"
+    }
+  ]
+}

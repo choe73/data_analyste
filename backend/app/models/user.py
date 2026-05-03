@@ -44,6 +44,7 @@ class User(Base):
     )
     forms = relationship("Form", back_populates="owner", lazy="select")
     data_imports = relationship("DataImport", back_populates="owner", lazy="select")
+    data_sources = relationship("DataSource", back_populates="user", lazy="select")
     
     @property
     def subscription_plan(self) -> str:

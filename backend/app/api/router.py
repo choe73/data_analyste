@@ -25,6 +25,7 @@ from app.api.endpoints import (
     plans,
     models,
     init_tables,
+    data_sources,
 )
 
 api_router = APIRouter()
@@ -38,6 +39,7 @@ api_router.include_router(analysis.router, prefix="/analysis", tags=["Analysis"]
 api_router.include_router(smart_analysis.router, prefix="/smart-analysis", tags=["Smart Analysis"])
 api_router.include_router(data_collection.router, prefix="/collect", tags=["Data Collection"])
 api_router.include_router(collection_debug.router, prefix="/collect", tags=["Collection Debug"])
+api_router.include_router(data_sources.router, tags=["Data Sources"])
 api_router.include_router(cache.router, prefix="/cache", tags=["Cache"])
 api_router.include_router(subscriptions.router, prefix="/subscriptions", tags=["Subscriptions"])
 api_router.include_router(plans.router, prefix="/plans", tags=["Plans"])
