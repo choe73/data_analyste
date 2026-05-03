@@ -27,6 +27,7 @@ from app.api.endpoints import (
     init_tables,
     data_sources,
     monitoring,
+    advanced_scraping,
 )
 
 api_router = APIRouter()
@@ -42,6 +43,7 @@ api_router.include_router(data_collection.router, prefix="/collect", tags=["Data
 api_router.include_router(collection_debug.router, prefix="/collect", tags=["Collection Debug"])
 api_router.include_router(data_sources.router, tags=["Data Sources"])
 api_router.include_router(monitoring.router, tags=["Monitoring"])
+api_router.include_router(advanced_scraping.router, tags=["Advanced Scraping"])
 api_router.include_router(cache.router, prefix="/cache", tags=["Cache"])
 api_router.include_router(subscriptions.router, prefix="/subscriptions", tags=["Subscriptions"])
 api_router.include_router(plans.router, prefix="/plans", tags=["Plans"])
