@@ -91,32 +91,56 @@ class CollectionLog(Base):
 # ---------------------------------------------------------------------------
 # Sources to collect — real Cameroon data URLs
 # ---------------------------------------------------------------------------
-SOURCES = [
-    {
-        "id": 1,
-        "name": "World Bank - Cameroon Economic Data",
-        "category": "economy",
-        "url": "https://api.worldbank.org/v2/country/CMR/indicator/NY.GDP.MKTP.CD?format=json&per_page=100",
-        "parser": "json_api",
-        "use_playwright": False,
-    },
-    {
-        "id": 2,
-        "name": "World Bank - Cameroon Population",
-        "category": "demographics",
-        "url": "https://api.worldbank.org/v2/country/CMR/indicator/SP.POP.TOTL?format=json&per_page=100",
-        "parser": "json_api",
-        "use_playwright": False,
-    },
-    {
-        "id": 3,
-        "name": "World Bank - Cameroon Agriculture",
-        "category": "agriculture",
-        "url": "https://api.worldbank.org/v2/country/CMR/indicator/NV.AGR.TOTL.CD?format=json&per_page=100",
-        "parser": "json_api",
-        "use_playwright": False,
-    },
-]
+# Load sources from config file or use defaults
+def load_sources():
+    """Load sources from JSON config or use World Bank defaults."""
+    config_path = os.path.join(os.path.dirname(__file__), "../data/sources_config.json")
+    
+    if os.path.exists(config_path):
+        try:
+            with open(config_path, "r") as f:
+                config = json.load(f)
+                sources = config.get("sources", [])
+                # Add IDs if missing
+                for i, src in enumerate(sources, 1):
+                    if "id" not in src:
+                        src["id"] = i
+                    if "parser" not in src:
+                        src["parser"] = "json_api" if src.get("api_type") == "rest" else "ckan"
+                log.info(f"Loaded {len(sources)} sources from config")
+                return sources
+        except Exception as e:
+            log.warning(f"Failed to load config: {e}, using defaults")
+    
+    # Fallback: World Bank APIs
+    return [
+        {
+            "id": 1,
+            "name": "World Bank - Cameroon Economic Data",
+            "category": "economy",
+            "url": "https://api.worldbank.org/v2/country/CMR/indicator/NY.GDP.MKTP.CD?format=json&per_page=100",
+            "parser": "json_api",
+            "use_playwright": False,
+        },
+        {
+            "id": 2,
+            "name": "World Bank - Cameroon Population",
+            "category": "demographics",
+            "url": "https://api.worldbank.org/v2/country/CMR/indicator/SP.POP.TOTL?format=json&per_page=100",
+            "parser": "json_api",
+            "use_playwright": False,
+        },
+        {
+            "id": 3,
+            "name": "World Bank - Cameroon Agriculture",
+            "category": "agriculture",
+            "url": "https://api.worldbank.org/v2/country/CMR/indicator/NV.AGR.TOTL.CD?format=json&per_page=100",
+            "parser": "json_api",
+            "use_playwright": False,
+        },
+    ]
+
+SOURCES = load_sources()
 
 
 # ---------------------------------------------------------------------------

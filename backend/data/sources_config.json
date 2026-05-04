@@ -1,85 +1,304 @@
 {
   "sources": [
     {
-      "name": "OpenAFRICA",
-      "url": "https://open.africa/api/3/action/package_search",
+      "id": 1,
+      "name": "World Bank - Cameroon GDP",
+      "url": "https://api.worldbank.org/v2/country/CMR/indicator/NY.GDP.MKTP.CD?format=json&per_page=100",
+      "api_type": "rest",
+      "category": "economy",
+      "country": "Cameroon",
+      "auth_type": "none",
+      "parser": "json_api"
+    },
+    {
+      "id": 2,
+      "name": "World Bank - Cameroon Population",
+      "url": "https://api.worldbank.org/v2/country/CMR/indicator/SP.POP.TOTL?format=json&per_page=100",
+      "api_type": "rest",
+      "category": "demographics",
+      "country": "Cameroon",
+      "auth_type": "none",
+      "parser": "json_api"
+    },
+    {
+      "id": 3,
+      "name": "World Bank - Cameroon Agriculture",
+      "url": "https://api.worldbank.org/v2/country/CMR/indicator/NV.AGR.TOTL.CD?format=json&per_page=100",
+      "api_type": "rest",
+      "category": "agriculture",
+      "country": "Cameroon",
+      "auth_type": "none",
+      "parser": "json_api"
+    },
+    {
+      "id": 4,
+      "name": "World Bank - Cameroon Inflation",
+      "url": "https://api.worldbank.org/v2/country/CMR/indicator/FP.CPI.TOTL.ZG?format=json&per_page=100",
+      "api_type": "rest",
+      "category": "economy",
+      "country": "Cameroon",
+      "auth_type": "none",
+      "parser": "json_api"
+    },
+    {
+      "id": 5,
+      "name": "World Bank - Cameroon Unemployment",
+      "url": "https://api.worldbank.org/v2/country/CMR/indicator/SL.UEM.TOTL.ZS?format=json&per_page=100",
+      "api_type": "rest",
+      "category": "labor",
+      "country": "Cameroon",
+      "auth_type": "none",
+      "parser": "json_api"
+    },
+    {
+      "id": 6,
+      "name": "World Bank - Cameroon Trade",
+      "url": "https://api.worldbank.org/v2/country/CMR/indicator/NE.EXP.GNFS.CD?format=json&per_page=100",
+      "api_type": "rest",
+      "category": "trade",
+      "country": "Cameroon",
+      "auth_type": "none",
+      "parser": "json_api"
+    },
+    {
+      "id": 7,
+      "name": "World Bank - Cameroon Education",
+      "url": "https://api.worldbank.org/v2/country/CMR/indicator/SE.ADT.LITR.ZS?format=json&per_page=100",
+      "api_type": "rest",
+      "category": "education",
+      "country": "Cameroon",
+      "auth_type": "none",
+      "parser": "json_api"
+    },
+    {
+      "id": 8,
+      "name": "World Bank - Cameroon Health",
+      "url": "https://api.worldbank.org/v2/country/CMR/indicator/SP.URB.TOTL.IN.ZS?format=json&per_page=100",
+      "api_type": "rest",
+      "category": "health",
+      "country": "Cameroon",
+      "auth_type": "none",
+      "parser": "json_api"
+    },
+    {
+      "id": 9,
+      "name": "World Bank - Cameroon Energy",
+      "url": "https://api.worldbank.org/v2/country/CMR/indicator/EG.USE.ELEC.KH.PC?format=json&per_page=100",
+      "api_type": "rest",
+      "category": "energy",
+      "country": "Cameroon",
+      "auth_type": "none",
+      "parser": "json_api"
+    },
+    {
+      "id": 10,
+      "name": "World Bank - Cameroon Environment",
+      "url": "https://api.worldbank.org/v2/country/CMR/indicator/EN.ATM.CO2E.PC?format=json&per_page=100",
+      "api_type": "rest",
+      "category": "environment",
+      "country": "Cameroon",
+      "auth_type": "none",
+      "parser": "json_api"
+    },
+    {
+      "id": 11,
+      "name": "OpenAFRICA - Pan-Africa Data",
+      "url": "https://open.africa/api/3/action/package_search?q=cameroon&rows=100",
+      "api_type": "ckan",
+      "category": "open_data",
+      "country": "Pan-Africa",
+      "auth_type": "none",
+      "parser": "ckan"
+    },
+    {
+      "id": 12,
+      "name": "Africa Data Hub",
+      "url": "https://africadatahub.org/api/v1/datasets?country=CM",
       "api_type": "rest",
       "category": "open_data",
       "country": "Pan-Africa",
       "auth_type": "none",
-      "collection_frequency": "0 0 * * 0"
+      "parser": "json_api"
     },
     {
-      "name": "Africa Data Hub",
-      "url": "https://africadatahub.org/api/v1/datasets",
-      "api_type": "rest",
-      "category": "open_data",
-      "country": "Pan-Africa",
-      "auth_type": "none"
-    },
-    {
+      "id": 13,
       "name": "Kenya Open Data Portal",
-      "url": "https://www.opendata.go.ke/api/3/action/package_search",
+      "url": "https://www.opendata.go.ke/api/3/action/package_search?rows=100",
       "api_type": "ckan",
       "category": "government",
       "country": "Kenya",
-      "auth_type": "none"
+      "auth_type": "none",
+      "parser": "ckan"
     },
     {
+      "id": 14,
       "name": "Nigeria Open Data Portal",
-      "url": "https://data.gov.ng/api/3/action/package_search",
+      "url": "https://data.gov.ng/api/3/action/package_search?rows=100",
       "api_type": "ckan",
       "category": "government",
       "country": "Nigeria",
-      "auth_type": "none"
+      "auth_type": "none",
+      "parser": "ckan"
     },
     {
+      "id": 15,
       "name": "Ghana Open Data Portal",
-      "url": "https://data.gov.gh/api/3/action/package_search",
+      "url": "https://data.gov.gh/api/3/action/package_search?rows=100",
       "api_type": "ckan",
       "category": "government",
       "country": "Ghana",
-      "auth_type": "none"
+      "auth_type": "none",
+      "parser": "ckan"
     },
     {
+      "id": 16,
       "name": "Rwanda Open Data Portal",
-      "url": "https://data.gov.rw/api/3/action/package_search",
+      "url": "https://data.gov.rw/api/3/action/package_search?rows=100",
       "api_type": "ckan",
       "category": "government",
       "country": "Rwanda",
-      "auth_type": "none"
+      "auth_type": "none",
+      "parser": "ckan"
     },
     {
+      "id": 17,
       "name": "Morocco Open Data Portal",
-      "url": "https://data.gov.ma/api/3/action/package_search",
+      "url": "https://data.gov.ma/api/3/action/package_search?rows=100",
       "api_type": "ckan",
       "category": "government",
       "country": "Morocco",
-      "auth_type": "none"
+      "auth_type": "none",
+      "parser": "ckan"
     },
     {
+      "id": 18,
       "name": "Tunisia Open Data Portal",
-      "url": "https://data.gov.tn/api/3/action/package_search",
+      "url": "https://data.gov.tn/api/3/action/package_search?rows=100",
       "api_type": "ckan",
       "category": "government",
       "country": "Tunisia",
-      "auth_type": "none"
+      "auth_type": "none",
+      "parser": "ckan"
     },
     {
+      "id": 19,
       "name": "Senegal Open Data Portal",
-      "url": "https://data.gouv.sn/api/3/action/package_search",
+      "url": "https://data.gouv.sn/api/3/action/package_search?rows=100",
       "api_type": "ckan",
       "category": "government",
       "country": "Senegal",
-      "auth_type": "none"
+      "auth_type": "none",
+      "parser": "ckan"
     },
     {
+      "id": 20,
       "name": "Zimbabwe Open Data Portal",
-      "url": "https://data.gov.zw/api/3/action/package_search",
+      "url": "https://data.gov.zw/api/3/action/package_search?rows=100",
       "api_type": "ckan",
       "category": "government",
       "country": "Zimbabwe",
-      "auth_type": "none"
+      "auth_type": "none",
+      "parser": "ckan"
+    },
+    {
+      "id": 21,
+      "name": "World Bank - Nigeria GDP",
+      "url": "https://api.worldbank.org/v2/country/NGA/indicator/NY.GDP.MKTP.CD?format=json&per_page=100",
+      "api_type": "rest",
+      "category": "economy",
+      "country": "Nigeria",
+      "auth_type": "none",
+      "parser": "json_api"
+    },
+    {
+      "id": 22,
+      "name": "World Bank - Kenya GDP",
+      "url": "https://api.worldbank.org/v2/country/KEN/indicator/NY.GDP.MKTP.CD?format=json&per_page=100",
+      "api_type": "rest",
+      "category": "economy",
+      "country": "Kenya",
+      "auth_type": "none",
+      "parser": "json_api"
+    },
+    {
+      "id": 23,
+      "name": "World Bank - Ghana GDP",
+      "url": "https://api.worldbank.org/v2/country/GHA/indicator/NY.GDP.MKTP.CD?format=json&per_page=100",
+      "api_type": "rest",
+      "category": "economy",
+      "country": "Ghana",
+      "auth_type": "none",
+      "parser": "json_api"
+    },
+    {
+      "id": 24,
+      "name": "World Bank - South Africa GDP",
+      "url": "https://api.worldbank.org/v2/country/ZAF/indicator/NY.GDP.MKTP.CD?format=json&per_page=100",
+      "api_type": "rest",
+      "category": "economy",
+      "country": "South Africa",
+      "auth_type": "none",
+      "parser": "json_api"
+    },
+    {
+      "id": 25,
+      "name": "World Bank - Ethiopia GDP",
+      "url": "https://api.worldbank.org/v2/country/ETH/indicator/NY.GDP.MKTP.CD?format=json&per_page=100",
+      "api_type": "rest",
+      "category": "economy",
+      "country": "Ethiopia",
+      "auth_type": "none",
+      "parser": "json_api"
+    },
+    {
+      "id": 26,
+      "name": "World Bank - Egypt GDP",
+      "url": "https://api.worldbank.org/v2/country/EGY/indicator/NY.GDP.MKTP.CD?format=json&per_page=100",
+      "api_type": "rest",
+      "category": "economy",
+      "country": "Egypt",
+      "auth_type": "none",
+      "parser": "json_api"
+    },
+    {
+      "id": 27,
+      "name": "World Bank - Cameroon Trade Imports",
+      "url": "https://api.worldbank.org/v2/country/CMR/indicator/NE.IMP.GNFS.CD?format=json&per_page=100",
+      "api_type": "rest",
+      "category": "trade",
+      "country": "Cameroon",
+      "auth_type": "none",
+      "parser": "json_api"
+    },
+    {
+      "id": 28,
+      "name": "World Bank - Cameroon FDI",
+      "url": "https://api.worldbank.org/v2/country/CMR/indicator/BX.KLT.DINV.CD.WD?format=json&per_page=100",
+      "api_type": "rest",
+      "category": "investment",
+      "country": "Cameroon",
+      "auth_type": "none",
+      "parser": "json_api"
+    },
+    {
+      "id": 29,
+      "name": "World Bank - Cameroon Debt",
+      "url": "https://api.worldbank.org/v2/country/CMR/indicator/GC.DOD.TOTL.GD.ZS?format=json&per_page=100",
+      "api_type": "rest",
+      "category": "finance",
+      "country": "Cameroon",
+      "auth_type": "none",
+      "parser": "json_api"
+    },
+    {
+      "id": 30,
+      "name": "World Bank - Cameroon Poverty",
+      "url": "https://api.worldbank.org/v2/country/CMR/indicator/SI.POV.DDAY?format=json&per_page=100",
+      "api_type": "rest",
+      "category": "social",
+      "country": "Cameroon",
+      "auth_type": "none",
+      "parser": "json_api"
     }
   ]
 }
