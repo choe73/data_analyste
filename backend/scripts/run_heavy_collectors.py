@@ -155,28 +155,80 @@ async def scrape_source(source: dict) -> list[dict]:
         async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.get(source["url"], follow_redirects=True)
             response.raise_for_status()
-            data = response.json()
+            
+            # JSON API
+            if source.get("parser") == "json_api":
+                data = response.json()
+                records = []
+                if isinstance(data, list) and len(data) > 1:
+                    indicators = data[1]
+                    if indicators:
+                        for item in indicators:
+                            if item.get("value"):
+                                records.append({
+                                    "col1": item.get("indicator", {}).get("value", ""),
+                                    "col2": str(item.get("value", "")),
+                                    "col3": item.get("date", ""),
+                                    "col4": item.get("country", {}).get("value", ""),
+                                })
+                return records
+            
+            # BeautifulSoup scraping for local Cameroon sources
+            elif source.get("parser") == "beautifulsoup":
+                from bs4 import BeautifulSoup
+                soup = BeautifulSoup(response.text, "html.parser")
+                records = []
+                
+                # Jumia - Telecom prices
+                if "jumia.cm" in source["url"]:
+                    products = soup.find_all("article", class_="prd")
+                    for prod in products[:100]:  # Limit to 100 products
+                        name = prod.find("h2", class_="name")
+                        price = prod.find("span", class_="prc")
+                        if name and price:
+                            records.append({
+                                "col1": name.get_text(strip=True),
+                                "col2": price.get_text(strip=True),
+                                "col3": "Jumia",
+                                "col4": datetime.utcnow().date().isoformat(),
+                            })
+                
+                # SCD - Financial data
+                elif "scd.cm" in source["url"]:
+                    tables = soup.find_all("table")
+                    for table in tables[:5]:
+                        rows = table.find_all("tr")
+                        for row in rows[1:]:
+                            cells = row.find_all(["td", "th"])
+                            if len(cells) >= 2:
+                                records.append({
+                                    "col1": cells[0].get_text(strip=True),
+                                    "col2": cells[1].get_text(strip=True),
+                                    "col3": cells[2].get_text(strip=True) if len(cells) > 2 else "",
+                                    "col4": datetime.utcnow().date().isoformat(),
+                                })
+                
+                # INS - Statistics
+                elif "ins-cameroun.cm" in source["url"]:
+                    divs = soup.find_all("div", class_="stat-item")
+                    for div in divs[:100]:
+                        label = div.find("h3")
+                        value = div.find("span", class_="value")
+                        if label and value:
+                            records.append({
+                                "col1": label.get_text(strip=True),
+                                "col2": value.get_text(strip=True),
+                                "col3": "INS",
+                                "col4": datetime.utcnow().date().isoformat(),
+                            })
+                
+                return records
+            
     except Exception as e:
         log.error(f"  failed to fetch {source['url']}: {e}")
         return []
-
-    records = []
-
-    # Parse World Bank JSON API format
-    if source["parser"] == "json_api" and isinstance(data, list) and len(data) > 1:
-        indicators = data[1]  # Second element contains data
-        if indicators:
-            for item in indicators:
-                if item.get("value"):
-                    records.append({
-                        "col1": item.get("indicator", {}).get("value", ""),
-                        "col2": str(item.get("value", "")),
-                        "col3": item.get("date", ""),
-                        "col4": item.get("country", {}).get("value", ""),
-                    })
-
-    log.info(f"  scraped {len(records)} raw records from {source['name']}")
-    return records
+    
+    return []
 
 
 def map_records(raw: list[dict], source: dict) -> list[dict]:
