@@ -212,25 +212,27 @@ async def _ping_url(url: str, domain: str, rate_limiter: DomainRateLimiter) -> d
                 'status': response.status_code,
                 'reason': 'OK'
             }
-    except httpx.SSLError as e:
-        # SSL error but might still be reachable
-        return {
-            'reachable': True,
-            'status': 'SSL_ERROR',
-            'reason': f'SSL error (will retry with verify=False): {str(e)[:50]}'
-        }
-    except httpx.ConnectError as e:
-        return {
-            'reachable': False,
-            'status': 'CONNECT_ERROR',
-            'reason': f'Connection failed: {str(e)[:50]}'
-        }
     except Exception as e:
-        return {
-            'reachable': False,
-            'status': 'ERROR',
-            'reason': str(e)[:50]
-        }
+        # Any error - try to determine if reachable
+        error_str = str(e).lower()
+        if 'ssl' in error_str or 'certificate' in error_str:
+            return {
+                'reachable': True,
+                'status': 'SSL_ERROR',
+                'reason': f'SSL error (will retry with verify=False): {str(e)[:50]}'
+            }
+        elif 'connect' in error_str or 'connection' in error_str:
+            return {
+                'reachable': False,
+                'status': 'CONNECT_ERROR',
+                'reason': f'Connection failed: {str(e)[:50]}'
+            }
+        else:
+            return {
+                'reachable': False,
+                'status': 'ERROR',
+                'reason': str(e)[:50]
+            }
 
 
 
@@ -318,9 +320,9 @@ async def scrape_source(
     
     log.info(f"  ✓ URL reachable (HTTP {ping_result['status']})")
     
-    # Discover alternative endpoints if enabled
+    # Discover alternative endpoints if enabled (skip for JSON APIs - too slow)
     discovered_urls = []
-    if source.get("enable_url_discovery", True):
+    if source.get("enable_url_discovery", True) and source.get("parser") != "json_api":
         discovered_urls = await _discover_source_urls(source["url"], rate_limiter)
 
     for attempt in range(max_retries):
@@ -725,6 +727,59 @@ async def write_to_supabase(session: AsyncSession, source: dict, records: list[d
     log.info(f"  ✓ wrote {len(records)} records | trust={trust['overall']:.1f} | dataset_id={dataset.id}")
 
 
+def categorize_records(records: list[dict], source: dict) -> list[dict]:
+    """Categorize records based on content after collection"""
+    categorized = []
+    
+    for record in records:
+        category = "uncategorized"
+        
+        # Infer category from source name and content
+        source_name = source.get("name", "").lower()
+        item_name = str(record.get("item_name", "")).lower()
+        
+        # Agriculture
+        if any(x in source_name for x in ["minader", "agricultural", "price", "market"]):
+            category = "agriculture"
+        elif any(x in item_name for x in ["rice", "maize", "cassava", "banana", "cocoa", "coffee", "price"]):
+            category = "agriculture"
+        
+        # Environment
+        elif any(x in source_name for x in ["environment", "climate", "weather", "air quality", "gbif", "biodiversity"]):
+            category = "environment"
+        elif any(x in item_name for x in ["temperature", "rainfall", "pollution", "species", "forest"]):
+            category = "environment"
+        
+        # Demographics
+        elif any(x in source_name for x in ["ins", "statistics", "demographic", "population", "census"]):
+            category = "demographics"
+        elif any(x in item_name for x in ["population", "age", "gender", "household", "education"]):
+            category = "demographics"
+        
+        # Economy
+        elif any(x in source_name for x in ["world bank", "economic", "gdp", "trade", "market"]):
+            category = "economy"
+        elif any(x in item_name for x in ["gdp", "inflation", "trade", "export", "import", "price"]):
+            category = "economy"
+        
+        # Health
+        elif any(x in source_name for x in ["health", "disease", "medical"]):
+            category = "health"
+        elif any(x in item_name for x in ["disease", "mortality", "health", "hospital"]):
+            category = "health"
+        
+        # Infrastructure
+        elif any(x in source_name for x in ["infrastructure", "transport", "road", "water"]):
+            category = "infrastructure"
+        elif any(x in item_name for x in ["road", "bridge", "water", "electricity", "transport"]):
+            category = "infrastructure"
+        
+        record["category"] = category
+        categorized.append(record)
+    
+    return categorized
+
+
 async def run_source(
     session: AsyncSession,
     source: dict,
@@ -842,57 +897,3 @@ def _to_float(val) -> float:
 if __name__ == "__main__":
     asyncio.run(main())
 
-
-
-
-def categorize_records(records: list[dict], source: dict) -> list[dict]:
-    """Categorize records based on content after collection"""
-    categorized = []
-    
-    for record in records:
-        category = "uncategorized"
-        
-        # Infer category from source name and content
-        source_name = source.get("name", "").lower()
-        item_name = str(record.get("item_name", "")).lower()
-        
-        # Agriculture
-        if any(x in source_name for x in ["minader", "agricultural", "price", "market"]):
-            category = "agriculture"
-        elif any(x in item_name for x in ["rice", "maize", "cassava", "banana", "cocoa", "coffee", "price"]):
-            category = "agriculture"
-        
-        # Environment
-        elif any(x in source_name for x in ["environment", "climate", "weather", "air quality", "gbif", "biodiversity"]):
-            category = "environment"
-        elif any(x in item_name for x in ["temperature", "rainfall", "pollution", "species", "forest"]):
-            category = "environment"
-        
-        # Demographics
-        elif any(x in source_name for x in ["ins", "statistics", "demographic", "population", "census"]):
-            category = "demographics"
-        elif any(x in item_name for x in ["population", "age", "gender", "household", "education"]):
-            category = "demographics"
-        
-        # Economy
-        elif any(x in source_name for x in ["world bank", "economic", "gdp", "trade", "market"]):
-            category = "economy"
-        elif any(x in item_name for x in ["gdp", "inflation", "trade", "export", "import", "price"]):
-            category = "economy"
-        
-        # Health
-        elif any(x in source_name for x in ["health", "disease", "medical"]):
-            category = "health"
-        elif any(x in item_name for x in ["disease", "mortality", "health", "hospital"]):
-            category = "health"
-        
-        # Infrastructure
-        elif any(x in source_name for x in ["infrastructure", "transport", "road", "water"]):
-            category = "infrastructure"
-        elif any(x in item_name for x in ["road", "bridge", "water", "electricity", "transport"]):
-            category = "infrastructure"
-        
-        record["category"] = category
-        categorized.append(record)
-    
-    return categorized
