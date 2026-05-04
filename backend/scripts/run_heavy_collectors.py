@@ -197,164 +197,221 @@ async def scrape_source(
     rate_limiter: DomainRateLimiter,
     max_retries: int = 3
 ) -> list[dict]:
-    """Scrape one source with retry logic and rate limiting."""
+    """Scrape one source with retry logic and rate limiting.
+    
+    Supports:
+    - Simple JSON APIs (World Bank, GBIF, etc.)
+    - Complex HTML scraping (INS, MINADER, Météo)
+    - Browser-based scraping for JS-heavy sites
+    """
     import httpx
     from bs4 import BeautifulSoup
     from urllib.parse import urlparse
 
     domain = urlparse(source["url"]).netloc
+    scraper_type = source.get("scraper_type", "http")
+    complexity = source.get("complexity", "simple")
 
     for attempt in range(max_retries):
         try:
             await rate_limiter.wait_if_needed(domain)
 
-            async with httpx.AsyncClient(
-                timeout=30.0,
-                follow_redirects=True
-            ) as client:
-                response = await client.get(source["url"])
-                response.raise_for_status()
+            # Browser-based scraping for complex sites
+            if scraper_type == "browser" and complexity == "high":
+                try:
+                    from playwright.async_api import async_playwright
+                    async with async_playwright() as p:
+                        browser = await p.chromium.launch(headless=True)
+                        page = await browser.new_page()
+                        await page.goto(
+                            source["url"],
+                            wait_until="networkidle",
+                            timeout=30000
+                        )
+                        html = await page.content()
+                        await browser.close()
+                except Exception as e:
+                    log.warning(
+                        f"  browser scraping failed: {e}, "
+                        f"falling back to HTTP"
+                    )
+                    async with httpx.AsyncClient(
+                        timeout=30.0,
+                        follow_redirects=True
+                    ) as client:
+                        response = await client.get(source["url"])
+                        html = response.text
+            else:
+                # HTTP-based scraping
+                async with httpx.AsyncClient(
+                    timeout=30.0,
+                    follow_redirects=True
+                ) as client:
+                    response = await client.get(source["url"])
+                    response.raise_for_status()
+                    html = response.text
 
-                # JSON API (World Bank, FAOSTAT, OpenAQ, etc.)
-                if source.get("parser") == "json_api":
-                    try:
-                        data = response.json()
-                        records = []
-
-                        if isinstance(data, list) and len(data) > 1:
-                            indicators = data[1]
-                            if indicators:
-                                for item in indicators:
-                                    if item.get("value"):
-                                        records.append({
-                                            "col1": item.get(
-                                                "indicator", {}
-                                            ).get("value", ""),
-                                            "col2": str(item.get("value", "")),
-                                            "col3": item.get("date", ""),
-                                            "col4": item.get(
-                                                "country", {}
-                                            ).get("value", ""),
-                                        })
-                        elif isinstance(data, dict):
-                            # Handle OCHA HDX, Zenodo, etc.
-                            results = data.get("results", [])
-                            for item in results[:100]:
-                                records.append({
-                                    "col1": item.get("title", ""),
-                                    "col2": item.get("name", ""),
-                                    "col3": item.get("date", ""),
-                                    "col4": item.get("id", ""),
-                                })
-
-                        return records
-                    except Exception as e:
-                        log.warning(f"  JSON parse failed: {e}")
-                        return []
-
-                # HTML scraping with BeautifulSoup
-                elif source.get("parser") == "beautifulsoup":
-                    soup = BeautifulSoup(response.text, "html.parser")
+            # JSON API parsing
+            if source.get("parser") == "json_api":
+                try:
+                    # Try to parse as JSON
+                    import json
+                    data = json.loads(html)
                     records = []
 
-                    # INS - Statistics & Demographics
-                    if "ins-cameroun.cm" in source["url"]:
-                        tables = soup.find_all("table")
-                        for table in tables[:5]:
-                            rows = table.find_all("tr")
-                            for row in rows[1:]:
-                                cells = row.find_all(["td", "th"])
-                                if len(cells) >= 2:
-                                    try:
-                                        label = cells[0].get_text(strip=True)
-                                        value = cells[1].get_text(strip=True)
-                                        if label and value:
-                                            records.append({
-                                                "col1": label,
-                                                "col2": value,
-                                                "col3": "INS",
-                                                "col4": (
-                                                    datetime.utcnow()
-                                                    .date()
-                                                    .isoformat()
-                                                ),
-                                            })
-                                    except Exception:
-                                        continue
-
-                    # MINADER - Agricultural prices
-                    elif "minader.cm" in source["url"]:
-                        tables = soup.find_all("table")
-                        for table in tables[:3]:
-                            rows = table.find_all("tr")
-                            for row in rows[1:]:
-                                cells = row.find_all(["td", "th"])
-                                if len(cells) >= 3:
-                                    try:
-                                        product = cells[0].get_text(
-                                            strip=True
-                                        )
-                                        price = (
-                                            cells[1]
-                                            .get_text(strip=True)
-                                            .replace("FCFA", "")
-                                            .replace(",", "")
-                                            .strip()
-                                        )
-                                        region = (
-                                            cells[2].get_text(strip=True)
-                                            if len(cells) > 2
-                                            else "National"
-                                        )
-                                        if product and price:
-                                            records.append({
-                                                "col1": product,
-                                                "col2": price,
-                                                "col3": region,
-                                                "col4": (
-                                                    datetime.utcnow()
-                                                    .date()
-                                                    .isoformat()
-                                                ),
-                                            })
-                                    except Exception:
-                                        continue
-
-                    # Météo Cameroun - Weather data
-                    elif "meteocameroon.gov.cm" in source["url"]:
-                        tables = soup.find_all("table")
-                        for table in tables[:2]:
-                            rows = table.find_all("tr")
-                            for row in rows[1:]:
-                                cells = row.find_all(["td", "th"])
-                                if len(cells) >= 3:
-                                    try:
-                                        station = cells[0].get_text(
-                                            strip=True
-                                        )
-                                        temp = cells[1].get_text(
-                                            strip=True
-                                        )
-                                        humidity = (
-                                            cells[2].get_text(strip=True)
-                                            if len(cells) > 2
-                                            else ""
-                                        )
-                                        if station and temp:
-                                            records.append({
-                                                "col1": station,
-                                                "col2": temp,
-                                                "col3": humidity,
-                                                "col4": (
-                                                    datetime.utcnow()
-                                                    .date()
-                                                    .isoformat()
-                                                ),
-                                            })
-                                    except Exception:
-                                        continue
+                    if isinstance(data, list) and len(data) > 1:
+                        # World Bank format
+                        indicators = data[1]
+                        if indicators:
+                            for item in indicators:
+                                if item.get("value"):
+                                    records.append({
+                                        "col1": item.get(
+                                            "indicator", {}
+                                        ).get("value", ""),
+                                        "col2": str(item.get("value", "")),
+                                        "col3": item.get("date", ""),
+                                        "col4": item.get(
+                                            "country", {}
+                                        ).get("value", ""),
+                                    })
+                    elif isinstance(data, dict):
+                        # Handle multiple API formats
+                        results = (
+                            data.get("results", []) or
+                            data.get("data", []) or
+                            data.get("records", []) or
+                            data.get("hits", {}).get("hits", [])
+                        )
+                        for item in results[:100]:
+                            records.append({
+                                "col1": item.get(
+                                    "title",
+                                    item.get("name", "")
+                                ),
+                                "col2": item.get(
+                                    "description",
+                                    item.get("summary", "")
+                                ),
+                                "col3": item.get(
+                                    "date",
+                                    item.get("created", "")
+                                ),
+                                "col4": item.get("id", ""),
+                            })
 
                     return records
+                except Exception as e:
+                    log.warning(f"  JSON parse failed: {e}")
+                    return []
+
+            # HTML scraping with BeautifulSoup
+            elif source.get("parser") == "beautifulsoup":
+                soup = BeautifulSoup(html, "html.parser")
+                records = []
+
+                # INS - Statistics & Demographics
+                if "ins-cameroun.cm" in source["url"]:
+                    tables = soup.find_all("table")
+                    for table in tables[:5]:
+                        rows = table.find_all("tr")
+                        for row in rows[1:]:
+                            cells = row.find_all(["td", "th"])
+                            if len(cells) >= 2:
+                                try:
+                                    label = cells[0].get_text(
+                                        strip=True
+                                    )
+                                    value = cells[1].get_text(
+                                        strip=True
+                                    )
+                                    if label and value:
+                                        records.append({
+                                            "col1": label,
+                                            "col2": value,
+                                            "col3": "INS",
+                                            "col4": (
+                                                datetime.utcnow()
+                                                .date()
+                                                .isoformat()
+                                            ),
+                                        })
+                                except Exception:
+                                    continue
+
+                # MINADER - Agricultural prices
+                elif "minader.cm" in source["url"]:
+                    tables = soup.find_all("table")
+                    for table in tables[:3]:
+                        rows = table.find_all("tr")
+                        for row in rows[1:]:
+                            cells = row.find_all(["td", "th"])
+                            if len(cells) >= 3:
+                                try:
+                                    product = cells[0].get_text(
+                                        strip=True
+                                    )
+                                    price = (
+                                        cells[1]
+                                        .get_text(strip=True)
+                                        .replace("FCFA", "")
+                                        .replace(",", "")
+                                        .strip()
+                                    )
+                                    region = (
+                                        cells[2].get_text(strip=True)
+                                        if len(cells) > 2
+                                        else "National"
+                                    )
+                                    if product and price:
+                                        records.append({
+                                            "col1": product,
+                                            "col2": price,
+                                            "col3": region,
+                                            "col4": (
+                                                datetime.utcnow()
+                                                .date()
+                                                .isoformat()
+                                            ),
+                                        })
+                                except Exception:
+                                    continue
+
+                # Météo Cameroun - Weather data
+                elif "meteocameroon.gov.cm" in source["url"]:
+                    tables = soup.find_all("table")
+                    for table in tables[:2]:
+                        rows = table.find_all("tr")
+                        for row in rows[1:]:
+                            cells = row.find_all(["td", "th"])
+                            if len(cells) >= 3:
+                                try:
+                                    station = cells[0].get_text(
+                                        strip=True
+                                    )
+                                    temp = cells[1].get_text(
+                                        strip=True
+                                    )
+                                    humidity = (
+                                        cells[2].get_text(strip=True)
+                                        if len(cells) > 2
+                                        else ""
+                                    )
+                                    if station and temp:
+                                        records.append({
+                                            "col1": station,
+                                            "col2": temp,
+                                            "col3": humidity,
+                                            "col4": (
+                                                datetime.utcnow()
+                                                .date()
+                                                .isoformat()
+                                            ),
+                                        })
+                                except Exception:
+                                    continue
+
+                return records
 
         except asyncio.TimeoutError:
             log.warning(

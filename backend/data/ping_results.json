@@ -1,0 +1,730 @@
+{
+  "timestamp": "2026-05-04T13:44:53.719717",
+  "total": 80,
+  "operational": 13,
+  "failed": 67,
+  "operational_sources": [
+    {
+      "id": 2,
+      "name": "World Bank - All Africa Indicators",
+      "url": "https://api.worldbank.org/v2/country/all/indicator?format=json",
+      "status": "\u2705 OK",
+      "response_time": "2.18s",
+      "has_data": true,
+      "operational": true
+    },
+    {
+      "id": 14,
+      "name": "Copernicus Sentinel - Satellite",
+      "url": "https://api.sentinel-hub.com/v1/catalog/search",
+      "status": "\u2705 OK",
+      "response_time": "9.91s",
+      "has_data": false,
+      "operational": true
+    },
+    {
+      "id": 24,
+      "name": "Sabi - Market Intelligence",
+      "url": "https://api.sabi.co/v1/products",
+      "status": "\u2705 OK",
+      "response_time": "11.94s",
+      "has_data": false,
+      "operational": true
+    },
+    {
+      "id": 48,
+      "name": "WAQI - Air Quality",
+      "url": "https://api.waqi.info/feed/geo",
+      "status": "\u2705 OK",
+      "response_time": "7.59s",
+      "has_data": true,
+      "operational": true
+    },
+    {
+      "id": 50,
+      "name": "GBIF - Biodiversity",
+      "url": "https://api.gbif.org/v1/occurrence/search",
+      "status": "\u2705 OK",
+      "response_time": "22.91s",
+      "has_data": true,
+      "operational": true
+    },
+    {
+      "id": 51,
+      "name": "iNaturalist - Science",
+      "url": "https://api.inaturalist.org/v1/observations",
+      "status": "\u2705 OK",
+      "response_time": "13.33s",
+      "has_data": true,
+      "operational": true
+    },
+    {
+      "id": 64,
+      "name": "ThingSpeak - IoT",
+      "url": "https://api.thingspeak.com/channels",
+      "status": "\u2705 OK",
+      "response_time": "14.41s",
+      "has_data": false,
+      "operational": true
+    },
+    {
+      "id": 68,
+      "name": "Google Maps - Mobility",
+      "url": "https://maps.googleapis.com/maps/api/place/textsearch/json",
+      "status": "\u2705 OK",
+      "response_time": "5.47s",
+      "has_data": true,
+      "operational": true
+    },
+    {
+      "id": 73,
+      "name": "Kaggle - ML",
+      "url": "https://www.kaggle.com/api/v1/datasets/list",
+      "status": "\u2705 OK",
+      "response_time": "5.53s",
+      "has_data": true,
+      "operational": true
+    },
+    {
+      "id": 74,
+      "name": "Zenodo - Science",
+      "url": "https://zenodo.org/api/records",
+      "status": "\u2705 OK",
+      "response_time": "22.84s",
+      "has_data": true,
+      "operational": true
+    },
+    {
+      "id": 75,
+      "name": "Figshare - Outputs",
+      "url": "https://api.figshare.com/v2/articles",
+      "status": "\u2705 OK",
+      "response_time": "12.95s",
+      "has_data": true,
+      "operational": true
+    },
+    {
+      "id": 76,
+      "name": "HuggingFace - ML",
+      "url": "https://huggingface.co/api/datasets",
+      "status": "\u2705 OK",
+      "response_time": "23.19s",
+      "has_data": true,
+      "operational": true
+    },
+    {
+      "id": 80,
+      "name": "OCHA HumData - Humanitarian",
+      "url": "https://data.humdata.org/api/3/action/package_search",
+      "status": "\u2705 OK",
+      "response_time": "16.27s",
+      "has_data": true,
+      "operational": true
+    }
+  ],
+  "failed_sources": [
+    {
+      "id": 1,
+      "name": "FAOSTAT - Africa Agriculture",
+      "url": "https://www.fao.org/faostat/api/v1/data?datasource=QCL",
+      "status": "\u26a0\ufe0f 404",
+      "response_time": "2.36s",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 3,
+      "name": "Digital Earth Africa - Satellite",
+      "url": "https://api.digitalearthafrica.org/datasets",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 4,
+      "name": "OpenAQ - Air Quality",
+      "url": "https://api.openaq.org/v2/measurements",
+      "status": "\u26a0\ufe0f 410",
+      "response_time": "2.41s",
+      "has_data": true,
+      "operational": false
+    },
+    {
+      "id": 5,
+      "name": "Sensors.AFRICA - IoT Data",
+      "url": "https://api.sensors.africa/v2/data",
+      "status": "\u26a0\ufe0f 403",
+      "response_time": "2.50s",
+      "has_data": true,
+      "operational": false
+    },
+    {
+      "id": 6,
+      "name": "GSMA Intelligence - Mobile",
+      "url": "https://api.gsma.com/intelligence/v1/countries",
+      "status": "\u274c ConnectTimeout",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 7,
+      "name": "Pngme - Financial Panels",
+      "url": "https://api.pngme.com/v1/panels",
+      "status": "\u26a0\ufe0f 403",
+      "response_time": "2.62s",
+      "has_data": true,
+      "operational": false
+    },
+    {
+      "id": 8,
+      "name": "Mono - Bank Data",
+      "url": "https://api.mono.co/v1/accounts",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 9,
+      "name": "Sawa Telematics - Fleet",
+      "url": "https://api.sawatelematics.com/v1/vehicles",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 10,
+      "name": "Tracker SA - Vehicles",
+      "url": "https://api.trackersa.com/v1/movements",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 11,
+      "name": "HarvestStat Africa - Crops",
+      "url": "https://api.harveststat.org/v1/crops",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 12,
+      "name": "Africa Development Indicators",
+      "url": "https://api.afdb.org/v1/indicators",
+      "status": "\u26a0\ufe0f 404",
+      "response_time": "3.32s",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 13,
+      "name": "WaPOR FAO - Water",
+      "url": "https://api.wapor.fao.org/v1/data",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 15,
+      "name": "Google Earth Engine - Landsat",
+      "url": "https://earthengine.googleapis.com/v1alpha/projects",
+      "status": "\u26a0\ufe0f 404",
+      "response_time": "3.27s",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 16,
+      "name": "NOAA Climate Data",
+      "url": "https://www.ncei.noaa.gov/access/metadata",
+      "status": "\u26a0\ufe0f 403",
+      "response_time": "8.32s",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 17,
+      "name": "Vizzion - Traffic Cameras",
+      "url": "https://api.vizzion.com/v1/cameras",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 18,
+      "name": "Omnisient - Data Collab",
+      "url": "https://api.omnisient.com/v1/datasets",
+      "status": "\u26a0\ufe0f 404",
+      "response_time": "2.80s",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 19,
+      "name": "Dentsu Merkury - Profiles",
+      "url": "https://api.merkury.com/v1/profiles",
+      "status": "\u274c ConnectTimeout",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 20,
+      "name": "Terragon - Identity",
+      "url": "https://api.terragon.io/v1/identities",
+      "status": "\u26a0\ufe0f 404",
+      "response_time": "7.21s",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 21,
+      "name": "Africa's Talking - Payments",
+      "url": "https://api.africastalking.com/v1/payments",
+      "status": "\u26a0\ufe0f 404",
+      "response_time": "3.76s",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 22,
+      "name": "Paystack - E-commerce",
+      "url": "https://api.paystack.co/transaction",
+      "status": "\u26a0\ufe0f 401",
+      "response_time": "2.30s",
+      "has_data": true,
+      "operational": false
+    },
+    {
+      "id": 23,
+      "name": "Flutterwave - Payments",
+      "url": "https://api.flutterwave.com/v3/transactions",
+      "status": "\u26a0\ufe0f 401",
+      "response_time": "4.04s",
+      "has_data": true,
+      "operational": false
+    },
+    {
+      "id": 25,
+      "name": "Maad - Market Data",
+      "url": "https://api.maad.com/v1/prices",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 26,
+      "name": "Rwazi - Consumer Data",
+      "url": "https://api.rwazi.com/v1/consumers",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 27,
+      "name": "ANKA - E-commerce",
+      "url": "https://api.anka.com/v1/orders",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 28,
+      "name": "Zent - Distribution",
+      "url": "https://api.zent.com/v1/distribution",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 29,
+      "name": "Comparo - SME Sales",
+      "url": "https://api.comparo.com/v1/sales",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 30,
+      "name": "440 Technology - E-commerce",
+      "url": "https://api.440tech.com/v1/listings",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 31,
+      "name": "Paga - Mobile Money",
+      "url": "https://api.paga.com/v1/transactions",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 32,
+      "name": "MTN Mobile Money",
+      "url": "https://api.mtn.com/v1/momo/transactions",
+      "status": "\u26a0\ufe0f 418",
+      "response_time": "4.07s",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 33,
+      "name": "Orange Money",
+      "url": "https://api.orange.com/v1/money/transactions",
+      "status": "\u26a0\ufe0f 404",
+      "response_time": "2.21s",
+      "has_data": true,
+      "operational": false
+    },
+    {
+      "id": 34,
+      "name": "Airtel Money",
+      "url": "https://api.airtel.com/v1/money/transactions",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 35,
+      "name": "Stitch - Banking",
+      "url": "https://api.stitch.money/v1/accounts",
+      "status": "\u26a0\ufe0f 404",
+      "response_time": "2.95s",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 36,
+      "name": "FinAgent - Scoring",
+      "url": "https://api.finagent.com/v1/profiles",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 37,
+      "name": "INSPIRE - Health Records",
+      "url": "https://api.inspire.org/v1/health",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 38,
+      "name": "Nigeria NDR - Patients",
+      "url": "https://api.ndr.ng/v1/patients",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 39,
+      "name": "Botswana EMR - Health",
+      "url": "https://api.emr.bw/v1/records",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 40,
+      "name": "DS-I Africa - Research",
+      "url": "https://api.ds-i.org/v1/data",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 41,
+      "name": "Bridgestone - Telematics",
+      "url": "https://api.bridgestone.com/v1/vehicles",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 42,
+      "name": "Targa - Fleet",
+      "url": "https://api.targa.com/v1/fleet",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 43,
+      "name": "AMOS - Intelligence",
+      "url": "https://api.amos.com/v1/signals",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 44,
+      "name": "MEF - Operators",
+      "url": "https://api.mef.com/v1/operators",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 45,
+      "name": "HederaLink - SME",
+      "url": "https://api.hederalink.com/v1/businesses",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 46,
+      "name": "Flowminder - Mobility",
+      "url": "https://api.flowminder.org/v1/mobility",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 47,
+      "name": "AirQo - Air Quality",
+      "url": "https://api.airqo.net/v2/measurements",
+      "status": "\u26a0\ufe0f 404",
+      "response_time": "2.99s",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 49,
+      "name": "PurpleAir - Sensors",
+      "url": "https://api.purpleair.com/v1/sensors",
+      "status": "\u26a0\ufe0f 403",
+      "response_time": "3.68s",
+      "has_data": true,
+      "operational": false
+    },
+    {
+      "id": 52,
+      "name": "Movebank - Tracking",
+      "url": "https://www.movebank.org/api/v1/events",
+      "status": "\u26a0\ufe0f 404",
+      "response_time": "4.83s",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 53,
+      "name": "IRENA - Energy",
+      "url": "https://api.irena.org/v1/energy",
+      "status": "\u26a0\ufe0f 403",
+      "response_time": "14.05s",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 54,
+      "name": "SE4All - Access",
+      "url": "https://api.se4all.org/v1/access",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 55,
+      "name": "Beyond Grid - Mini-grids",
+      "url": "https://api.beyondthegrid.africa/v1/minigrid",
+      "status": "\u274c ConnectTimeout",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 56,
+      "name": "Africa Energy - Portal",
+      "url": "https://api.africaenergyportal.org/v1/data",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 57,
+      "name": "CGIAR - Research",
+      "url": "https://api.cgiar.org/v1/research",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 58,
+      "name": "GIEWS - Alerts",
+      "url": "https://api.giews.org/v1/alerts",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 59,
+      "name": "PlantVillage - Diseases",
+      "url": "https://api.plantvillage.org/v1/diseases",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 60,
+      "name": "Digital Green - Videos",
+      "url": "https://api.digitalgreen.org/v1/videos",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 61,
+      "name": "Africa Rising - Agro",
+      "url": "https://api.africarising.org/v1/data",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 62,
+      "name": "IFPRI - Policy",
+      "url": "https://api.ifpri.org/v1/policy",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 63,
+      "name": "World Agroforestry",
+      "url": "https://api.worldagroforestry.org/v1/landuse",
+      "status": "\u274c ConnectTimeout",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 65,
+      "name": "TTN - LoRaWAN",
+      "url": "https://api.thethingsnetwork.org/v1/packets",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 66,
+      "name": "OpenStreetMap - Geo",
+      "url": "https://api.openstreetmap.org/api/0.6/map",
+      "status": "\u26a0\ufe0f 400",
+      "response_time": "5.92s",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 67,
+      "name": "TomTom - Traffic",
+      "url": "https://api.tomtom.com/traffic/services/4/flowSegmentData",
+      "status": "\u274c ConnectTimeout",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 69,
+      "name": "Maxar - Imagery",
+      "url": "https://api.maxar.com/v1/imagery",
+      "status": "\u26a0\ufe0f 403",
+      "response_time": "9.76s",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 70,
+      "name": "NASA Disasters",
+      "url": "https://api.nasa.gov/planetary/earth/imagery",
+      "status": "\u26a0\ufe0f 403",
+      "response_time": "12.40s",
+      "has_data": true,
+      "operational": false
+    },
+    {
+      "id": 71,
+      "name": "UNOSAT - Monitoring",
+      "url": "https://api.unitar.org/v1/unosat",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 72,
+      "name": "Data.World - Datasets",
+      "url": "https://api.data.world/v1/datasets",
+      "status": "\u26a0\ufe0f 404",
+      "response_time": "12.60s",
+      "has_data": true,
+      "operational": false
+    },
+    {
+      "id": 77,
+      "name": "Crunchbase - Startups",
+      "url": "https://api.crunchbase.com/v4/entities/companies",
+      "status": "\u26a0\ufe0f 401",
+      "response_time": "8.08s",
+      "has_data": true,
+      "operational": false
+    },
+    {
+      "id": 78,
+      "name": "African Growth - Economy",
+      "url": "https://api.africangrowth.com/v1/data",
+      "status": "\u274c ConnectError",
+      "response_time": "N/A",
+      "has_data": false,
+      "operational": false
+    },
+    {
+      "id": 79,
+      "name": "UN DESA - Development",
+      "url": "https://api.un.org/v1/data",
+      "status": "\u26a0\ufe0f 404",
+      "response_time": "8.18s",
+      "has_data": false,
+      "operational": false
+    }
+  ]
+}
