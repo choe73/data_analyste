@@ -13,12 +13,18 @@ import json
 import logging
 import os
 import sys
+import time
+import random
 from datetime import datetime
+from typing import Optional, Dict, List
 
 # Allow imports from project root
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s"
+)
 log = logging.getLogger(__name__)
 
 from sqlalchemy.ext.asyncio import (
@@ -26,10 +32,49 @@ from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
 )
-from sqlalchemy import select, Column, Integer, String, DateTime, Text, JSON, ForeignKey
+from sqlalchemy import select, Column, Integer, String, DateTime, Text, JSON
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.sql import func
-from datetime import datetime as dt
+
+
+# ---------------------------------------------------------------------------
+# Rate Limiter (Token Bucket per domain)
+# ---------------------------------------------------------------------------
+class DomainRateLimiter:
+    """Rate limiting per domain to respect robots.txt and avoid blocking."""
+
+    def __init__(self):
+        self.domain_limits: Dict[str, Dict] = {
+            "api.worldbank.org": {"req_per_sec": 2.0, "last_request": 0},
+            "www.fao.org": {"req_per_sec": 1.0, "last_request": 0},
+            "api.openaq.org": {"req_per_sec": 1.0, "last_request": 0},
+            "api.gbif.org": {"req_per_sec": 1.0, "last_request": 0},
+            "api.inaturalist.org": {"req_per_sec": 1.0, "last_request": 0},
+            "power.larc.nasa.gov": {"req_per_sec": 0.5, "last_request": 0},
+            "www.ncei.noaa.gov": {"req_per_sec": 0.5, "last_request": 0},
+            "data.humdata.org": {"req_per_sec": 1.0, "last_request": 0},
+            "zenodo.org": {"req_per_sec": 1.0, "last_request": 0},
+            "api.openstreetmap.org": {"req_per_sec": 0.5, "last_request": 0},
+            "ins-cameroun.cm": {"req_per_sec": 0.3, "last_request": 0},
+            "www.minader.cm": {"req_per_sec": 0.3, "last_request": 0},
+            "meteocameroon.gov.cm": {"req_per_sec": 0.5, "last_request": 0},
+        }
+
+    async def wait_if_needed(self, domain: str):
+        """Wait before making request to respect rate limits."""
+        if domain not in self.domain_limits:
+            domain = "default"
+            self.domain_limits[domain] = {"req_per_sec": 1.0, "last_request": 0}
+
+        limit = self.domain_limits[domain]
+        min_interval = 1.0 / limit["req_per_sec"]
+        elapsed = time.time() - limit["last_request"]
+
+        if elapsed < min_interval:
+            wait_time = min_interval - elapsed + random.uniform(0.1, 0.5)
+            await asyncio.sleep(wait_time)
+
+        limit["last_request"] = time.time()
 
 
 # ---------------------------------------------------------------------------
@@ -147,87 +192,188 @@ SOURCES = load_sources()
 # Core pipeline
 # ---------------------------------------------------------------------------
 
-async def scrape_source(source: dict) -> list[dict]:
-    """Scrape one source using httpx. Returns list of raw records."""
+async def scrape_source(
+    source: dict,
+    rate_limiter: DomainRateLimiter,
+    max_retries: int = 3
+) -> list[dict]:
+    """Scrape one source with retry logic and rate limiting."""
     import httpx
+    from bs4 import BeautifulSoup
+    from urllib.parse import urlparse
 
-    try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await client.get(source["url"], follow_redirects=True)
-            response.raise_for_status()
-            
-            # JSON API
-            if source.get("parser") == "json_api":
-                data = response.json()
-                records = []
-                if isinstance(data, list) and len(data) > 1:
-                    indicators = data[1]
-                    if indicators:
-                        for item in indicators:
-                            if item.get("value"):
+    domain = urlparse(source["url"]).netloc
+
+    for attempt in range(max_retries):
+        try:
+            await rate_limiter.wait_if_needed(domain)
+
+            async with httpx.AsyncClient(
+                timeout=30.0,
+                follow_redirects=True
+            ) as client:
+                response = await client.get(source["url"])
+                response.raise_for_status()
+
+                # JSON API (World Bank, FAOSTAT, OpenAQ, etc.)
+                if source.get("parser") == "json_api":
+                    try:
+                        data = response.json()
+                        records = []
+
+                        if isinstance(data, list) and len(data) > 1:
+                            indicators = data[1]
+                            if indicators:
+                                for item in indicators:
+                                    if item.get("value"):
+                                        records.append({
+                                            "col1": item.get(
+                                                "indicator", {}
+                                            ).get("value", ""),
+                                            "col2": str(item.get("value", "")),
+                                            "col3": item.get("date", ""),
+                                            "col4": item.get(
+                                                "country", {}
+                                            ).get("value", ""),
+                                        })
+                        elif isinstance(data, dict):
+                            # Handle OCHA HDX, Zenodo, etc.
+                            results = data.get("results", [])
+                            for item in results[:100]:
                                 records.append({
-                                    "col1": item.get("indicator", {}).get("value", ""),
-                                    "col2": str(item.get("value", "")),
+                                    "col1": item.get("title", ""),
+                                    "col2": item.get("name", ""),
                                     "col3": item.get("date", ""),
-                                    "col4": item.get("country", {}).get("value", ""),
+                                    "col4": item.get("id", ""),
                                 })
-                return records
-            
-            # BeautifulSoup scraping for local Cameroon sources
-            elif source.get("parser") == "beautifulsoup":
-                from bs4 import BeautifulSoup
-                soup = BeautifulSoup(response.text, "html.parser")
-                records = []
-                
-                # Jumia - Telecom prices
-                if "jumia.cm" in source["url"]:
-                    products = soup.find_all("article", class_="prd")
-                    for prod in products[:100]:  # Limit to 100 products
-                        name = prod.find("h2", class_="name")
-                        price = prod.find("span", class_="prc")
-                        if name and price:
-                            records.append({
-                                "col1": name.get_text(strip=True),
-                                "col2": price.get_text(strip=True),
-                                "col3": "Jumia",
-                                "col4": datetime.utcnow().date().isoformat(),
-                            })
-                
-                # SCD - Financial data
-                elif "scd.cm" in source["url"]:
-                    tables = soup.find_all("table")
-                    for table in tables[:5]:
-                        rows = table.find_all("tr")
-                        for row in rows[1:]:
-                            cells = row.find_all(["td", "th"])
-                            if len(cells) >= 2:
-                                records.append({
-                                    "col1": cells[0].get_text(strip=True),
-                                    "col2": cells[1].get_text(strip=True),
-                                    "col3": cells[2].get_text(strip=True) if len(cells) > 2 else "",
-                                    "col4": datetime.utcnow().date().isoformat(),
-                                })
-                
-                # INS - Statistics
-                elif "ins-cameroun.cm" in source["url"]:
-                    divs = soup.find_all("div", class_="stat-item")
-                    for div in divs[:100]:
-                        label = div.find("h3")
-                        value = div.find("span", class_="value")
-                        if label and value:
-                            records.append({
-                                "col1": label.get_text(strip=True),
-                                "col2": value.get_text(strip=True),
-                                "col3": "INS",
-                                "col4": datetime.utcnow().date().isoformat(),
-                            })
-                
-                return records
-            
-    except Exception as e:
-        log.error(f"  failed to fetch {source['url']}: {e}")
-        return []
-    
+
+                        return records
+                    except Exception as e:
+                        log.warning(f"  JSON parse failed: {e}")
+                        return []
+
+                # HTML scraping with BeautifulSoup
+                elif source.get("parser") == "beautifulsoup":
+                    soup = BeautifulSoup(response.text, "html.parser")
+                    records = []
+
+                    # INS - Statistics & Demographics
+                    if "ins-cameroun.cm" in source["url"]:
+                        tables = soup.find_all("table")
+                        for table in tables[:5]:
+                            rows = table.find_all("tr")
+                            for row in rows[1:]:
+                                cells = row.find_all(["td", "th"])
+                                if len(cells) >= 2:
+                                    try:
+                                        label = cells[0].get_text(strip=True)
+                                        value = cells[1].get_text(strip=True)
+                                        if label and value:
+                                            records.append({
+                                                "col1": label,
+                                                "col2": value,
+                                                "col3": "INS",
+                                                "col4": (
+                                                    datetime.utcnow()
+                                                    .date()
+                                                    .isoformat()
+                                                ),
+                                            })
+                                    except Exception:
+                                        continue
+
+                    # MINADER - Agricultural prices
+                    elif "minader.cm" in source["url"]:
+                        tables = soup.find_all("table")
+                        for table in tables[:3]:
+                            rows = table.find_all("tr")
+                            for row in rows[1:]:
+                                cells = row.find_all(["td", "th"])
+                                if len(cells) >= 3:
+                                    try:
+                                        product = cells[0].get_text(
+                                            strip=True
+                                        )
+                                        price = (
+                                            cells[1]
+                                            .get_text(strip=True)
+                                            .replace("FCFA", "")
+                                            .replace(",", "")
+                                            .strip()
+                                        )
+                                        region = (
+                                            cells[2].get_text(strip=True)
+                                            if len(cells) > 2
+                                            else "National"
+                                        )
+                                        if product and price:
+                                            records.append({
+                                                "col1": product,
+                                                "col2": price,
+                                                "col3": region,
+                                                "col4": (
+                                                    datetime.utcnow()
+                                                    .date()
+                                                    .isoformat()
+                                                ),
+                                            })
+                                    except Exception:
+                                        continue
+
+                    # Météo Cameroun - Weather data
+                    elif "meteocameroon.gov.cm" in source["url"]:
+                        tables = soup.find_all("table")
+                        for table in tables[:2]:
+                            rows = table.find_all("tr")
+                            for row in rows[1:]:
+                                cells = row.find_all(["td", "th"])
+                                if len(cells) >= 3:
+                                    try:
+                                        station = cells[0].get_text(
+                                            strip=True
+                                        )
+                                        temp = cells[1].get_text(
+                                            strip=True
+                                        )
+                                        humidity = (
+                                            cells[2].get_text(strip=True)
+                                            if len(cells) > 2
+                                            else ""
+                                        )
+                                        if station and temp:
+                                            records.append({
+                                                "col1": station,
+                                                "col2": temp,
+                                                "col3": humidity,
+                                                "col4": (
+                                                    datetime.utcnow()
+                                                    .date()
+                                                    .isoformat()
+                                                ),
+                                            })
+                                    except Exception:
+                                        continue
+
+                    return records
+
+        except asyncio.TimeoutError:
+            log.warning(
+                f"  timeout on attempt {attempt + 1}/{max_retries}"
+            )
+            if attempt < max_retries - 1:
+                await asyncio.sleep(2 ** attempt)
+                continue
+            return []
+
+        except Exception as e:
+            log.warning(
+                f"  attempt {attempt + 1}/{max_retries} failed: {e}"
+            )
+            if attempt < max_retries - 1:
+                await asyncio.sleep(2 ** attempt)
+                continue
+            return []
+
     return []
 
 
@@ -355,18 +501,24 @@ async def write_to_supabase(session: AsyncSession, source: dict, records: list[d
     log.info(f"  ✓ wrote {len(records)} records | trust={trust['overall']:.1f} | dataset_id={dataset.id}")
 
 
-async def run_source(session: AsyncSession, source: dict):
+async def run_source(
+    session: AsyncSession,
+    source: dict,
+    rate_limiter: DomainRateLimiter
+):
     """Full pipeline for one source."""
     log.info(f"→ {source['name']}")
     started = datetime.utcnow()
 
     try:
-        raw = await scrape_source(source)
+        raw = await scrape_source(source, rate_limiter)
         mapped = map_records(raw, source)
         trust = compute_trust(mapped)
 
         if trust["overall"] < 50:
-            log.warning(f"  trust too low ({trust['overall']:.1f}), skipping write")
+            log.warning(
+                f"  trust too low ({trust['overall']:.1f}), skipping write"
+            )
             return
 
         await write_to_supabase(session, source, mapped, trust)
@@ -408,18 +560,28 @@ async def main():
 
     engine = create_async_engine(
         db_url,
-        connect_args={"ssl": ssl_ctx, "prepared_statement_cache_size": 0, "statement_cache_size": 0},
+        connect_args={
+            "ssl": ssl_ctx,
+            "prepared_statement_cache_size": 0,
+            "statement_cache_size": 0
+        },
         echo=False,
     )
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-    Session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+    Session = async_sessionmaker(
+        engine,
+        class_=AsyncSession,
+        expire_on_commit=False
+    )
+
+    rate_limiter = DomainRateLimiter()
 
     async with Session() as session:
         for source in SOURCES:
-            await run_source(session, source)
+            await run_source(session, source, rate_limiter)
 
     await engine.dispose()
     log.info("✓ collection complete")
