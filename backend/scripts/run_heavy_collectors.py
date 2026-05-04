@@ -26,12 +26,66 @@ from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
 )
-from sqlalchemy import select
+from sqlalchemy import select, Column, Integer, String, DateTime, Text, JSON, ForeignKey
+from sqlalchemy.orm import declarative_base
+from sqlalchemy.sql import func
+from datetime import datetime as dt
 
-from backend.app.models.dataset import Dataset
-from backend.app.models.data_audit import DataAudit
-from backend.app.models.data_source import CollectionLog
-from backend.app.core.database import Base
+
+# ---------------------------------------------------------------------------
+# Minimal models for direct Supabase writes
+# ---------------------------------------------------------------------------
+Base = declarative_base()
+
+
+class Dataset(Base):
+    __tablename__ = "datasets"
+    id = Column(Integer, primary_key=True)
+    name = Column(String(200), nullable=False)
+    description = Column(Text)
+    domain = Column(String(50))
+    source_type = Column(String(100))
+    row_count = Column(Integer, default=0)
+    column_count = Column(Integer, default=0)
+    columns_info = Column(JSON, default=[])
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+
+class DataAudit(Base):
+    __tablename__ = "data_audit"
+    id = Column(Integer, primary_key=True)
+    data_source_id = Column(Integer)
+    data_hash = Column(String(64))
+    record_count = Column(Integer)
+    trust_score = Column(Integer)
+    authenticity_score = Column(Integer)
+    consistency_score = Column(Integer)
+    freshness_score = Column(Integer)
+    source_reputation_score = Column(Integer)
+    ai_generated_count = Column(Integer, default=0)
+    ai_generated_percentage = Column(Integer, default=0)
+    cross_verified = Column(Integer, default=0)
+    verification_status = Column(String(50))
+    completeness = Column(Integer)
+    validity = Column(Integer)
+    uniqueness = Column(Integer)
+    anomalies_detected = Column(JSON, default={})
+    suspicious_records = Column(Integer, default=0)
+    extreme_values = Column(JSON, default={})
+    collected_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class CollectionLog(Base):
+    __tablename__ = "collection_logs"
+    id = Column(Integer, primary_key=True)
+    data_source_id = Column(Integer)
+    status = Column(String(50))
+    records_fetched = Column(Integer)
+    records_stored = Column(Integer)
+    error_message = Column(Text)
+    started_at = Column(DateTime(timezone=True))
+    completed_at = Column(DateTime(timezone=True))
 
 
 # ---------------------------------------------------------------------------
@@ -40,26 +94,26 @@ from backend.app.core.database import Base
 SOURCES = [
     {
         "id": 1,
-        "name": "Cameroon Food Prices - MINADER",
-        "category": "agriculture",
-        "url": "https://www.statistics-cameroon.org/",
-        "parser": "html_table",  # Parse HTML tables
+        "name": "World Bank - Cameroon Economic Data",
+        "category": "economy",
+        "url": "https://api.worldbank.org/v2/country/CMR/indicator/NY.GDP.MKTP.CD?format=json&per_page=100",
+        "parser": "json_api",
         "use_playwright": False,
     },
     {
         "id": 2,
-        "name": "Cameroon Fuel Prices - SONARA",
-        "category": "energy",
-        "url": "https://www.sonara.cm/",
-        "parser": "html_table",
+        "name": "World Bank - Cameroon Population",
+        "category": "demographics",
+        "url": "https://api.worldbank.org/v2/country/CMR/indicator/SP.POP.TOTL?format=json&per_page=100",
+        "parser": "json_api",
         "use_playwright": False,
     },
     {
         "id": 3,
-        "name": "Cameroon Transport Costs - MINTP",
-        "category": "transport",
-        "url": "https://www.mintp.cm/",
-        "parser": "html_table",
+        "name": "World Bank - Cameroon Agriculture",
+        "category": "agriculture",
+        "url": "https://api.worldbank.org/v2/country/CMR/indicator/NV.AGR.TOTL.CD?format=json&per_page=100",
+        "parser": "json_api",
         "use_playwright": False,
     },
 ]
@@ -70,39 +124,32 @@ SOURCES = [
 # ---------------------------------------------------------------------------
 
 async def scrape_source(source: dict) -> list[dict]:
-    """Scrape one source using httpx + BeautifulSoup. Returns list of raw records."""
+    """Scrape one source using httpx. Returns list of raw records."""
     import httpx
-    from bs4 import BeautifulSoup
 
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.get(source["url"], follow_redirects=True)
             response.raise_for_status()
-            html = response.text
+            data = response.json()
     except Exception as e:
         log.error(f"  failed to fetch {source['url']}: {e}")
         return []
 
-    soup = BeautifulSoup(html, "html.parser")
     records = []
 
-    # Parse tables from HTML
-    tables = soup.find_all("table")
-    if not tables:
-        log.warning(f"  no tables found in {source['name']}")
-        return []
-
-    for table in tables:
-        rows = table.find_all("tr")
-        for row in rows[1:]:  # Skip header
-            cells = row.find_all(["td", "th"])
-            if len(cells) >= 2:
-                records.append({
-                    "col1": cells[0].get_text(strip=True),
-                    "col2": cells[1].get_text(strip=True),
-                    "col3": cells[2].get_text(strip=True) if len(cells) > 2 else "",
-                    "col4": cells[3].get_text(strip=True) if len(cells) > 3 else "",
-                })
+    # Parse World Bank JSON API format
+    if source["parser"] == "json_api" and isinstance(data, list) and len(data) > 1:
+        indicators = data[1]  # Second element contains data
+        if indicators:
+            for item in indicators:
+                if item.get("value"):
+                    records.append({
+                        "col1": item.get("indicator", {}).get("value", ""),
+                        "col2": str(item.get("value", "")),
+                        "col3": item.get("date", ""),
+                        "col4": item.get("country", {}).get("value", ""),
+                    })
 
     log.info(f"  scraped {len(records)} raw records from {source['name']}")
     return records
