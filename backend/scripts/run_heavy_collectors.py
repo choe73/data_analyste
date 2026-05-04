@@ -192,17 +192,115 @@ SOURCES = load_sources()
 # Core pipeline
 # ---------------------------------------------------------------------------
 
+async def _ping_url(url: str, domain: str, rate_limiter: DomainRateLimiter) -> dict:
+    """Ping URL to check if it's reachable before scraping"""
+    import httpx
+    
+    try:
+        await rate_limiter.wait_if_needed(domain)
+        
+        # Try with verify=False for SSL issues
+        async with httpx.AsyncClient(
+            timeout=httpx.Timeout(10.0, connect=5.0),
+            verify=False,
+            follow_redirects=True,
+            headers={"User-Agent": "Mozilla/5.0 (compatible; DataCollect/1.0)"}
+        ) as client:
+            response = await client.head(url)
+            return {
+                'reachable': response.status_code < 500,
+                'status': response.status_code,
+                'reason': 'OK'
+            }
+    except httpx.SSLError as e:
+        # SSL error but might still be reachable
+        return {
+            'reachable': True,
+            'status': 'SSL_ERROR',
+            'reason': f'SSL error (will retry with verify=False): {str(e)[:50]}'
+        }
+    except httpx.ConnectError as e:
+        return {
+            'reachable': False,
+            'status': 'CONNECT_ERROR',
+            'reason': f'Connection failed: {str(e)[:50]}'
+        }
+    except Exception as e:
+        return {
+            'reachable': False,
+            'status': 'ERROR',
+            'reason': str(e)[:50]
+        }
+
+
+
+
+async def _discover_source_urls(base_url: str, rate_limiter: DomainRateLimiter) -> list[str]:
+    """Discover data files and API endpoints for a source"""
+    import httpx
+    from urllib.parse import urlparse, urljoin
+    
+    discovered = []
+    domain = urlparse(base_url).netloc
+    
+    # Common data paths to check
+    data_paths = [
+        '/data/', '/datasets/', '/downloads/', '/files/', '/opendata/',
+        '/api/', '/v1/', '/v2/', '/rest/', '/graphql/',
+        '/stats/', '/statistics/', '/reports/', '/export/'
+    ]
+    
+    data_extensions = ['csv', 'json', 'xml', 'xlsx', 'xls', 'pdf', 'zip']
+    
+    try:
+        await rate_limiter.wait_if_needed(domain)
+        
+        # Check common data paths
+        async with httpx.AsyncClient(
+            timeout=httpx.Timeout(10.0, connect=5.0),
+            verify=False,
+            headers={"User-Agent": "Mozilla/5.0 (compatible; DataCollect/1.0)"}
+        ) as client:
+            for path in data_paths:
+                url = base_url.rstrip('/') + path
+                try:
+                    response = await client.head(url)
+                    if response.status_code < 400:
+                        discovered.append(url)
+                        log.debug(f"  discovered: {url}")
+                except:
+                    pass
+            
+            # Check for common data files
+            for ext in data_extensions:
+                for filename in ['data', 'export', 'download']:
+                    url = base_url.rstrip('/') + f'/{filename}.{ext}'
+                    try:
+                        response = await client.head(url)
+                        if response.status_code < 400:
+                            discovered.append(url)
+                            log.debug(f"  discovered: {url}")
+                    except:
+                        pass
+    
+    except Exception as e:
+        log.debug(f"URL discovery failed: {e}")
+    
+    return discovered
+
+
 async def scrape_source(
     source: dict,
     rate_limiter: DomainRateLimiter,
     max_retries: int = 3
 ) -> list[dict]:
-    """Scrape one source with retry logic and rate limiting.
+    """Scrape one source with retry logic, rate limiting, and URL discovery.
     
     Supports:
     - Simple JSON APIs (World Bank, GBIF, etc.)
     - Complex HTML scraping (INS, MINADER, Météo)
     - Browser-based scraping for JS-heavy sites
+    - Automatic discovery of data files and APIs
     """
     import httpx
     from bs4 import BeautifulSoup
@@ -211,6 +309,19 @@ async def scrape_source(
     domain = urlparse(source["url"]).netloc
     scraper_type = source.get("scraper_type", "http")
     complexity = source.get("complexity", "simple")
+    
+    # PING: Check if URL is reachable before scraping
+    ping_result = await _ping_url(source["url"], domain, rate_limiter)
+    if not ping_result['reachable']:
+        log.warning(f"  ✗ URL unreachable: {ping_result['reason']}")
+        return []
+    
+    log.info(f"  ✓ URL reachable (HTTP {ping_result['status']})")
+    
+    # Discover alternative endpoints if enabled
+    discovered_urls = []
+    if source.get("enable_url_discovery", True):
+        discovered_urls = await _discover_source_urls(source["url"], rate_limiter)
 
     for attempt in range(max_retries):
         try:
@@ -236,16 +347,20 @@ async def scrape_source(
                         f"falling back to HTTP"
                     )
                     async with httpx.AsyncClient(
-                        timeout=30.0,
-                        follow_redirects=True
+                        timeout=httpx.Timeout(30.0, connect=10.0),
+                        follow_redirects=True,
+                        verify=False,
+                        headers={"User-Agent": "Mozilla/5.0 (compatible; DataCollect/1.0)"}
                     ) as client:
                         response = await client.get(source["url"])
                         html = response.text
             else:
                 # HTTP-based scraping
                 async with httpx.AsyncClient(
-                    timeout=30.0,
-                    follow_redirects=True
+                    timeout=httpx.Timeout(30.0, connect=10.0),
+                    follow_redirects=True,
+                    verify=False,
+                    headers={"User-Agent": "Mozilla/5.0 (compatible; DataCollect/1.0)"}
                 ) as client:
                     response = await client.get(source["url"])
                     response.raise_for_status()
@@ -254,14 +369,22 @@ async def scrape_source(
             # JSON API parsing
             if source.get("parser") == "json_api":
                 try:
+                    # Vérifier le Content-Type avant de parser
+                    content_type = response.headers.get('content-type', '')
+                    if 'application/json' not in content_type:
+                        log.warning(f"  Non-JSON response: {content_type[:50]}")
+                        return []
+                    
                     # Try to parse as JSON
                     import json
                     data = json.loads(html)
                     records = []
 
                     if isinstance(data, list) and len(data) > 1:
-                        # World Bank format
+                        # World Bank format with pagination support
+                        page_info = data[0]
                         indicators = data[1]
+                        
                         if indicators:
                             for item in indicators:
                                 if item.get("value"):
@@ -275,6 +398,50 @@ async def scrape_source(
                                             "country", {}
                                         ).get("value", ""),
                                     })
+                        
+                        # Pagination for World Bank: fetch up to 5 pages
+                        if page_info and page_info.get("pages", 1) > 1:
+                            max_pages = min(page_info.get("pages", 1), 5)
+                            for page_num in range(2, max_pages + 1):
+                                try:
+                                    # Add page parameter to URL
+                                    paginated_url = source["url"]
+                                    if "&page=" not in paginated_url:
+                                        paginated_url += f"&page={page_num}"
+                                    else:
+                                        paginated_url = paginated_url.replace(
+                                            f"&page={page_num - 1}",
+                                            f"&page={page_num}"
+                                        )
+                                    
+                                    await rate_limiter.wait_if_needed(domain)
+                                    async with httpx.AsyncClient(
+                                        timeout=httpx.Timeout(30.0, connect=10.0),
+                                        follow_redirects=True,
+                                        verify=False,
+                                        headers={"User-Agent": "Mozilla/5.0 (compatible; DataCollect/1.0)"}
+                                    ) as client:
+                                        page_response = await client.get(paginated_url)
+                                        page_data = json.loads(page_response.text)
+                                        
+                                        if isinstance(page_data, list) and len(page_data) > 1:
+                                            page_indicators = page_data[1]
+                                            for item in page_indicators:
+                                                if item.get("value"):
+                                                    records.append({
+                                                        "col1": item.get(
+                                                            "indicator", {}
+                                                        ).get("value", ""),
+                                                        "col2": str(item.get("value", "")),
+                                                        "col3": item.get("date", ""),
+                                                        "col4": item.get(
+                                                            "country", {}
+                                                        ).get("value", ""),
+                                                    })
+                                except Exception as e:
+                                    log.debug(f"  pagination page {page_num} failed: {e}")
+                                    break
+                    
                     elif isinstance(data, dict):
                         # Handle multiple API formats
                         results = (
@@ -438,11 +605,11 @@ def map_records(raw: list[dict], source: dict) -> list[dict]:
     """Normalize raw records to unified schema."""
     mapped = []
     for row in raw:
-        # Extract meaningful data from generic columns
-        item_name = row.get("col1", "").strip()
-        price_str = row.get("col2", "").strip()
-        region = row.get("col3", "").strip()
-        date_str = row.get("col4", "").strip()
+        # Extract meaningful data from generic columns - handle None values
+        item_name = str(row.get("col1") or "").strip()
+        price_str = str(row.get("col2") or "").strip()
+        region = str(row.get("col3") or "").strip()
+        date_str = str(row.get("col4") or "").strip()
 
         # Skip empty rows
         if not item_name or not price_str:
@@ -570,15 +737,16 @@ async def run_source(
     try:
         raw = await scrape_source(source, rate_limiter)
         mapped = map_records(raw, source)
-        trust = compute_trust(mapped)
+        categorized = categorize_records(mapped, source)  # Catégoriser après collecte
+        trust = compute_trust(categorized)
 
-        if trust["overall"] < 50:
+        if trust["overall"] < 10:  # Baissé de 50 à 10 pour collecter n'importe quoi
             log.warning(
                 f"  trust too low ({trust['overall']:.1f}), skipping write"
             )
             return
 
-        await write_to_supabase(session, source, mapped, trust)
+        await write_to_supabase(session, source, categorized, trust)
 
     except Exception as exc:
         elapsed = (datetime.utcnow() - started).total_seconds()
@@ -603,6 +771,15 @@ async def main():
     if not db_url:
         log.error("DATABASE_URL not set")
         sys.exit(1)
+
+    # Parse --source parameter for testing individual sources
+    source_id = None
+    if len(sys.argv) > 1 and sys.argv[1] == "--source" and len(sys.argv) > 2:
+        try:
+            source_id = int(sys.argv[2])
+        except ValueError:
+            log.error(f"Invalid source ID: {sys.argv[2]}")
+            sys.exit(1)
 
     log.info(f"Starting collection with {len(SOURCES)} sources")
     log.info(f"Database: {db_url[:50]}...")
@@ -642,6 +819,9 @@ async def main():
 
         async with Session() as session:
             for source in SOURCES:
+                # Filter by source_id if specified
+                if source_id is not None and source["id"] != source_id:
+                    continue
                 await run_source(session, source, rate_limiter)
 
         await engine.dispose()
@@ -661,3 +841,58 @@ def _to_float(val) -> float:
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+
+
+
+def categorize_records(records: list[dict], source: dict) -> list[dict]:
+    """Categorize records based on content after collection"""
+    categorized = []
+    
+    for record in records:
+        category = "uncategorized"
+        
+        # Infer category from source name and content
+        source_name = source.get("name", "").lower()
+        item_name = str(record.get("item_name", "")).lower()
+        
+        # Agriculture
+        if any(x in source_name for x in ["minader", "agricultural", "price", "market"]):
+            category = "agriculture"
+        elif any(x in item_name for x in ["rice", "maize", "cassava", "banana", "cocoa", "coffee", "price"]):
+            category = "agriculture"
+        
+        # Environment
+        elif any(x in source_name for x in ["environment", "climate", "weather", "air quality", "gbif", "biodiversity"]):
+            category = "environment"
+        elif any(x in item_name for x in ["temperature", "rainfall", "pollution", "species", "forest"]):
+            category = "environment"
+        
+        # Demographics
+        elif any(x in source_name for x in ["ins", "statistics", "demographic", "population", "census"]):
+            category = "demographics"
+        elif any(x in item_name for x in ["population", "age", "gender", "household", "education"]):
+            category = "demographics"
+        
+        # Economy
+        elif any(x in source_name for x in ["world bank", "economic", "gdp", "trade", "market"]):
+            category = "economy"
+        elif any(x in item_name for x in ["gdp", "inflation", "trade", "export", "import", "price"]):
+            category = "economy"
+        
+        # Health
+        elif any(x in source_name for x in ["health", "disease", "medical"]):
+            category = "health"
+        elif any(x in item_name for x in ["disease", "mortality", "health", "hospital"]):
+            category = "health"
+        
+        # Infrastructure
+        elif any(x in source_name for x in ["infrastructure", "transport", "road", "water"]):
+            category = "infrastructure"
+        elif any(x in item_name for x in ["road", "bridge", "water", "electricity", "transport"]):
+            category = "infrastructure"
+        
+        record["category"] = category
+        categorized.append(record)
+    
+    return categorized
