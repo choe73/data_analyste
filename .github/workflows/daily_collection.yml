@@ -25,13 +25,12 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r backend/requirements-prod-2026.txt
+          playwright install chromium
 
       - name: Run heavy collectors
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: |
-          cd datacollect-pro-cameroun
-          python backend/scripts/run_heavy_collectors.py
+        run: python backend/scripts/run_heavy_collectors.py
 
       - name: Log collection status
         if: always()

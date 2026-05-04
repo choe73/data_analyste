@@ -604,6 +604,9 @@ async def main():
         log.error("DATABASE_URL not set")
         sys.exit(1)
 
+    log.info(f"Starting collection with {len(SOURCES)} sources")
+    log.info(f"Database: {db_url[:50]}...")
+
     # Ensure asyncpg driver
     if db_url.startswith("postgres://"):
         db_url = db_url.replace("postgres://", "postgresql+asyncpg://", 1)
@@ -615,33 +618,38 @@ async def main():
     ssl_ctx.check_hostname = False
     ssl_ctx.verify_mode = ssl.CERT_NONE
 
-    engine = create_async_engine(
-        db_url,
-        connect_args={
-            "ssl": ssl_ctx,
-            "prepared_statement_cache_size": 0,
-            "statement_cache_size": 0
-        },
-        echo=False,
-    )
+    try:
+        engine = create_async_engine(
+            db_url,
+            connect_args={
+                "ssl": ssl_ctx,
+                "prepared_statement_cache_size": 0,
+                "statement_cache_size": 0
+            },
+            echo=False,
+        )
 
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
 
-    Session = async_sessionmaker(
-        engine,
-        class_=AsyncSession,
-        expire_on_commit=False
-    )
+        Session = async_sessionmaker(
+            engine,
+            class_=AsyncSession,
+            expire_on_commit=False
+        )
 
-    rate_limiter = DomainRateLimiter()
+        rate_limiter = DomainRateLimiter()
 
-    async with Session() as session:
-        for source in SOURCES:
-            await run_source(session, source, rate_limiter)
+        async with Session() as session:
+            for source in SOURCES:
+                await run_source(session, source, rate_limiter)
 
-    await engine.dispose()
-    log.info("✓ collection complete")
+        await engine.dispose()
+        log.info("✓ collection complete")
+
+    except Exception as e:
+        log.error(f"Collection failed: {e}", exc_info=True)
+        sys.exit(1)
 
 
 def _to_float(val) -> float:
