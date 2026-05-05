@@ -20,8 +20,12 @@ from urllib.parse import urljoin, urlparse
 
 try:
     from playwright.async_api import async_playwright, Browser, Page
+    HAS_PLAYWRIGHT = True
 except ImportError:
-    raise ImportError("playwright not installed. Run: pip install playwright")
+    HAS_PLAYWRIGHT = False
+    async_playwright = None
+    Browser = None
+    Page = None
 
 from bs4 import BeautifulSoup
 import httpx
