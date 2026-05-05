@@ -36,7 +36,7 @@ class DataSource(Base):
     __tablename__ = "data_sources"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     
     # Identité de la source
     name = Column(String(255), unique=True, index=True, nullable=False)
