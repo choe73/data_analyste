@@ -33,6 +33,8 @@ router = APIRouter()
 @router.post("/register", response_model=UserSchema, status_code=status.HTTP_201_CREATED)
 async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)) -> Any:
     """Register a new user."""
+    import logging
+    logger = logging.getLogger(__name__)
     try:
         # Check if user exists
         query = select(UserModel).where(UserModel.email == user_data.email)
@@ -67,6 +69,7 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)) ->
         raise
     except Exception as e:
         await db.rollback()
+        logger.error(f"Registration failed: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Registration failed: {str(e)}")
 
 

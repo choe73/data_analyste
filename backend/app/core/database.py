@@ -67,6 +67,8 @@ async def get_db():
 
 async def init_db():
     """Create all tables. Called at startup (non-blocking)."""
+    import logging
+    logger = logging.getLogger(__name__)
     try:
         async with async_engine.begin() as conn:
             # Import models to register them with Base.metadata
@@ -75,8 +77,8 @@ async def init_db():
                 analysis_results, celery_jobs, user, form, plan as plan_module,
             )
             await conn.run_sync(Base.metadata.create_all)
+            logger.info("✅ Database tables created/verified successfully")
     except Exception as e:
-        # Log but don't fail - database might not be ready yet
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.warning(f"Failed to initialize database: {e}")
+        # Log the error with full traceback
+        logger.error(f"❌ Failed to initialize database: {e}", exc_info=True)
+        # Don't re-raise - app should start anyway, but log it clearly
