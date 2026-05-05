@@ -447,16 +447,58 @@ async def scrape_source(
                     elif isinstance(data, dict):
                         # Handle multiple API formats
                         
-                        # OCHA HDX format: result.results[]
+                        # OCHA HDX format: result.results[] with pagination
                         if "result" in data and isinstance(data["result"], dict):
                             results = data["result"].get("results", [])
-                            for item in results[:500]:
+                            for item in results:
                                 records.append({
                                     "col1": item.get("title", item.get("name", "")),
                                     "col2": item.get("notes", item.get("description", "")),
                                     "col3": item.get("metadata_created", item.get("created", "")),
                                     "col4": item.get("id", ""),
                                 })
+                            
+                            # Pagination for OCHA HDX: fetch up to 20 pages
+                            result_info = data.get("result", {})
+                            total = result_info.get("count", 0)
+                            if total > len(results):
+                                max_pages = min(20, (total // 20) + 1)
+                                for page_num in range(2, max_pages + 1):
+                                    try:
+                                        paginated_url = source["url"]
+                                        if "offset=" not in paginated_url:
+                                            offset = (page_num - 1) * 20
+                                            paginated_url += f"&offset={offset}"
+                                        else:
+                                            old_offset = (page_num - 2) * 20
+                                            new_offset = (page_num - 1) * 20
+                                            paginated_url = paginated_url.replace(
+                                                f"offset={old_offset}",
+                                                f"offset={new_offset}"
+                                            )
+                                        
+                                        await rate_limiter.wait_if_needed(domain)
+                                        async with httpx.AsyncClient(
+                                            timeout=httpx.Timeout(30.0, connect=10.0),
+                                            follow_redirects=True,
+                                            verify=False,
+                                            headers={"User-Agent": "Mozilla/5.0 (compatible; DataCollect/1.0)"}
+                                        ) as client:
+                                            page_response = await client.get(paginated_url)
+                                            page_data = json.loads(page_response.text)
+                                            
+                                            if "result" in page_data and isinstance(page_data["result"], dict):
+                                                page_results = page_data["result"].get("results", [])
+                                                for item in page_results:
+                                                    records.append({
+                                                        "col1": item.get("title", item.get("name", "")),
+                                                        "col2": item.get("notes", item.get("description", "")),
+                                                        "col3": item.get("metadata_created", item.get("created", "")),
+                                                        "col4": item.get("id", ""),
+                                                    })
+                                    except Exception as e:
+                                        log.debug(f"  pagination page {page_num} failed: {e}")
+                                        break
                         # iNaturalist format: results[] with pagination
                         elif "results" in data and isinstance(data["results"], list):
                             results = data["results"]
@@ -500,6 +542,56 @@ async def scrape_source(
                                                         "col2": item.get("description", ""),
                                                         "col3": item.get("observed_on", item.get("created_at", "")),
                                                         "col4": item.get("id", ""),
+                                                    })
+                                    except Exception as e:
+                                        log.debug(f"  pagination page {page_num} failed: {e}")
+                                        break
+                        # GBIF format: results[] with pagination
+                        elif "results" in data and isinstance(data["results"], list) and "count" in data:
+                            results = data["results"]
+                            for item in results:
+                                records.append({
+                                    "col1": item.get("scientificName", item.get("species", "")),
+                                    "col2": item.get("locality", item.get("country", "")),
+                                    "col3": item.get("eventDate", item.get("dateIdentified", "")),
+                                    "col4": item.get("key", item.get("id", "")),
+                                })
+                            
+                            # Pagination for GBIF: fetch up to 50 pages (5000 records)
+                            total = data.get("count", 0)
+                            if total > len(results):
+                                max_pages = min(50, (total // 100) + 1)
+                                for page_num in range(2, max_pages + 1):
+                                    try:
+                                        paginated_url = source["url"]
+                                        if "offset=" not in paginated_url:
+                                            offset = (page_num - 1) * 100
+                                            paginated_url += f"&offset={offset}"
+                                        else:
+                                            old_offset = (page_num - 2) * 100
+                                            new_offset = (page_num - 1) * 100
+                                            paginated_url = paginated_url.replace(
+                                                f"offset={old_offset}",
+                                                f"offset={new_offset}"
+                                            )
+                                        
+                                        await rate_limiter.wait_if_needed(domain)
+                                        async with httpx.AsyncClient(
+                                            timeout=httpx.Timeout(30.0, connect=10.0),
+                                            follow_redirects=True,
+                                            verify=False,
+                                            headers={"User-Agent": "Mozilla/5.0 (compatible; DataCollect/1.0)"}
+                                        ) as client:
+                                            page_response = await client.get(paginated_url)
+                                            page_data = json.loads(page_response.text)
+                                            
+                                            if "results" in page_data and isinstance(page_data["results"], list):
+                                                for item in page_data["results"]:
+                                                    records.append({
+                                                        "col1": item.get("scientificName", item.get("species", "")),
+                                                        "col2": item.get("locality", item.get("country", "")),
+                                                        "col3": item.get("eventDate", item.get("dateIdentified", "")),
+                                                        "col4": item.get("key", item.get("id", "")),
                                                     })
                                     except Exception as e:
                                         log.debug(f"  pagination page {page_num} failed: {e}")
