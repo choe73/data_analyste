@@ -9,247 +9,325 @@
 | **Flux de Prix E-commerce** | Exportateurs, commerçants, investisseurs | 500 – 2 000 € | Suivi prix Jumia, Amazon, marchés locaux |
 | **Scoring de Crédit Mobile Money** | Microfinance, banques | 1 000 – 5 000 € | Évaluation risque basée données télécom |
 | **Données de Mobilité Anonymisées** | Mairies, ministères, ONG | 2 000 – 10 000 € | Planification urbaine, transport |
-| **Registre Entreprises Enrichi** | Cabinets conseil, assureurs | 500 – 1 500 € | Due diligence, scoring crédit |
+| **Registre Entreprises Enrichi** | Cabinets conseil, assureurs | 500 – 1 500 € | Due diligence, scoring B2B |
 | **Données Foncières** | Promoteurs immobiliers, notaires | 500 – 2 000 € | Valorisation terrains, transactions |
 
 ### Objectif Commercial
 - **10 clients à 1 000 €/mois = 120 k€/an**
 - Croissance: +2 clients/trimestre
+- Rétention: 90% (churn < 10%)
 
 ---
 
-## 2. Sources de Données à Développer
+## 2. Sources de Données Prioritaires
 
-### Données Difficiles d'Accès (Haute Valeur)
+### Données Difficiles d'Accès (Valeur Ajoutée)
 
-#### A. Mobile Money & Télécoms
-- **Source**: Pngme (partenariat données anonymisées)
-- **Valeur**: Scoring crédit, analyse comportement
-- **Fréquence**: Quotidienne/hebdomadaire
-- **Clients**: Microfinance, banques, assureurs
-
-#### B. E-commerce Cameroun
-- **Source**: Jumia Cameroon (scraping)
-- **Données**: Prix, catégories, vendeurs, volumes
-- **Valeur**: Intelligence marché, pricing
+#### A. E-commerce Cameroun
+- **Jumia.cm**: Prix produits, catégories, vendeurs
+- **Amazon.com (Cameroon)**: Tarifs internationaux
+- **Marchés locaux**: Scraping sites marchands locaux
 - **Fréquence**: Quotidienne
-- **Clients**: Exportateurs, commerçants
+- **Volume**: 10 000 - 50 000 prix/jour
+
+#### B. Mobile Money & Télécom
+- **Pngme**: Données anonymisées Mobile Money (partenariat)
+- **Orange Money, MTN Mobile Money**: Volumes transactions
+- **Fréquence**: Hebdomadaire
+- **Volume**: Agrégats régionaux
 
 #### C. Registres Officiels
 - **APICAM** (apicam.cm): Registre commerce
   - Entreprises, secteurs, capital social
-  - Mise à jour: mensuelle
-- **Direction des Impôts**: Données fiscales
+  - Fréquence: Mensuelle
+  - Volume: 50 000 - 100 000 entreprises
+
+- **Direction des Impôts**: Données fiscales (si accès)
+  - Chiffre d'affaires, secteurs
+  - Fréquence: Trimestrielle
+
 - **MINDCAF**: Données douanières
+  - Importations, exportations
+  - Fréquence: Mensuelle
 
 #### D. Données Foncières
-- **Source**: Journal Officiel (JO) - PDFs
-- **Données**: Annonces foncières, transactions
-- **Valeur**: Valorisation terrains, tendances marché
-- **Fréquence**: Hebdomadaire
+- **Journal Officiel (JO)**: Annonces foncières, mutations
+  - Scraping PDFs JO
+  - Fréquence: Hebdomadaire
+  - Volume: 500 - 2 000 annonces/semaine
 
-#### E. Données de Mobilité
-- **Source**: Opérateurs télécom (partenariat)
-- **Données**: Flux anonymisés, patterns urbains
-- **Valeur**: Planification, transport, urbanisme
-- **Clients**: Mairies, ministères, ONG
+- **Notaires**: Actes de vente (si partenariat)
+  - Localisation, prix, surface
+  - Fréquence: Mensuelle
 
 ---
 
-## 3. Implémentation Technique
+## 3. Architecture de Scraping
 
-### Phase 1: Scrapers pour Sources Publiques (Semaines 1-4)
+### Principes
+- **Anonymisation**: Pas d'identification personnelle
+- **Légalité**: Respect robots.txt, conditions d'utilisation
+- **Robustesse**: Retry logic, rate limiting, proxy rotation
+- **Scalabilité**: Async/await, batch processing
 
-#### 1.1 Registre de Commerce (APICAM)
-```
-Endpoint: apicam.cm/search
-Données à extraire:
-- Numéro RCCM
-- Raison sociale
-- Secteur d'activité
-- Capital social
-- Adresse
-- Dirigeants
-Fréquence: Mensuelle
-Volume estimé: 50 000 - 100 000 entreprises
-```
+### Scrapers à Implémenter
 
-#### 1.2 Journal Officiel (Annonces Foncières)
+#### 1. Jumia.cm Scraper
 ```
-Source: PDFs du JO
-Données à extraire:
-- Localisation (région, ville, quartier)
-- Surface
-- Type (terrain, immeuble, etc.)
-- Prix/valeur
-- Propriétaire
-Fréquence: Hebdomadaire
-Volume estimé: 500 - 1 000 annonces/mois
+Endpoint: https://www.jumia.cm/
+Données: product_name, price, category, seller, rating, stock
+Fréquence: Quotidienne (2h du matin)
+Timeout: 300s
+Rate limit: 1 req/sec par domaine
 ```
 
-#### 1.3 Jumia Cameroon
+#### 2. APICAM Registre Commerce
 ```
-Endpoint: jumia.cm (scraping)
-Données à extraire:
-- Catégorie produit
-- Prix
-- Vendeur
-- Nombre avis
-- Stock
+Endpoint: https://apicam.cm/
+Données: company_name, sector, capital, registration_date, status
+Fréquence: Mensuelle (1er du mois)
+Timeout: 120s
+Anonymisation: Pas de noms de dirigeants
+```
+
+#### 3. Journal Officiel Scraper
+```
+Endpoint: https://www.jo.cm/ (PDFs)
+Données: announcement_type, location, price, date
+Fréquence: Hebdomadaire (lundi)
+Timeout: 600s (PDFs lents)
+Extraction: OCR si nécessaire
+```
+
+#### 4. E-commerce Agrégateur
+```
+Sources: Jumia, Amazon, sites locaux
+Données: product, price, seller, category, timestamp
 Fréquence: Quotidienne
-Volume estimé: 10 000 - 50 000 produits
+Déduplication: Hash sur (product, seller, price)
 ```
 
-### Phase 2: Intégrations Partenaires (Semaines 5-8)
+---
 
-#### 2.1 Pngme (Mobile Money)
-- Négocier accès API données anonymisées
-- Intégrer flux quotidien
-- Développer scoring crédit
+## 4. Implémentation Technique
 
-#### 2.2 Opérateurs Télécom
-- Partenariat données mobilité
-- Anonymisation garantie
-- Agrégation par zone géographique
+### Intégration au Pipeline Existant
 
-### Phase 3: Enrichissement & Géolocalisation (Semaines 9-12)
+**Fichier**: `backend/scripts/run_heavy_collectors.py`
 
-- Ajouter coordonnées GPS aux adresses
-- Enrichir avec données démographiques
-- Créer indices de risque/opportunité
-- Développer dashboards clients
+Ajouter sources commerciales:
+```python
+COMMERCIAL_SOURCES = [
+    {
+        "id": 200,
+        "name": "Jumia.cm - E-commerce Prices",
+        "url": "https://www.jumia.cm/",
+        "parser": "beautifulsoup",
+        "scraper_type": "browser",
+        "complexity": "high",
+        "category": "ecommerce",
+        "frequency": "daily",
+        "anonymize": True,
+    },
+    {
+        "id": 201,
+        "name": "APICAM - Business Registry",
+        "url": "https://apicam.cm/",
+        "parser": "beautifulsoup",
+        "scraper_type": "http",
+        "complexity": "medium",
+        "category": "business_registry",
+        "frequency": "monthly",
+        "anonymize": True,
+    },
+    {
+        "id": 202,
+        "name": "Journal Officiel - Land Announcements",
+        "url": "https://www.jo.cm/",
+        "parser": "pdf_ocr",
+        "scraper_type": "browser",
+        "complexity": "high",
+        "category": "land_data",
+        "frequency": "weekly",
+        "anonymize": True,
+    },
+]
+```
+
+### Nouvelles Fonctions
+
+#### 1. Anonymization Layer
+```python
+def anonymize_record(record: dict, source_id: int) -> dict:
+    """Remove PII, keep only aggregated/categorical data"""
+    if source_id == 200:  # Jumia
+        return {
+            "product": record.get("product_name"),
+            "category": record.get("category"),
+            "price": record.get("price"),
+            "rating": record.get("rating"),
+            "timestamp": datetime.utcnow().isoformat(),
+        }
+    elif source_id == 201:  # APICAM
+        return {
+            "sector": record.get("sector"),
+            "capital": record.get("capital"),
+            "status": record.get("status"),
+            "registration_date": record.get("registration_date"),
+        }
+    return record
+```
+
+#### 2. PDF OCR Handler
+```python
+async def extract_pdf_text(pdf_url: str) -> str:
+    """Download and OCR PDF from Journal Officiel"""
+    import pytesseract
+    from pdf2image import convert_from_bytes
+    
+    async with httpx.AsyncClient() as client:
+        response = await client.get(pdf_url)
+        images = convert_from_bytes(response.content)
+        text = "\n".join(pytesseract.image_to_string(img) for img in images)
+    return text
+```
+
+#### 3. Deduplication
+```python
+def deduplicate_records(records: list[dict], source_id: int) -> list[dict]:
+    """Remove duplicates based on source-specific keys"""
+    seen = set()
+    unique = []
+    
+    for record in records:
+        if source_id == 200:  # Jumia
+            key = (record.get("product"), record.get("seller"), record.get("price"))
+        elif source_id == 201:  # APICAM
+            key = record.get("company_name")
+        else:
+            key = record.get("id")
+        
+        key_hash = hashlib.md5(str(key).encode()).hexdigest()
+        if key_hash not in seen:
+            seen.add(key_hash)
+            unique.append(record)
+    
+    return unique
+```
 
 ---
 
-## 4. Abandon des Sources Open Data
+## 5. Calendrier de Déploiement
 
-### ❌ À Retirer du Pipeline
-- **World Bank**: Données annuelles, pas de valeur d'abonnement
-- **GBIF**: Biodiversité, pas de cas d'usage commercial
-- **iNaturalist**: Observations scientifiques, pas de marché
-- **OCHA HDX**: Données humanitaires, clients limités
+### Phase 1: Fondation (Semaine 1-2)
+- ✅ Vérifier légalité scraping (robots.txt, ToS)
+- ✅ Implémenter anonymization layer
+- ✅ Ajouter PDF OCR support
+- ✅ Tester sur APICAM (source simple)
 
-### ✅ À Conserver (Infrastructure)
-- Garder le système technique (collecte, normalisation, API)
-- Utiliser comme base pour nouvelles sources
-- Réutiliser parseurs et pipelines
+### Phase 2: E-commerce (Semaine 3-4)
+- ✅ Implémenter Jumia scraper
+- ✅ Ajouter browser automation (Playwright)
+- ✅ Tester déduplication
+- ✅ Déployer collecte quotidienne
 
----
+### Phase 3: Données Foncières (Semaine 5-6)
+- ✅ Implémenter Journal Officiel scraper
+- ✅ Intégrer OCR pour PDFs
+- ✅ Parser annonces foncières
+- ✅ Déployer collecte hebdomadaire
 
-## 5. Roadmap Commerciale
-
-### Trimestre 1 (Maintenant - Juin)
-- [ ] Développer scrapers APICAM + JO + Jumia
-- [ ] Tester volume et qualité données
-- [ ] Approcher 3 clients pilotes
-- [ ] Négocier partenariat Pngme
-
-### Trimestre 2 (Juillet - Septembre)
-- [ ] Lancer 3 clients pilotes
-- [ ] Intégrer données Mobile Money
-- [ ] Développer scoring crédit MVP
-- [ ] Approcher 5 nouveaux clients
-
-### Trimestre 3 (Octobre - Décembre)
-- [ ] 10 clients actifs
-- [ ] Intégrer données mobilité
-- [ ] Lancer dashboards clients
-- [ ] Atteindre 120 k€/an
+### Phase 4: Enrichissement (Semaine 7-8)
+- ✅ Ajouter géolocalisation
+- ✅ Implémenter scoring crédit (Mobile Money)
+- ✅ Créer API commerciale
+- ✅ Tester avec premiers clients
 
 ---
 
-## 6. Clients Prioritaires
+## 6. Métriques de Succès
 
-### Tier 1 (Haute Probabilité)
-1. **Microfinance Cameroun** (scoring crédit)
-2. **Jumia Cameroon** (intelligence marché)
-3. **Notaires Cameroun** (données foncières)
+### Techniques
+- **Volume**: 50 000+ records/jour (e-commerce + registres)
+- **Qualité**: Trust score > 90%
+- **Latence**: < 5 min entre scrape et API
+- **Disponibilité**: 99.5% uptime
 
-### Tier 2 (Moyen Terme)
-4. **Banques Cameroun** (scoring crédit)
-5. **Mairie Yaoundé** (mobilité urbaine)
-6. **Cabinets conseil** (due diligence)
-
-### Tier 3 (Long Terme)
-7-10. Assureurs, promoteurs immobiliers, ONG, ministères
-
----
-
-## 7. Différenciation vs Concurrence
-
-| Aspect | Nous | Concurrence |
-|--------|------|------------|
-| **Données** | Locales, difficiles d'accès | Open data publique |
-| **Fréquence** | Quotidienne/hebdomadaire | Annuelle/statique |
-| **Granularité** | Infra-nationale (quartier, secteur) | Nationale |
-| **Valeur Ajoutée** | Scoring, enrichissement, géolocalisation | Agrégation simple |
-| **Clients** | Cameroun + Afrique | Global (pas local) |
+### Commerciales
+- **Clients**: 3 clients signés (mois 1), 10 clients (mois 6)
+- **ARR**: 10 k€ (mois 1), 120 k€ (mois 12)
+- **Rétention**: > 90%
+- **NPS**: > 50
 
 ---
 
-## 8. Métriques de Succès
+## 7. Risques et Mitigations
 
-### Mois 1-3
-- [ ] 3 sources publiques scrapées (APICAM, JO, Jumia)
-- [ ] 100 000+ records collectés
-- [ ] 3 clients pilotes signés
-
-### Mois 4-6
-- [ ] Intégration Pngme
-- [ ] 10 clients actifs
-- [ ] 50 k€ MRR
-
-### Mois 7-12
-- [ ] 20 clients actifs
-- [ ] 100 k€ MRR
-- [ ] Expansion Afrique (Côte d'Ivoire, Sénégal)
+| Risque | Mitigation |
+|--------|-----------|
+| Blocage IP par sites | Proxy rotation, rate limiting, user-agent rotation |
+| Données obsolètes | Collecte quotidienne, versioning, timestamps |
+| Données incorrectes | Validation schema, anomaly detection, manual review |
+| Conformité légale | Anonymisation stricte, audit légal, ToS compliance |
+| Concurrence | Fréquence (quotidienne vs mensuelle), enrichissement, API |
 
 ---
 
-## 9. Prochaines Actions Immédiates
+## 8. Prochaines Actions
 
-### Cette Semaine
-1. Analyser structure APICAM (apicam.cm)
-2. Identifier PDFs Journal Officiel
-3. Tester scraping Jumia Cameroon
-4. Contacter Pngme pour partenariat
+### Immédiat (Cette Semaine)
+1. Audit légal: vérifier légalité scraping APICAM, Jumia, JO
+2. Implémenter anonymization layer dans `run_heavy_collectors.py`
+3. Tester APICAM scraper (source simple)
 
-### Semaine Prochaine
-1. Développer scrapers APICAM + JO
-2. Intégrer dans pipeline collecte
-3. Tester volume et qualité
-4. Approcher 3 clients pilotes
+### Court Terme (2-4 Semaines)
+1. Déployer Jumia scraper avec Playwright
+2. Ajouter PDF OCR pour Journal Officiel
+3. Implémenter déduplication
+4. Tester collecte quotidienne
 
-### Avant Fin Juin
-1. Lancer 3 clients pilotes
-2. Atteindre 100 000 records
-3. Signer partenariat Pngme
-4. Approcher 5 nouveaux clients
-
----
-
-## 10. Budget & Ressources
-
-### Développement (Semaines 1-12)
-- Scrapers: 40h (1 dev)
-- Intégrations: 30h (1 dev)
-- Enrichissement: 20h (1 data engineer)
-- **Total**: 90h = ~15 k€
-
-### Partenariats
-- Pngme: Négociation en cours
-- Opérateurs télécom: À initier
-- APICAM: Accès public (gratuit)
-
-### Go-to-Market
-- Sales: 1 personne (part-time)
-- Marketing: Content + LinkedIn
-- Support: Intégré dans dev
+### Moyen Terme (1-3 Mois)
+1. Approcher premiers clients (microfinance, exportateurs)
+2. Créer API commerciale
+3. Implémenter scoring crédit Mobile Money
+4. Signer premiers contrats
 
 ---
 
-## Conclusion
+## 9. Ressources Requises
 
-La rentabilité viendra de **données difficiles d'accès** (Mobile Money, e-commerce, registres officiels), pas de données open data. Le système technique est prêt; il faut maintenant le rediriger vers des sources à haute valeur commerciale.
+### Dépendances Python
+```
+pytesseract==0.3.10
+pdf2image==1.16.3
+playwright==1.40.0
+httpx==0.25.0
+beautifulsoup4==4.12.0
+```
 
-**Objectif**: 10 clients à 1 000 €/mois = 120 k€/an en 12 mois.
+### Infrastructure
+- Proxy service (pour rotation IP)
+- OCR service (Tesseract ou cloud)
+- Cache Redis (déduplication)
+- PostgreSQL (données commerciales)
+
+### Équipe
+- 1 dev scraping (2-3 mois)
+- 1 data analyst (validation)
+- 1 legal/compliance (audit)
+
+---
+
+## 10. Conclusion
+
+**Stratégie**: Passer de données open data (sans valeur) à données difficiles d'accès (valeur commerciale).
+
+**Différenciation**: 
+- Fréquence (quotidienne vs mensuelle)
+- Anonymisation (conformité)
+- Enrichissement (géolocalisation, scoring)
+- API (accès facile)
+
+**Objectif**: 120 k€/an avec 10 clients à 1 000 €/mois en 12 mois.
+
+**Clé du succès**: Données que les clients ne peuvent pas obtenir facilement ailleurs.

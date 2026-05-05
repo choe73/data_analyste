@@ -6,8 +6,8 @@ from typing import Dict, List, Any, Optional
 from datetime import datetime
 from sqlalchemy.orm import Session
 
-from backend.app.models.data_source import DataSource
-from backend.app.models.data_audit import DataAudit, SourceReputation
+from app.models.data_source import DataSource
+from app.models.data_audit import DataAudit, SourceReputation
 
 
 class TrustVerifier:

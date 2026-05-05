@@ -415,3 +415,113 @@ class EndpointHealer:
                 await asyncio.sleep(2 ** attempt)
 
         return None
+
+
+class URLDiscoveryEngine:
+    """Discover hidden files, APIs, and data endpoints for each source"""
+    
+    DATA_EXTENSIONS = ['csv', 'json', 'xml', 'xlsx', 'xls', 'pdf', 'zip', 'sql']
+    DATA_PATHS = [
+        '/data/', '/datasets/', '/downloads/', '/files/', '/opendata/',
+        '/api/', '/v1/', '/v2/', '/rest/', '/graphql/',
+        '/stats/', '/statistics/', '/reports/', '/export/',
+        '/public/', '/assets/', '/media/'
+    ]
+    
+    def __init__(self, scraper: WebScraperAdvanced):
+        self.scraper = scraper
+        self.discovered_urls = set()
+    
+    async def discover_data_endpoints(self, base_url: str) -> Dict[str, List[str]]:
+        """Discover data files and API endpoints for a source"""
+        results = {
+            'files': [],
+            'apis': [],
+            'forms': [],
+            'xhr_endpoints': []
+        }
+        
+        # 1. Check common data paths
+        for path in self.DATA_PATHS:
+            url = base_url.rstrip('/') + path
+            if await self._check_url_exists(url):
+                results['apis'].append(url)
+        
+        # 2. Check for data files with common names
+        for ext in self.DATA_EXTENSIONS:
+            for filename in ['data', 'export', 'download', 'dataset', 'records']:
+                for path in ['/data/', '/downloads/', '/export/', '/']:
+                    url = base_url.rstrip('/') + path + f'{filename}.{ext}'
+                    if await self._check_url_exists(url):
+                        results['files'].append(url)
+        
+        # 3. Extract forms and XHR endpoints from HTML
+        try:
+            html = await self.scraper.fetch_with_fallback(base_url)
+            forms = self._extract_forms(html)
+            xhr = self._extract_xhr_endpoints(html, base_url)
+            results['forms'] = forms
+            results['xhr_endpoints'] = xhr
+        except Exception as e:
+            logger.debug(f"HTML extraction failed: {e}")
+        
+        return results
+    
+    async def _check_url_exists(self, url: str) -> bool:
+        """Check if URL is accessible"""
+        try:
+            async with httpx.AsyncClient(timeout=5, verify=False) as client:
+                response = await client.head(url)
+                return response.status_code < 400
+        except:
+            return False
+    
+    def _extract_forms(self, html: str) -> List[Dict]:
+        """Extract HTML forms for automated submission"""
+        from bs4 import BeautifulSoup
+        forms = []
+        try:
+            soup = BeautifulSoup(html, 'html.parser')
+            for form in soup.find_all('form'):
+                form_data = {
+                    'action': form.get('action', ''),
+                    'method': form.get('method', 'GET').upper(),
+                    'fields': []
+                }
+                for field in form.find_all(['input', 'select', 'textarea']):
+                    form_data['fields'].append({
+                        'name': field.get('name', ''),
+                        'type': field.get('type', 'text'),
+                        'value': field.get('value', '')
+                    })
+                if form_data['fields']:
+                    forms.append(form_data)
+        except Exception as e:
+            logger.debug(f"Form extraction failed: {e}")
+        return forms
+    
+    def _extract_xhr_endpoints(self, html: str, base_url: str) -> List[str]:
+        """Extract XHR/Fetch endpoints from JavaScript"""
+        import re
+        from urllib.parse import urljoin
+        
+        endpoints = []
+        patterns = [
+            r'fetch\([\'"]([^\'"]+)[\'"]',
+            r'\.ajax\({.*?url:\s*[\'"]([^\'"]+)[\'"]',
+            r'axios\.(get|post|put|delete)\([\'"]([^\'"]+)[\'"]',
+            r'XMLHttpRequest.*?open\([\'"]([^\'"]+)[\'"]'
+        ]
+        
+        for pattern in patterns:
+            try:
+                matches = re.findall(pattern, html, re.DOTALL | re.IGNORECASE)
+                for match in matches:
+                    endpoint = match[-1] if isinstance(match, tuple) else match
+                    if endpoint and not endpoint.startswith('http') and len(endpoint) < 500:
+                        full_url = urljoin(base_url, endpoint)
+                        endpoints.append(full_url)
+            except Exception as e:
+                logger.debug(f"XHR extraction failed: {e}")
+        
+        return list(set(endpoints))

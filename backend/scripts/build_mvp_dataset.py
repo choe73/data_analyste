@@ -66,7 +66,7 @@ async def build_dataset_1_prices():
     """
     
     try:
-        from backend.app.services.web_scraper_advanced import WebScraperAdvanced
+        from app.services.web_scraper_advanced import WebScraperAdvanced
         
         async with WebScraperAdvanced(use_stealth=False) as scraper:
             selectors = {
@@ -117,7 +117,7 @@ async def build_dataset_1_prices():
     logger.info("-" * 70)
     
     try:
-        from backend.app.services.schema_mapper import SchemaMapper
+        from app.services.schema_mapper import SchemaMapper
         
         mapper = SchemaMapper()
         
@@ -175,9 +175,9 @@ async def build_dataset_1_prices():
     }
     
     try:
-        from backend.app.services.trust_verifier import TrustVerifier
-        from backend.app.core.database import AsyncSessionLocal
-        from backend.app.models.data_source import DataSource
+        from app.services.trust_verifier import TrustVerifier
+        from app.core.database import AsyncSessionLocal
+        from app.models.data_source import DataSource
         
         async with AsyncSessionLocal() as db:
             verifier = TrustVerifier(db)

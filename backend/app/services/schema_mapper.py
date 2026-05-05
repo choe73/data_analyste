@@ -18,8 +18,10 @@ import json
 
 try:
     from sentence_transformers import SentenceTransformer
+    HAS_SENTENCE_TRANSFORMERS = True
 except ImportError:
-    raise ImportError("sentence-transformers not installed. Run: pip install sentence-transformers")
+    HAS_SENTENCE_TRANSFORMERS = False
+    SentenceTransformer = None
 
 logger = logging.getLogger(__name__)
 

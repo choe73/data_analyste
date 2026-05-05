@@ -6,10 +6,10 @@ from sqlalchemy import func
 from datetime import datetime, timedelta
 from typing import Dict, Any, List
 
-from backend.app.core.database import get_db
-from backend.app.core.monitoring import registry, MetricsCollector
-from backend.app.models.data_source import DataSource
-from backend.app.models.data_audit import (
+from app.core.database import get_db
+from app.core.monitoring import registry, MetricsCollector
+from app.models.data_source import DataSource
+from app.models.data_audit import (
     DataAudit,
     CollectionLogDetailed,
     SourceReputation,

@@ -4,12 +4,12 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 
-from backend.app.core.database import get_db
-from backend.app.core.auth import get_current_user
-from backend.app.models.user import User
-from backend.app.models.data_source import DataSource
-from backend.app.services.data_source_manager import DataSourceManager
-from backend.app.schemas.data_source import (
+from app.core.database import get_db
+from app.core.auth import get_current_user
+from app.models.user import User
+from app.models.data_source import DataSource
+from app.services.data_source_manager import DataSourceManager
+from app.schemas.data_source import (
     DataSourceCreate,
     DataSourceUpdate,
     DataSourceOut,
@@ -127,7 +127,7 @@ async def discover_api_schema(
     # This is a temporary endpoint for testing - in production,
     # you'd want to validate the URL first
     
-    from backend.app.services.generic_collector import CollectorFactory
+    from app.services.generic_collector import CollectorFactory
     
     try:
         factory = CollectorFactory()

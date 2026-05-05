@@ -4,13 +4,13 @@ import asyncio
 from celery import shared_task
 from datetime import datetime, timedelta
 
-from backend.app.core.database import SessionLocal
-from backend.app.models.data_source import (
+from app.core.database import SessionLocal
+from app.models.data_source import (
     DataSource,
     CollectionLog,
     SourceStatus,
 )
-from backend.app.services.generic_collector import CollectorFactory
+from app.services.generic_collector import CollectorFactory
 
 
 @shared_task(bind=True, max_retries=3)

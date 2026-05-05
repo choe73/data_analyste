@@ -7,9 +7,9 @@ from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 
-from backend.app.models.data_source import DataSource, CollectionLog, APIType, AuthType, SourceStatus
-from backend.app.services.generic_collector import CollectorFactory
-from backend.app.core.config import settings
+from app.models.data_source import DataSource, CollectionLog, APIType, AuthType, SourceStatus
+from app.services.generic_collector import CollectorFactory
+from app.core.config import settings
 
 
 class DataSourceManager:

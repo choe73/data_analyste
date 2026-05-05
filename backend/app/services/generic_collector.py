@@ -20,6 +20,8 @@ class BaseCollector(ABC):
             source_config.get("rate_limit", 60),
             source_config.get("rate_limit_window", 60)
         )
+        self.discovered_endpoints = {}
+        self.url_discovery_enabled = source_config.get("enable_url_discovery", True)
     
     async def __aenter__(self):
         self.session = httpx.AsyncClient(timeout=30.0)
@@ -40,14 +42,20 @@ class BaseCollector(ABC):
         pass
     
     async def collect(self) -> Dict[str, Any]:
-        """Pipeline complet de collecte"""
+        """Pipeline complet de collecte avec découverte d'URL"""
         try:
             async with self:
+                # Découvrir les endpoints si activé
+                if self.url_discovery_enabled:
+                    await self._discover_endpoints()
+                
                 raw_data = await self.fetch_data()
                 transformed_data = await self.transform_data(raw_data)
                 return {
                     "status": "success",
                     "records_fetched": len(raw_data),
+                    "records_transformed": len(transformed_data),
+                    "discovered_endpoints": self.discovered_endpoints,
                     "records_stored": len(transformed_data),
                     "data": transformed_data,
                     "error": None
@@ -284,3 +292,22 @@ class CollectorFactory:
     def register(cls, api_type: str, collector_class):
         """Enregistrer un nouveau type de collecteur"""
         cls._collectors[api_type] = collector_class
+
+    async def _discover_endpoints(self):
+        """Découvrir les endpoints de données pour cette source"""
+        try:
+            from app.services.web_scraper_advanced import WebScraperAdvanced, URLDiscoveryEngine
+            
+            base_url = self.config.get("url", "")
+            if not base_url:
+                return
+            
+            async with WebScraperAdvanced() as scraper:
+                discovery = URLDiscoveryEngine(scraper)
+                endpoints = await discovery.discover_data_endpoints(base_url)
+                self.discovered_endpoints = endpoints
+                
+                if endpoints.get('files') or endpoints.get('apis'):
+                    logger.info(f"Discovered {len(endpoints.get('files', []))} files and {len(endpoints.get('apis', []))} APIs for {base_url}")
+        except Exception as e:
+            logger.debug(f"URL discovery failed: {e}")
