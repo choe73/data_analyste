@@ -146,7 +146,15 @@ async def logout(response: Response) -> Any:
 @router.get("/me", response_model=UserSchema)
 async def get_me(current_user: UserModel = Depends(get_current_active_user)) -> Any:
     """Get current user info."""
-    return current_user
+    # Return manually constructed response to avoid loading relationships
+    return {
+        "id": current_user.id,
+        "email": current_user.email,
+        "full_name": current_user.full_name,
+        "role": current_user.role,
+        "is_active": current_user.is_active,
+        "is_verified": current_user.is_verified,
+    }
 
 
 @router.put("/me", response_model=UserSchema)
