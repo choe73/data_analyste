@@ -37,7 +37,8 @@ if "postgresql" in settings.DATABASE_URL or "postgres" in settings.DATABASE_URL:
     engine_args["connect_args"] = {
         "ssl": _ssl_ctx,
         "prepared_statement_cache_size": 0,
-        "statement_cache_size": 0
+        "statement_cache_size": 0,
+        "timeout": 10,  # 10 second connection timeout
     }
 
 async_engine = create_async_engine(
@@ -66,10 +67,16 @@ async def get_db():
 
 async def init_db():
     """Create all tables. Called at startup (non-blocking)."""
-    async with async_engine.begin() as conn:
-        # Import models to register them with Base.metadata
-        from app.models import (  # noqa: F401
-            raw_data, processed_data, ml_models,
-            analysis_results, celery_jobs, user, form, plan as plan_module,
-        )
-        await conn.run_sync(Base.metadata.create_all)
+    try:
+        async with async_engine.begin() as conn:
+            # Import models to register them with Base.metadata
+            from app.models import (  # noqa: F401
+                raw_data, processed_data, ml_models,
+                analysis_results, celery_jobs, user, form, plan as plan_module,
+            )
+            await conn.run_sync(Base.metadata.create_all)
+    except Exception as e:
+        # Log but don't fail - database might not be ready yet
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.warning(f"Failed to initialize database: {e}")
