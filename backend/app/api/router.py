@@ -27,8 +27,15 @@ from app.api.endpoints import (
     init_tables,
     data_sources,
     monitoring,
-    advanced_scraping,
 )
+
+# Try to import advanced_scraping, but don't fail if dependencies are missing
+try:
+    from app.api.endpoints import advanced_scraping
+    HAS_ADVANCED_SCRAPING = True
+except ImportError:
+    HAS_ADVANCED_SCRAPING = False
+    advanced_scraping = None
 
 api_router = APIRouter()
 
@@ -43,7 +50,8 @@ api_router.include_router(data_collection.router, prefix="/collect", tags=["Data
 api_router.include_router(collection_debug.router, prefix="/collect", tags=["Collection Debug"])
 api_router.include_router(data_sources.router, tags=["Data Sources"])
 api_router.include_router(monitoring.router, tags=["Monitoring"])
-api_router.include_router(advanced_scraping.router, tags=["Advanced Scraping"])
+if HAS_ADVANCED_SCRAPING:
+    api_router.include_router(advanced_scraping.router, tags=["Advanced Scraping"])
 api_router.include_router(cache.router, prefix="/cache", tags=["Cache"])
 api_router.include_router(subscriptions.router, prefix="/subscriptions", tags=["Subscriptions"])
 api_router.include_router(plans.router, prefix="/plans", tags=["Plans"])
