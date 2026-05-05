@@ -401,9 +401,9 @@ async def scrape_source(
                                         ).get("value", ""),
                                     })
                         
-                        # Pagination for World Bank: fetch up to 5 pages
+                        # Pagination for World Bank: fetch up to 20 pages
                         if page_info and page_info.get("pages", 1) > 1:
-                            max_pages = min(page_info.get("pages", 1), 5)
+                            max_pages = min(page_info.get("pages", 1), 20)
                             for page_num in range(2, max_pages + 1):
                                 try:
                                     # Add page parameter to URL
@@ -446,28 +446,88 @@ async def scrape_source(
                     
                     elif isinstance(data, dict):
                         # Handle multiple API formats
-                        results = (
-                            data.get("results", []) or
-                            data.get("data", []) or
-                            data.get("records", []) or
-                            data.get("hits", {}).get("hits", [])
-                        )
-                        for item in results[:100]:
-                            records.append({
-                                "col1": item.get(
-                                    "title",
-                                    item.get("name", "")
-                                ),
-                                "col2": item.get(
-                                    "description",
-                                    item.get("summary", "")
-                                ),
-                                "col3": item.get(
-                                    "date",
-                                    item.get("created", "")
-                                ),
-                                "col4": item.get("id", ""),
-                            })
+                        
+                        # OCHA HDX format: result.results[]
+                        if "result" in data and isinstance(data["result"], dict):
+                            results = data["result"].get("results", [])
+                            for item in results[:500]:
+                                records.append({
+                                    "col1": item.get("title", item.get("name", "")),
+                                    "col2": item.get("notes", item.get("description", "")),
+                                    "col3": item.get("metadata_created", item.get("created", "")),
+                                    "col4": item.get("id", ""),
+                                })
+                        # iNaturalist format: results[] with pagination
+                        elif "results" in data and isinstance(data["results"], list):
+                            results = data["results"]
+                            for item in results:
+                                records.append({
+                                    "col1": item.get("species_guess", item.get("taxon", {}).get("name", "")),
+                                    "col2": item.get("description", ""),
+                                    "col3": item.get("observed_on", item.get("created_at", "")),
+                                    "col4": item.get("id", ""),
+                                })
+                            
+                            # Pagination for iNaturalist: fetch up to 20 pages
+                            total_results = data.get("total_results", 0)
+                            if total_results > len(results):
+                                max_pages = min(20, (total_results // 100) + 1)
+                                for page_num in range(2, max_pages + 1):
+                                    try:
+                                        paginated_url = source["url"]
+                                        if "page=" not in paginated_url:
+                                            paginated_url += f"&page={page_num}"
+                                        else:
+                                            paginated_url = paginated_url.replace(
+                                                f"page={page_num - 1}",
+                                                f"page={page_num}"
+                                            )
+                                        
+                                        await rate_limiter.wait_if_needed(domain)
+                                        async with httpx.AsyncClient(
+                                            timeout=httpx.Timeout(30.0, connect=10.0),
+                                            follow_redirects=True,
+                                            verify=False,
+                                            headers={"User-Agent": "Mozilla/5.0 (compatible; DataCollect/1.0)"}
+                                        ) as client:
+                                            page_response = await client.get(paginated_url)
+                                            page_data = json.loads(page_response.text)
+                                            
+                                            if "results" in page_data and isinstance(page_data["results"], list):
+                                                for item in page_data["results"]:
+                                                    records.append({
+                                                        "col1": item.get("species_guess", item.get("taxon", {}).get("name", "")),
+                                                        "col2": item.get("description", ""),
+                                                        "col3": item.get("observed_on", item.get("created_at", "")),
+                                                        "col4": item.get("id", ""),
+                                                    })
+                                    except Exception as e:
+                                        log.debug(f"  pagination page {page_num} failed: {e}")
+                                        break
+                        # Generic format fallback
+                        else:
+                            results = (
+                                data.get("results", []) or
+                                data.get("data", []) or
+                                data.get("records", []) or
+                                data.get("hits", {}).get("hits", [])
+                            )
+                            for item in results[:100]:
+                                records.append({
+                                    "col1": item.get(
+                                        "title",
+                                        item.get("name", "")
+                                    ),
+                                    "col2": item.get(
+                                        "description",
+                                        item.get("summary", "")
+                                    ),
+                                    "col3": item.get(
+                                        "date",
+                                        item.get("created", "")
+                                    ),
+                                    "col4": item.get("id", ""),
+                                })
 
                     return records
                 except Exception as e:
