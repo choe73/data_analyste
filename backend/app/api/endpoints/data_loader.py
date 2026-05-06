@@ -326,6 +326,7 @@ async def load_csv_data(db: AsyncSession = Depends(get_db)):
 async def load_sample_cameroon_data(db: AsyncSession = Depends(get_db)):
     """Load sample Cameroon data into raw_data table."""
     from sqlalchemy import text
+    from datetime import datetime
     
     sample_data = {
         "Démographie Cameroun": {
@@ -397,18 +398,20 @@ async def load_sample_cameroon_data(db: AsyncSession = Depends(get_db)):
                 })
                 continue
             
-            # Insert rows
+            # Insert rows using correct schema
             rows_inserted = 0
             for row_data in dataset_info["rows"]:
                 await db.execute(
                     text("""
-                        INSERT INTO raw_data (dataset_name, domain, row_data)
-                        VALUES (:dataset_name, :domain, :row_data)
+                        INSERT INTO raw_data (source, dataset_name, domain, data, collected_at)
+                        VALUES (:source, :dataset_name, :domain, :data, :collected_at)
                     """),
                     {
+                        "source": "sample",
                         "dataset_name": dataset_name,
                         "domain": dataset_info["domain"],
-                        "row_data": json.dumps(row_data),
+                        "data": json.dumps(row_data),
+                        "collected_at": datetime.utcnow(),
                     }
                 )
                 rows_inserted += 1
