@@ -216,88 +216,33 @@ async def get_cameroon_data_status(db: AsyncSession = Depends(get_db)):
 
 
 
-@router.post("/load-sample-data")
-async def load_sample_data(db: AsyncSession = Depends(get_db)):
-    """Load sample Cameroon data directly into database."""
-    import io
+@router.post("/load-csv-data")
+async def load_csv_data(db: AsyncSession = Depends(get_db)):
+    """Load CSV data from cameroon_data directory into Supabase."""
+    from sqlalchemy import text
     
     loaded = []
     failed = []
     
-    # Sample data for each domain
-    sample_datasets = [
-        {
-            "name": "Démographie Cameroun",
-            "description": "Données démographiques du Cameroun par région",
-            "domain": "demographics",
-            "data": {
-                "Region": ["Centre", "Littoral", "Nord", "Ouest", "Sud"],
-                "Population": [3500000, 1500000, 2000000, 1800000, 800000],
-                "Density": [45.2, 120.5, 35.8, 55.3, 12.1],
-                "Growth_Rate": [2.5, 2.8, 3.1, 2.3, 2.0],
-            }
-        },
-        {
-            "name": "Économie Cameroun",
-            "description": "Indicateurs économiques trimestriels",
-            "domain": "economics",
-            "data": {
-                "Quarter": ["Q1 2024", "Q2 2024", "Q3 2024", "Q4 2024"],
-                "GDP_Growth": [3.2, 3.5, 3.8, 4.1],
-                "Inflation": [2.1, 2.3, 2.5, 2.4],
-                "Unemployment": [4.5, 4.3, 4.1, 3.9],
-            }
-        },
-        {
-            "name": "Santé Cameroun",
-            "description": "Indicateurs de santé par district",
-            "domain": "health",
-            "data": {
-                "District": ["Yaoundé", "Douala", "Buea", "Bamenda", "Garoua"],
-                "Hospitals": [15, 12, 8, 10, 7],
-                "Doctors": [450, 380, 200, 250, 180],
-                "Beds": [2500, 2000, 1200, 1500, 1000],
-            }
-        },
-        {
-            "name": "Agriculture Cameroun",
-            "description": "Prix agricoles régionaux",
-            "domain": "agriculture",
-            "data": {
-                "Product": ["Cacao", "Café", "Banane", "Maïs", "Riz"],
-                "Price_XAF": [1200, 800, 300, 150, 250],
-                "Production_Tons": [450000, 120000, 800000, 1200000, 350000],
-                "Region": ["Littoral", "Ouest", "Littoral", "Nord", "Centre"],
-            }
-        },
-        {
-            "name": "Éducation Cameroun",
-            "description": "Statistiques éducatives",
-            "domain": "education",
-            "data": {
-                "Level": ["Primaire", "Secondaire", "Supérieur"],
-                "Students": [3500000, 1200000, 250000],
-                "Schools": [15000, 3500, 150],
-                "Teachers": [120000, 45000, 8000],
-            }
-        },
-    ]
-    
-    for dataset_info in sample_datasets:
+    for dataset_info in DATASETS:
+        file_path = DATA_DIR / dataset_info["file"]
+        
+        if not file_path.exists():
+            failed.append({
+                "file": dataset_info["file"],
+                "error": "File not found on server"
+            })
+            continue
+        
         try:
-            # Check if already loaded
+            # Read CSV
+            df = pd.read_csv(file_path)
+            
+            # Check if dataset already exists
             result = await db.execute(
                 select(Dataset).where(Dataset.name == dataset_info["name"])
             )
-            if result.scalar_one_or_none():
-                loaded.append({
-                    "name": dataset_info["name"],
-                    "status": "already_loaded"
-                })
-                continue
-            
-            # Create DataFrame from sample data
-            df = pd.DataFrame(dataset_info["data"])
+            existing = result.scalar_one_or_none()
             
             # Prepare columns info
             columns_info = []
@@ -306,42 +251,136 @@ async def load_sample_data(db: AsyncSession = Depends(get_db)):
                 columns_info.append({
                     "name": col,
                     "type": dtype,
-                    "null_count": 0,
+                    "null_count": int(df[col].isnull().sum()),
                 })
             
-            # Create dataset record
-            dataset = Dataset(
-                name=dataset_info["name"],
-                description=dataset_info["description"],
-                domain=dataset_info["domain"],
-                source_type="sample",
-                row_count=len(df),
-                column_count=len(df.columns),
-                columns_info=json.dumps(columns_info),
-                file_path="memory://sample_data",
-                created_at=datetime.utcnow(),
-            )
+            # Insert rows into raw_data table
+            rows_inserted = 0
+            for _, row in df.iterrows():
+                row_dict = row.to_dict()
+                # Convert NaN to None for JSON serialization
+                row_dict = {k: (None if pd.isna(v) else v) for k, v in row_dict.items()}
+                
+                await db.execute(
+                    text("""
+                        INSERT INTO raw_data (dataset_name, domain, row_data)
+                        VALUES (:dataset_name, :domain, :row_data)
+                    """),
+                    {
+                        "dataset_name": dataset_info["name"],
+                        "domain": dataset_info["domain"],
+                        "row_data": json.dumps(row_dict),
+                    }
+                )
+                rows_inserted += 1
             
-            db.add(dataset)
             await db.commit()
             
+            # Update or create dataset metadata
+            if existing:
+                existing.row_count = len(df)
+                existing.column_count = len(df.columns)
+                existing.columns_info = json.dumps(columns_info)
+                await db.commit()
+            else:
+                dataset = Dataset(
+                    name=dataset_info["name"],
+                    description=dataset_info["description"],
+                    domain=dataset_info["domain"],
+                    source_type="csv",
+                    row_count=len(df),
+                    column_count=len(df.columns),
+                    columns_info=json.dumps(columns_info),
+                    file_path=str(file_path),
+                    created_at=datetime.utcnow(),
+                )
+                db.add(dataset)
+                await db.commit()
+            
             loaded.append({
+                "file": dataset_info["file"],
                 "name": dataset_info["name"],
                 "rows": len(df),
                 "columns": len(df.columns),
+                "rows_inserted": rows_inserted,
                 "status": "loaded"
             })
             
         except Exception as e:
+            await db.rollback()
             failed.append({
-                "name": dataset_info["name"],
+                "file": dataset_info["file"],
                 "error": str(e)
             })
     
     return {
-        "total": len(sample_datasets),
+        "total": len(DATASETS),
         "loaded": len(loaded),
         "failed": len(failed),
         "loaded_datasets": loaded,
         "failed_datasets": failed,
+    }
+
+
+
+@router.get("/raw-data/{dataset_name}")
+async def get_raw_data(
+    dataset_name: str,
+    skip: int = 0,
+    limit: int = 100,
+    db: AsyncSession = Depends(get_db)
+):
+    """Get raw data for a dataset from Supabase."""
+    from sqlalchemy import text
+    
+    result = await db.execute(
+        text("""
+            SELECT row_data FROM raw_data 
+            WHERE dataset_name = :dataset_name
+            ORDER BY id
+            LIMIT :limit OFFSET :skip
+        """),
+        {
+            "dataset_name": dataset_name,
+            "limit": limit,
+            "skip": skip,
+        }
+    )
+    
+    rows = result.fetchall()
+    data = [json.loads(row[0]) if isinstance(row[0], str) else row[0] for row in rows]
+    
+    # Get total count
+    count_result = await db.execute(
+        text("SELECT COUNT(*) FROM raw_data WHERE dataset_name = :dataset_name"),
+        {"dataset_name": dataset_name}
+    )
+    total = count_result.scalar()
+    
+    return {
+        "dataset_name": dataset_name,
+        "total": total,
+        "skip": skip,
+        "limit": limit,
+        "data": data,
+    }
+
+
+@router.get("/raw-data-stats/{dataset_name}")
+async def get_raw_data_stats(
+    dataset_name: str,
+    db: AsyncSession = Depends(get_db)
+):
+    """Get statistics about raw data for a dataset."""
+    from sqlalchemy import text
+    
+    result = await db.execute(
+        text("SELECT COUNT(*) FROM raw_data WHERE dataset_name = :dataset_name"),
+        {"dataset_name": dataset_name}
+    )
+    total = result.scalar()
+    
+    return {
+        "dataset_name": dataset_name,
+        "total_rows": total,
     }
