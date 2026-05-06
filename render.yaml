@@ -18,6 +18,10 @@ services:
     name: datacollect-frontend
     buildCommand: cd frontend && npm ci --legacy-peer-deps && npm run build
     staticPublishPath: frontend/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
     envVars:
       - key: VITE_API_URL
         value: https://datacollect-cameroun-prod.onrender.com
@@ -30,6 +34,10 @@ services:
     name: datacollect-frontend-secondary
     buildCommand: cd frontend && npm ci --legacy-peer-deps && npm run build
     staticPublishPath: frontend/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
     envVars:
       - key: VITE_API_URL
         value: https://datacollect-cameroun-prod.onrender.com
