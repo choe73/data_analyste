@@ -28,6 +28,20 @@ async def list_datasets(
         q = q.where(DatasetModel.domain == domain)
     rows = (await db.execute(q)).scalars().all()
     for ds in rows:
+        # Handle columns_info - could be list or string
+        columns = []
+        if ds.columns_info:
+            if isinstance(ds.columns_info, str):
+                # If it's a string, try to parse it
+                import json
+                try:
+                    columns_data = json.loads(ds.columns_info)
+                    columns = [c.get("name", c) if isinstance(c, dict) else c for c in columns_data]
+                except:
+                    columns = []
+            elif isinstance(ds.columns_info, list):
+                columns = [c.get("name", c) if isinstance(c, dict) else c for c in ds.columns_info]
+        
         results.append({
             "id": ds.id,
             "name": ds.name,
@@ -36,7 +50,7 @@ async def list_datasets(
             "domain": ds.domain or "general",
             "row_count": ds.row_count or 0,
             "column_count": ds.column_count or 0,
-            "columns": [c["name"] for c in (ds.columns_info or [])],
+            "columns": columns,
             "created_at": ds.created_at.isoformat() if ds.created_at else None,
         })
 
@@ -70,6 +84,21 @@ async def get_dataset(
     row = (await db.execute(select(DatasetModel).where(DatasetModel.id == dataset_id))).scalar_one_or_none()
     if not row:
         raise HTTPException(status_code=404, detail="Dataset not found")
+    
+    # Handle columns_info - could be list or string
+    columns = []
+    if row.columns_info:
+        if isinstance(row.columns_info, str):
+            # If it's a string, try to parse it
+            import json
+            try:
+                columns_data = json.loads(row.columns_info)
+                columns = [c.get("name", c) if isinstance(c, dict) else c for c in columns_data]
+            except:
+                columns = []
+        elif isinstance(row.columns_info, list):
+            columns = [c.get("name", c) if isinstance(c, dict) else c for c in row.columns_info]
+    
     return {
         "id": row.id,
         "name": row.name,
@@ -78,6 +107,6 @@ async def get_dataset(
         "domain": row.domain or "general",
         "row_count": row.row_count or 0,
         "column_count": row.column_count or 0,
-        "columns": [c["name"] for c in (row.columns_info or [])],
+        "columns": columns,
         "created_at": row.created_at.isoformat() if row.created_at else None,
     }
