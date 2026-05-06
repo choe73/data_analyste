@@ -322,6 +322,121 @@ async def load_csv_data(db: AsyncSession = Depends(get_db)):
     }
 
 
+@router.post("/load-sample-cameroon-data")
+async def load_sample_cameroon_data(db: AsyncSession = Depends(get_db)):
+    """Load sample Cameroon data into raw_data table."""
+    from sqlalchemy import text
+    
+    sample_data = {
+        "Démographie Cameroun": {
+            "domain": "demographics",
+            "rows": [
+                {"Region": "Centre", "Population": 3500000, "Density": 45.2, "Growth_Rate": 2.5},
+                {"Region": "Littoral", "Population": 1500000, "Density": 120.5, "Growth_Rate": 2.8},
+                {"Region": "Nord", "Population": 2000000, "Density": 35.8, "Growth_Rate": 3.1},
+                {"Region": "Ouest", "Population": 1800000, "Density": 55.3, "Growth_Rate": 2.3},
+                {"Region": "Sud", "Population": 800000, "Density": 12.1, "Growth_Rate": 2.0},
+            ]
+        },
+        "Économie Cameroun": {
+            "domain": "economics",
+            "rows": [
+                {"Quarter": "Q1 2024", "GDP_Growth": 3.2, "Inflation": 2.1, "Unemployment": 4.5},
+                {"Quarter": "Q2 2024", "GDP_Growth": 3.5, "Inflation": 2.3, "Unemployment": 4.3},
+                {"Quarter": "Q3 2024", "GDP_Growth": 3.8, "Inflation": 2.5, "Unemployment": 4.1},
+                {"Quarter": "Q4 2024", "GDP_Growth": 4.1, "Inflation": 2.4, "Unemployment": 3.9},
+            ]
+        },
+        "Santé Cameroun": {
+            "domain": "health",
+            "rows": [
+                {"District": "Yaoundé", "Hospitals": 15, "Doctors": 450, "Beds": 2500},
+                {"District": "Douala", "Hospitals": 12, "Doctors": 380, "Beds": 2000},
+                {"District": "Buea", "Hospitals": 8, "Doctors": 200, "Beds": 1200},
+                {"District": "Bamenda", "Hospitals": 10, "Doctors": 250, "Beds": 1500},
+                {"District": "Garoua", "Hospitals": 7, "Doctors": 180, "Beds": 1000},
+            ]
+        },
+        "Agriculture Cameroun": {
+            "domain": "agriculture",
+            "rows": [
+                {"Product": "Cacao", "Price_XAF": 1200, "Production_Tons": 450000, "Region": "Littoral"},
+                {"Product": "Café", "Price_XAF": 800, "Production_Tons": 120000, "Region": "Ouest"},
+                {"Product": "Banane", "Price_XAF": 300, "Production_Tons": 800000, "Region": "Littoral"},
+                {"Product": "Maïs", "Price_XAF": 150, "Production_Tons": 1200000, "Region": "Nord"},
+                {"Product": "Riz", "Price_XAF": 250, "Production_Tons": 350000, "Region": "Centre"},
+            ]
+        },
+        "Éducation Cameroun": {
+            "domain": "education",
+            "rows": [
+                {"Level": "Primaire", "Students": 3500000, "Schools": 15000, "Teachers": 120000},
+                {"Level": "Secondaire", "Students": 1200000, "Schools": 3500, "Teachers": 45000},
+                {"Level": "Supérieur", "Students": 250000, "Schools": 150, "Teachers": 8000},
+            ]
+        },
+    }
+    
+    loaded = []
+    failed = []
+    
+    for dataset_name, dataset_info in sample_data.items():
+        try:
+            # Check if already loaded
+            result = await db.execute(
+                text("SELECT COUNT(*) FROM raw_data WHERE dataset_name = :name"),
+                {"name": dataset_name}
+            )
+            count = result.scalar()
+            
+            if count > 0:
+                loaded.append({
+                    "name": dataset_name,
+                    "status": "already_loaded",
+                    "rows": count
+                })
+                continue
+            
+            # Insert rows
+            rows_inserted = 0
+            for row_data in dataset_info["rows"]:
+                await db.execute(
+                    text("""
+                        INSERT INTO raw_data (dataset_name, domain, row_data)
+                        VALUES (:dataset_name, :domain, :row_data)
+                    """),
+                    {
+                        "dataset_name": dataset_name,
+                        "domain": dataset_info["domain"],
+                        "row_data": json.dumps(row_data),
+                    }
+                )
+                rows_inserted += 1
+            
+            await db.commit()
+            
+            loaded.append({
+                "name": dataset_name,
+                "status": "loaded",
+                "rows": rows_inserted
+            })
+            
+        except Exception as e:
+            await db.rollback()
+            failed.append({
+                "name": dataset_name,
+                "error": str(e)
+            })
+    
+    return {
+        "total": len(sample_data),
+        "loaded": len(loaded),
+        "failed": len(failed),
+        "loaded_datasets": loaded,
+        "failed_datasets": failed,
+    }
+
+
 
 @router.get("/raw-data/{dataset_name}")
 async def get_raw_data(
