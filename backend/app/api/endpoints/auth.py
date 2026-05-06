@@ -11,7 +11,7 @@ from sqlalchemy import select
 from app.core.database import get_db
 from app.core.config import settings
 from app.core.auth import get_current_user, get_current_active_user
-from app.models.user import User as UserModel, UserConsent
+from app.models.user import User as UserModel, UserConsent, Subscription
 from app.schemas.user import (
     UserCreate,
     User as UserSchema,
@@ -51,6 +51,15 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)) ->
         db.add(user)
         await db.commit()
         # Don't refresh - avoid loading relationships that may have missing columns
+        
+        # Create default free subscription (without plan_id to avoid foreign key issues)
+        subscription = Subscription(
+            user_id=user.id,
+            plan_id=None,  # Free plan has no plan_id
+            status="active"
+        )
+        db.add(subscription)
+        await db.commit()
         
         # Create default consent record
         consent = UserConsent(user_id=user.id)
