@@ -1,23 +1,24 @@
-"""Raw data model for storing unprocessed API responses."""
+"""Raw data model for storing collected data."""
 
-from sqlalchemy import Column, Integer, String, JSON, DateTime, Text
+from sqlalchemy import Column, Integer, String, DateTime, JSON, Text
 from sqlalchemy.sql import func
 
 from app.core.database import Base
 
 
 class RawData(Base):
-    """Store raw data from external sources."""
+    """Raw data collected from various sources."""
 
     __tablename__ = "raw_data"
 
     id = Column(Integer, primary_key=True, index=True)
-    source = Column(String(50), nullable=False, index=True)  # world_bank, nasa_power, fao
-    dataset_name = Column(String(255), nullable=False, index=True)
-    data = Column(JSON, nullable=False)  # Raw API response
-    hash = Column(String(64), unique=True, nullable=False, index=True)  # For deduplication
-    status = Column(String(20), default="pending")  # pending, processed, failed
+    source = Column(String(255), nullable=False)
+    dataset_name = Column(String(255), nullable=True, index=True)
+    data = Column(JSON, nullable=False)
+    collected_at = Column(DateTime(timezone=True), nullable=True)
+    hash = Column(String(255), nullable=True)
+    status = Column(String(50), nullable=True)
+    error_message = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-
-    def __repr__(self):
-        return f"<RawData {self.source}/{self.dataset_name}>"
+    domain = Column(String(100), nullable=True)
+    row_data = Column(JSON, nullable=True)

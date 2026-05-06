@@ -102,13 +102,15 @@ class AnalysisService:
         raw_rows = result.scalars().all()
         if raw_rows:
             try:
-                # Combine all raw data
+                # Combine all raw data - each row has a data field that's a dict
                 all_data = []
                 for row in raw_rows:
-                    if isinstance(row.data, list):
-                        all_data.extend(row.data)
-                    elif isinstance(row.data, dict):
+                    # row.data is already a dict (SQLAlchemy deserializes JSON)
+                    if isinstance(row.data, dict):
                         all_data.append(row.data)
+                    elif isinstance(row.data, list):
+                        all_data.extend(row.data)
+                
                 if all_data:
                     df = pd.DataFrame(all_data)
                     # Convert date columns to datetime
@@ -121,7 +123,11 @@ class AnalysisService:
                     if len(df) > MAX_ROWS:
                         df = df.sample(n=MAX_ROWS, random_state=42)
                     return df
-            except Exception:
+            except Exception as e:
+                # Log the error for debugging
+                import traceback
+                print(f"Error loading from RawData: {e}")
+                traceback.print_exc()
                 pass
 
         # Fallback: load from ProcessedData by domain
