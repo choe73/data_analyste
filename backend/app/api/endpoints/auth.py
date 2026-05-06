@@ -150,6 +150,8 @@ async def get_me(current_user: UserModel = Depends(get_current_active_user)) -> 
         "role": current_user.role,
         "is_active": current_user.is_active,
         "is_verified": current_user.is_verified,
+        "created_at": current_user.created_at,
+        "last_login": current_user.last_login,
     }
 
 
@@ -182,6 +184,8 @@ async def update_me(
         "role": current_user.role,
         "is_active": current_user.is_active,
         "is_verified": current_user.is_verified,
+        "created_at": current_user.created_at,
+        "last_login": current_user.last_login,
     }
 
 
