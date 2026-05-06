@@ -50,29 +50,6 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)) ->
         )
         db.add(user)
         await db.commit()
-        # Don't refresh - avoid loading relationships that may have missing columns
-        
-        # Create default free subscription (without plan_id to avoid foreign key issues)
-        try:
-            subscription = Subscription(
-                user_id=user.id,
-                plan_id=None,  # Free plan has no plan_id
-                status="active"
-            )
-            db.add(subscription)
-            await db.commit()
-        except Exception as sub_error:
-            logger.error(f"Failed to create subscription: {sub_error}", exc_info=True)
-            # Continue even if subscription creation fails
-        
-        # Create default consent record
-        try:
-            consent = UserConsent(user_id=user.id)
-            db.add(consent)
-            await db.commit()
-        except Exception as consent_error:
-            logger.error(f"Failed to create consent: {consent_error}", exc_info=True)
-            # Continue even if consent creation fails
 
         return {
             "id": user.id,
