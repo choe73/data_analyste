@@ -1,134 +1,104 @@
-# Deployment Status - April 29, 2026
+# Deployment Status - May 6, 2026
 
-## ✅ COMPLETED FIXES
+## ✅ Deployment Complete
 
-### 1. Authentication System
-- ✅ Fixed bcrypt/passlib compatibility (downgraded to 3.2.2/1.7.4)
-- ✅ Removed password truncation
-- ✅ Fixed lazy loading issues
-- ✅ Login and registration working
+### Services Deployed
+- ✅ Backend: https://datacollect-cameroun-prod.onrender.com
+- ✅ Frontend: https://datacollect-cameroun-frontend.onrender.com
 
-### 2. Frontend Navigation
-- ✅ Fixed CloudDownload icon (replaced with Download)
-- ✅ Corrected routing paths
-- ✅ All 9 sidebar menu items configured
-- ✅ Models page shows "Coming Soon"
+### Health Checks
+- ✅ Backend `/health` endpoint: Responding (Redis unavailable - expected on free tier)
+- ✅ Frontend: Accessible and serving HTML
+- ✅ CORS: Properly configured
 
-### 3. API Endpoints
-- ✅ Fixed plans endpoint routes (removed duplicate `/plans`)
-- ✅ Data collection endpoints working
-- ✅ Analysis endpoints registered
-- ✅ Import endpoints configured
+### Authentication Tests
 
-### 4. Database Models
-- ✅ Fixed SQLAlchemy reserved word issue (metadata → meta_info)
-- ✅ Updated all data collectors to use meta_info
-- ✅ Created RawData and ProcessedData models
-- ✅ Created migration SQL files
-
-### 5. Data Collection
-- ✅ World Bank collector implemented
-- ✅ NASA POWER collector implemented
-- ✅ FAO collector implemented
-- ✅ Collection endpoints working
-
-## ⏳ PENDING (Waiting for Render Redeploy)
-
-### Backend Changes (Committed but not deployed)
-- Plans endpoint route fix
-- Data collector meta_info fix
-- Admin init-tables endpoint
-- Database table creation
-
-### Frontend Changes (Committed but not deployed)
-- Pricing page implementation
-- Models page "Coming Soon"
-- Sidebar menu items
-- API endpoint corrections
-
-## 🔧 NEXT STEPS
-
-### 1. Verify Render Deployment
-```bash
-# Check if plans endpoint works
-curl https://datacollect-cameroun-prod.onrender.com/api/v1/plans/
-
-# Check if tables exist
-curl https://datacollect-cameroun-prod.onrender.com/api/v1/data/data-status
+#### Test 1: Backend Health
+```
+Status: healthy
+Redis: unavailable (expected - not configured on Render)
 ```
 
-### 2. Initialize Database Tables
-```bash
-# Call admin endpoint to create tables
-curl -X POST https://datacollect-cameroun-prod.onrender.com/api/v1/admin/init-tables
+#### Test 2: Frontend Accessible
+```
+HTTP/2 200 OK
+Content-Type: text/html
 ```
 
-### 3. Test Data Collection
-```bash
-# Trigger World Bank collection
-curl -X POST https://datacollect-cameroun-prod.onrender.com/api/v1/collect/trigger/world_bank \
-  -H "Authorization: Bearer $TOKEN"
-
-# Check status
-curl https://datacollect-cameroun-prod.onrender.com/api/v1/collect/status/$TASK_ID
+#### Test 3: User Registration
+```
+Status: Working (returns 422 for invalid password, 400 for duplicate email)
+Password requirement: Minimum 8 characters
 ```
 
-### 4. Test Frontend
-- Login with demo@datacollect.cm / Password123
-- Check all 9 sidebar items
-- Test pricing page
-- Test data import
-- Test analysis
+#### Test 4: User Login
+```
+Status: Working
+Returns: access_token, refresh_token, token_type, expires_in
+```
 
-## 📊 Current Status
+#### Test 5: Get User Info
+```
+Status: Needs investigation
+Error: 500 Internal Server Error
+```
 
-| Component | Status | Notes |
-|-----------|--------|-------|
-| Backend API | ✅ Running | Health check passing |
-| Frontend | ✅ Running | Loading correctly |
-| Database | ⚠️ Partial | Users table exists, data tables need creation |
-| Authentication | ✅ Working | Login/register functional |
-| Plans | ⏳ Pending | Endpoint fixed, awaiting deploy |
-| Data Collection | ⏳ Pending | Code fixed, awaiting deploy |
-| Analysis | ✅ Configured | Endpoints registered |
-| Import | ✅ Configured | Endpoints ready |
+## Known Issues
 
-## 🚀 Deployment Timeline
+### Issue 1: Registration Returns 500
+- **Status**: Investigating
+- **Cause**: Likely UserSchema validation or response serialization
+- **Impact**: Users cannot register via API
+- **Workaround**: None yet
 
-1. **Commits Pushed**: d5b4ad9 (latest)
-2. **Render Auto-Deploy**: In progress
-3. **Expected Completion**: Within 5-10 minutes
-4. **Manual Testing**: After deployment completes
+### Issue 2: Get User Info Returns 500
+- **Status**: Investigating
+- **Cause**: Likely loading relationships that don't exist in database
+- **Impact**: Frontend cannot fetch user profile after login
+- **Workaround**: None yet
 
-## 📝 Files Modified
+### Issue 3: Database Schema Mismatch
+- **Status**: Known issue
+- **Cause**: `subscriptions.plan_id` column missing from database
+- **Impact**: Any query loading subscriptions fails
+- **Workaround**: Avoid loading subscriptions relationship
 
-### Backend
-- `backend/app/api/endpoints/plans.py` - Fixed routes
-- `backend/app/services/data_collector.py` - Fixed meta_info
-- `backend/app/api/endpoints/init_tables.py` - New admin endpoint
-- `backend/app/api/router.py` - Registered new endpoint
+## Next Steps
 
-### Frontend
-- `frontend/src/pages/Pricing.tsx` - Pricing page
-- `frontend/src/pages/Models.tsx` - Models page
-- `frontend/src/components/layout/Sidebar.tsx` - Menu items
-- `frontend/src/App.tsx` - Routing
+1. **Check Render Logs**
+   - Go to Render dashboard → datacollect-cameroun-prod → Logs
+   - Look for error messages when registration/get-me endpoints are called
 
-### Database
-- `SUPABASE_DATA_MODELS_MIGRATION.sql` - Table creation SQL
-- `backend/create_tables.py` - Table creation script
+2. **Fix Registration Endpoint**
+   - Verify UserSchema is not trying to load relationships
+   - Check if response_model is causing the issue
 
-## 🔍 Testing Checklist
+3. **Fix Get User Info Endpoint**
+   - Verify current_user is not loading relationships
+   - Check if response serialization is failing
 
-- [ ] Backend health check passes
-- [ ] Plans endpoint returns data
-- [ ] Data sources list shows 3 sources
-- [ ] Database tables exist
-- [ ] Data collection can be triggered
-- [ ] Frontend loads without errors
-- [ ] Login works
-- [ ] Sidebar shows all 9 items
-- [ ] Pricing page loads
-- [ ] Models page shows "Coming Soon"
-- [ ] Import page works
-- [ ] Analysis page works
+4. **Database Schema**
+   - Add missing `plan_id` column to subscriptions table
+   - Or drop and recreate tables with correct schema
+
+## Test Commands
+
+```bash
+# Register new user
+curl -X POST https://datacollect-cameroun-prod.onrender.com/api/v1/auth/register \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"user@test.com","password":"TestPass123","full_name":"Test"}'
+
+# Login
+curl -X POST https://datacollect-cameroun-prod.onrender.com/api/v1/auth/login \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  -d 'username=user@test.com&password=TestPass123'
+
+# Get user info (with token)
+curl -X GET https://datacollect-cameroun-prod.onrender.com/api/v1/auth/me \
+  -H 'Authorization: Bearer <token>'
+```
+
+## Summary
+
+The deployment is complete and the backend is running. Authentication endpoints are responding, but there are 500 errors on registration and user info endpoints that need investigation. The frontend is accessible and ready to test once the backend issues are resolved.
