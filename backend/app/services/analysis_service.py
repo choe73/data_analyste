@@ -95,42 +95,69 @@ class AnalysisService:
                 except Exception:
                     pass
 
-        # Load from RawData (JSON) by dataset name
+        # Load from ProcessedData by dataset_id
         result = await self.db.execute(
-            select(RawData).where(RawData.dataset_name == ds.name).limit(MAX_ROWS)
+            select(ProcessedData).where(ProcessedData.dataset_id == dataset_id).limit(MAX_ROWS)
         )
-        raw_rows = result.scalars().all()
-        if raw_rows:
+        processed_rows = result.scalars().all()
+        if processed_rows:
             try:
-                # Combine all raw data - each row has a data field that's a dict
+                # Convert ProcessedData rows to dictionaries
                 all_data = []
-                for row in raw_rows:
-                    # row.data is already a dict (SQLAlchemy deserializes JSON)
-                    if isinstance(row.data, dict):
-                        all_data.append(row.data)
-                    elif isinstance(row.data, list):
-                        all_data.extend(row.data)
+                for row in processed_rows:
+                    record = {
+                        "region": row.region,
+                        "indicator": row.indicator,
+                        "value": float(row.numeric_value) if row.numeric_value else None,
+                        "date": row.date_value,
+                        "text_value": row.text_value,
+                    }
+                    
+                    # Extract meta_info fields if available
+                    if row.meta_info and isinstance(row.meta_info, dict):
+                        if "temperature" in row.meta_info:
+                            record["temp"] = row.meta_info["temperature"]
+                        if "T2M" in row.meta_info:
+                            record["temp"] = row.meta_info["T2M"]
+                        if record.get("value") is not None:
+                            record["temp"] = record["value"]
+                        
+                        if "precipitation" in row.meta_info:
+                            record["precip"] = row.meta_info["precipitation"]
+                        if "PRECTOTCORR" in row.meta_info:
+                            record["precip"] = row.meta_info["PRECTOTCORR"]
+                        
+                        if "humidity" in row.meta_info:
+                            record["humidity"] = row.meta_info["humidity"]
+                        if "RH2M" in row.meta_info:
+                            record["humidity"] = row.meta_info["RH2M"]
+                        
+                        if "wind_speed" in row.meta_info:
+                            record["wind"] = row.meta_info["wind_speed"]
+                        if "WS10M" in row.meta_info:
+                            record["wind"] = row.meta_info["WS10M"]
+                        
+                        for key, val in row.meta_info.items():
+                            if key not in record and isinstance(val, (int, float)):
+                                record[key] = val
+                    
+                    all_data.append(record)
                 
                 if all_data:
                     df = pd.DataFrame(all_data)
-                    # Convert date columns to datetime
-                    for col in df.columns:
-                        if 'date' in col.lower():
-                            try:
-                                df[col] = pd.to_datetime(df[col])
-                            except Exception:
-                                pass
+                    # Ensure date column is datetime
+                    if 'date' in df.columns:
+                        df['date'] = pd.to_datetime(df['date'], errors='coerce')
                     if len(df) > MAX_ROWS:
                         df = df.sample(n=MAX_ROWS, random_state=42)
                     return df
             except Exception as e:
-                # Log the error for debugging
                 import traceback
-                print(f"Error loading from RawData: {e}")
+                print(f"Error loading from ProcessedData: {e}")
                 traceback.print_exc()
                 pass
 
-        # Fallback: load from ProcessedData by domain
+        # Fallback: load from RawData by dataset name (for sample data)
         if ds.domain:
             result = await self.db.execute(
                 select(ProcessedData).where(ProcessedData.domain == ds.domain).limit(MAX_ROWS)
