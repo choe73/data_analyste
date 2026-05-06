@@ -58,6 +58,8 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)) ->
             "role": user.role,
             "is_active": user.is_active,
             "is_verified": user.is_verified,
+            "created_at": user.created_at,
+            "last_login": user.last_login,
         }
     except HTTPException:
         raise
