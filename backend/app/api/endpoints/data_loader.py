@@ -403,14 +403,15 @@ async def load_sample_cameroon_data(db: AsyncSession = Depends(get_db)):
             for row_data in dataset_info["rows"]:
                 await db.execute(
                     text("""
-                        INSERT INTO raw_data (source, dataset_name, domain, data, collected_at)
-                        VALUES (:source, :dataset_name, :domain, :data, :collected_at)
+                        INSERT INTO raw_data (source, dataset_name, domain, data, row_data, collected_at)
+                        VALUES (:source, :dataset_name, :domain, :data, :row_data, :collected_at)
                     """),
                     {
                         "source": "sample",
                         "dataset_name": dataset_name,
                         "domain": dataset_info["domain"],
                         "data": json.dumps(row_data),
+                        "row_data": json.dumps(row_data),
                         "collected_at": datetime.utcnow(),
                     }
                 )
