@@ -95,125 +95,68 @@ class AnalysisService:
                 except Exception:
                     pass
 
-        # Load from ProcessedData by dataset_id
-        result = await self.db.execute(
-            select(ProcessedData).where(ProcessedData.dataset_id == dataset_id).limit(MAX_ROWS)
-        )
-        processed_rows = result.scalars().all()
-        if processed_rows:
-            try:
-                # Convert ProcessedData rows to dictionaries
-                all_data = []
-                for row in processed_rows:
-                    record = {
-                        "region": row.region,
-                        "indicator": row.indicator,
-                        "value": float(row.numeric_value) if row.numeric_value else None,
-                        "date": row.date_value,
-                        "text_value": row.text_value,
-                    }
-                    
-                    # Extract meta_info fields if available
-                    if row.meta_info and isinstance(row.meta_info, dict):
-                        if "temperature" in row.meta_info:
-                            record["temp"] = row.meta_info["temperature"]
-                        if "T2M" in row.meta_info:
-                            record["temp"] = row.meta_info["T2M"]
-                        if record.get("value") is not None:
-                            record["temp"] = record["value"]
-                        
-                        if "precipitation" in row.meta_info:
-                            record["precip"] = row.meta_info["precipitation"]
-                        if "PRECTOTCORR" in row.meta_info:
-                            record["precip"] = row.meta_info["PRECTOTCORR"]
-                        
-                        if "humidity" in row.meta_info:
-                            record["humidity"] = row.meta_info["humidity"]
-                        if "RH2M" in row.meta_info:
-                            record["humidity"] = row.meta_info["RH2M"]
-                        
-                        if "wind_speed" in row.meta_info:
-                            record["wind"] = row.meta_info["wind_speed"]
-                        if "WS10M" in row.meta_info:
-                            record["wind"] = row.meta_info["WS10M"]
-                        
-                        for key, val in row.meta_info.items():
-                            if key not in record and isinstance(val, (int, float)):
-                                record[key] = val
-                    
-                    all_data.append(record)
-                
-                if all_data:
-                    df = pd.DataFrame(all_data)
-                    # Ensure date column is datetime
-                    if 'date' in df.columns:
-                        df['date'] = pd.to_datetime(df['date'], errors='coerce')
-                    if len(df) > MAX_ROWS:
-                        df = df.sample(n=MAX_ROWS, random_state=42)
-                    return df
-            except Exception as e:
-                import traceback
-                print(f"Error loading from ProcessedData: {e}")
-                traceback.print_exc()
-                pass
-
-        # Fallback: load from RawData by dataset name (for sample data)
+        # Load from ProcessedData by domain (matching dataset domain)
         if ds.domain:
             result = await self.db.execute(
                 select(ProcessedData).where(ProcessedData.domain == ds.domain).limit(MAX_ROWS)
             )
-            rows = result.scalars().all()
-            if rows:
-                data_list = []
-                for row in rows:
-                    # Build base record
-                    record = {
-                        "region": row.region,
-                        "indicator": row.indicator,
-                        "value": float(row.numeric_value) if row.numeric_value else None,
-                        "date": row.date_value,
-                        "text_value": row.text_value,
-                    }
+            processed_rows = result.scalars().all()
+            if processed_rows:
+                try:
+                    # Convert ProcessedData rows to dictionaries
+                    all_data = []
+                    for row in processed_rows:
+                        record = {
+                            "region": row.region,
+                            "indicator": row.indicator,
+                            "value": float(row.numeric_value) if row.numeric_value else None,
+                            "date": row.date_value,
+                            "text_value": row.text_value,
+                        }
+                        
+                        # Extract meta_info fields if available
+                        if row.meta_info and isinstance(row.meta_info, dict):
+                            if "temperature" in row.meta_info:
+                                record["temp"] = row.meta_info["temperature"]
+                            if "T2M" in row.meta_info:
+                                record["temp"] = row.meta_info["T2M"]
+                            if record.get("value") is not None:
+                                record["temp"] = record["value"]
+                            
+                            if "precipitation" in row.meta_info:
+                                record["precip"] = row.meta_info["precipitation"]
+                            if "PRECTOTCORR" in row.meta_info:
+                                record["precip"] = row.meta_info["PRECTOTCORR"]
+                            
+                            if "humidity" in row.meta_info:
+                                record["humidity"] = row.meta_info["humidity"]
+                            if "RH2M" in row.meta_info:
+                                record["humidity"] = row.meta_info["RH2M"]
+                            
+                            if "wind_speed" in row.meta_info:
+                                record["wind"] = row.meta_info["wind_speed"]
+                            if "WS10M" in row.meta_info:
+                                record["wind"] = row.meta_info["WS10M"]
+                            
+                            for key, val in row.meta_info.items():
+                                if key not in record and isinstance(val, (int, float)):
+                                    record[key] = val
+                        
+                        all_data.append(record)
                     
-                    # Extract meta_info fields if available (for meteorological data)
-                    if row.meta_info and isinstance(row.meta_info, dict):
-                        # Map common meteorological fields
-                        if "temperature" in row.meta_info:
-                            record["temp"] = row.meta_info["temperature"]
-                        if "T2M" in row.meta_info:
-                            record["temp"] = row.meta_info["T2M"]
-                        # Temperature is in value column, so map it
-                        if record.get("value") is not None:
-                            record["temp"] = record["value"]
-                        
-                        if "precipitation" in row.meta_info:
-                            record["precip"] = row.meta_info["precipitation"]
-                        if "PRECTOTCORR" in row.meta_info:
-                            record["precip"] = row.meta_info["PRECTOTCORR"]
-                        
-                        if "humidity" in row.meta_info:
-                            record["humidity"] = row.meta_info["humidity"]
-                        if "RH2M" in row.meta_info:
-                            record["humidity"] = row.meta_info["RH2M"]
-                        
-                        if "wind_speed" in row.meta_info:
-                            record["wind"] = row.meta_info["wind_speed"]
-                        if "WS10M" in row.meta_info:
-                            record["wind"] = row.meta_info["WS10M"]
-                        
-                        # Add any other meta fields
-                        for key, val in row.meta_info.items():
-                            if key not in record and isinstance(val, (int, float)):
-                                record[key] = val
-                    
-                    data_list.append(record)
-                
-                if data_list:
-                    df = pd.DataFrame(data_list)
-                    # Ensure date column is datetime
-                    if 'date' in df.columns:
-                        df['date'] = pd.to_datetime(df['date'], errors='coerce')
-                    return df
+                    if all_data:
+                        df = pd.DataFrame(all_data)
+                        # Ensure date column is datetime
+                        if 'date' in df.columns:
+                            df['date'] = pd.to_datetime(df['date'], errors='coerce')
+                        if len(df) > MAX_ROWS:
+                            df = df.sample(n=MAX_ROWS, random_state=42)
+                        return df
+                except Exception as e:
+                    import traceback
+                    print(f"Error loading from ProcessedData: {e}")
+                    traceback.print_exc()
+                    pass
 
         return None
 
