@@ -27,6 +27,7 @@ from app.api.endpoints import (
     init_tables,
     data_sources,
     monitoring,
+    data_loader,
 )
 
 # Try to import advanced_scraping, but don't fail if dependencies are missing
@@ -44,6 +45,7 @@ api_router.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 api_router.include_router(public_auth.router, tags=["Public Auth"])
 api_router.include_router(debug_auth.router, prefix="/debug", tags=["Debug"])
 api_router.include_router(datasets.router, prefix="/datasets", tags=["Datasets"])
+api_router.include_router(data_loader.router, prefix="/data-loader", tags=["Data Loader"])
 api_router.include_router(analysis.router, prefix="/analysis", tags=["Analysis"])
 api_router.include_router(smart_analysis.router, prefix="/smart-analysis", tags=["Smart Analysis"])
 api_router.include_router(data_collection.router, prefix="/collect", tags=["Data Collection"])
