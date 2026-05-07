@@ -1,4 +1,5 @@
 # Build stage
+# Force redeploy with SPA routing fix
 FROM node:20-alpine AS builder
 
 WORKDIR /app
