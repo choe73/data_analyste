@@ -5,12 +5,13 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from jose import JWTError, jwt
+from typing import Optional
 
 from app.core.config import settings
 from app.core.database import get_db
 from app.models.user import User
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", auto_error=False)
 
 
 async def get_current_user(
@@ -41,6 +42,32 @@ async def get_current_user(
 
     if user is None:
         raise credentials_exception
+
+    return user
+
+
+async def get_current_user_optional(
+    token: Optional[str] = Depends(oauth2_scheme),
+    db: AsyncSession = Depends(get_db),
+) -> Optional[User]:
+    """Get current authenticated user from JWT token, or None if not authenticated."""
+    if not token:
+        return None
+    
+    try:
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        )
+        user_id: str = payload.get("sub")
+        if user_id is None:
+            return None
+    except JWTError:
+        return None
+
+    # Load user without relationships to avoid schema mismatch
+    query = select(User).where(User.id == int(user_id))
+    result = await db.execute(query)
+    user = result.scalar_one_or_none()
 
     return user
 

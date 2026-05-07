@@ -193,37 +193,28 @@ class AnalysisService:
                         record = {
                             "region": row.region,
                             "indicator": row.indicator,
-                            "value": float(row.numeric_value) if row.numeric_value else None,
                             "date": row.date_value,
-                            "text_value": row.text_value,
                         }
+                        
+                        # Use indicator name as column name, numeric_value as value
+                        # This creates columns like "GDP", "Population", "Temperature", etc.
+                        if row.indicator and row.numeric_value is not None:
+                            # Normalize indicator name to lowercase, replace spaces with underscore
+                            col_name = str(row.indicator).lower().replace(" ", "_").replace("-", "_")
+                            record[col_name] = float(row.numeric_value)
+                        
+                        # Also add numeric_value as fallback
+                        if row.numeric_value is not None:
+                            record["value"] = float(row.numeric_value)
+                        
+                        # Add text_value if available
+                        if row.text_value:
+                            record["text_value"] = row.text_value
                         
                         # Extract meta_info fields if available
                         if row.meta_info and isinstance(row.meta_info, dict):
-                            if "temperature" in row.meta_info:
-                                record["temp"] = row.meta_info["temperature"]
-                            if "T2M" in row.meta_info:
-                                record["temp"] = row.meta_info["T2M"]
-                            if record.get("value") is not None:
-                                record["temp"] = record["value"]
-                            
-                            if "precipitation" in row.meta_info:
-                                record["precip"] = row.meta_info["precipitation"]
-                            if "PRECTOTCORR" in row.meta_info:
-                                record["precip"] = row.meta_info["PRECTOTCORR"]
-                            
-                            if "humidity" in row.meta_info:
-                                record["humidity"] = row.meta_info["humidity"]
-                            if "RH2M" in row.meta_info:
-                                record["humidity"] = row.meta_info["RH2M"]
-                            
-                            if "wind_speed" in row.meta_info:
-                                record["wind"] = row.meta_info["wind_speed"]
-                            if "WS10M" in row.meta_info:
-                                record["wind"] = row.meta_info["WS10M"]
-                            
                             for key, val in row.meta_info.items():
-                                if key not in record and isinstance(val, (int, float)):
+                                if isinstance(val, (int, float)):
                                     record[key] = val
                         
                         all_data.append(record)
@@ -690,7 +681,7 @@ class AnalysisService:
             X_2d = X
 
         # Calculate average profiles per cluster
-        average_profiles = []
+        average_profiles = {}
         for cid in sorted(unique_labels):
             if cid == -1:
                 continue
@@ -698,10 +689,10 @@ class AnalysisService:
             cluster_data = df_clean[mask][cols].select_dtypes(include=[np.number])
             if len(cluster_data) > 0:
                 avg_profile = cluster_data.mean().to_dict()
-                average_profiles.append({
-                    "cluster": int(cid),
-                    **{k: round(v, 2) if isinstance(v, float) else v for k, v in avg_profile.items()}
-                })
+                average_profiles[str(cid)] = {
+                    k: round(v, 2) if isinstance(v, float) else v 
+                    for k, v in avg_profile.items()
+                }
 
         return ClusteringResult(
             algorithm=request.algorithm,

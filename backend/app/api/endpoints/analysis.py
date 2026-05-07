@@ -26,7 +26,7 @@ from app.services.gemini_service import (
     interpret_with_gemini,
     PLAN_LIMITS,
 )
-from app.api.endpoints.auth import get_current_user
+from app.api.endpoints.auth import get_current_user_optional
 
 router = APIRouter()
 
@@ -356,26 +356,34 @@ async def preview_dataset(
 async def interpret_analysis(
     request: GeminiInterpretRequest,
     db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(get_current_user),
+    current_user: dict = Depends(get_current_user_optional),
 ):
     """Interpret analysis results using Gemini AI."""
-    user_id = current_user.id
-    is_premium = getattr(current_user, 'subscription_type', None) == 'premium'
-    if not is_premium and current_user.subscriptions:
-        active = [s for s in current_user.subscriptions if s.status == "active"]
-        if active and active[0].plan:
-            is_premium = active[0].plan.name in ("standard", "premium")
+    # If no user, use default free tier
+    if not current_user:
+        user_id = None
+        is_premium = False
+    else:
+        user_id = current_user.id
+        is_premium = getattr(current_user, 'subscription_type', None) == 'premium'
+        if not is_premium and current_user.subscriptions:
+            active = [s for s in current_user.subscriptions if s.status == "active"]
+            if active and active[0].plan:
+                is_premium = active[0].plan.name in ("standard", "premium")
 
-    current_count, remaining = await check_gemini_quota(user_id, is_premium, db)
-
-    if remaining <= 0:
-        plan = "premium" if is_premium else "free"
-        limit = PLAN_LIMITS.get(plan, 1)
-        raise HTTPException(
-            status_code=429,
-            detail=f"Quota Gemini epuise ({limit}/heure). Passez a un plan superieur pour plus d'interpretations.",
-            headers={"X-Quota-Limit": str(limit), "X-Quota-Used": str(current_count)},
-        )
+    # Check quota if user is logged in
+    if user_id:
+        current_count, remaining = await check_gemini_quota(user_id, is_premium, db)
+        if remaining <= 0:
+            plan = "premium" if is_premium else "free"
+            limit = PLAN_LIMITS.get(plan, 1)
+            raise HTTPException(
+                status_code=429,
+                detail=f"Quota Gemini epuise ({limit}/heure). Passez a un plan superieur pour plus d'interpretations.",
+                headers={"X-Quota-Limit": str(limit), "X-Quota-Used": str(current_count)},
+            )
+    else:
+        remaining = PLAN_LIMITS.get("free", 1)
 
     try:
         result = await interpret_with_gemini(
@@ -384,7 +392,10 @@ async def interpret_analysis(
             request.user_question,
             domain_hint=getattr(request, 'domain_hint', None),
         )
-        await increment_gemini_quota(user_id, db)
+        
+        # Increment quota if user is logged in
+        if user_id:
+            await increment_gemini_quota(user_id, db)
 
         return GeminiInterpretResponse(
             interpretation=result["interpretation"],
@@ -393,7 +404,7 @@ async def interpret_analysis(
             warnings=result.get("warnings", []),
             domain=result.get("domain"),
             persona=result.get("persona"),
-            quota_remaining=remaining - 1,
+            quota_remaining=remaining - 1 if user_id else remaining,
         )
     except ValueError as e:
         raise HTTPException(status_code=503, detail=str(e))
