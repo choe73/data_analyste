@@ -2,6 +2,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Dict, List
 
 from app.core.database import get_db
 from app.schemas.analysis import (
@@ -30,6 +31,113 @@ from app.api.endpoints.auth import get_current_user
 router = APIRouter()
 
 
+def validate_columns_for_analysis(
+    analysis_type: str,
+    columns_info: Dict[str, List[str]],
+    requested_columns: List[str],
+    target_column: str = None,
+) -> None:
+    """Validate that requested columns are compatible with analysis type."""
+    numeric = columns_info.get("numeric", [])
+    categorical = columns_info.get("categorical", [])
+    unusable = columns_info.get("unusable", [])
+    
+    # Check for unusable columns
+    invalid = [c for c in requested_columns if c in unusable]
+    if invalid:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "error": "incompatible_columns",
+                "message": f"Columns {invalid} are unusable (too many nulls or too many unique values)",
+                "suggestion": f"Use numeric columns: {numeric} or categorical: {categorical}",
+            },
+        )
+    
+    if analysis_type == "descriptive":
+        # Accepts numeric and categorical
+        valid = numeric + categorical
+        invalid = [c for c in requested_columns if c not in valid]
+        if invalid:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "error": "incompatible_columns",
+                    "message": f"Descriptive analysis requires numeric or categorical columns",
+                    "received": invalid,
+                    "suggestion": f"Use: {valid}",
+                },
+            )
+    
+    elif analysis_type == "regression":
+        # Target must be numeric, X must contain at least one numeric
+        if target_column and target_column not in numeric:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "error": "incompatible_columns",
+                    "message": f"Regression target must be numeric",
+                    "received": target_column,
+                    "suggestion": f"Use numeric columns: {numeric}",
+                },
+            )
+        if not any(c in numeric for c in requested_columns):
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "error": "incompatible_columns",
+                    "message": f"Regression requires at least one numeric feature",
+                    "suggestion": f"Use numeric columns: {numeric}",
+                },
+            )
+    
+    elif analysis_type in ("pca", "clustering"):
+        # All columns must be numeric, minimum 2
+        if len(numeric) < 2:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "error": "incompatible_columns",
+                    "message": f"{analysis_type.upper()} requires minimum 2 numeric columns",
+                    "available_numeric": numeric,
+                    "suggestion": f"Dataset has only {len(numeric)} numeric columns",
+                },
+            )
+        invalid = [c for c in requested_columns if c not in numeric]
+        if invalid:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "error": "incompatible_columns",
+                    "message": f"{analysis_type.upper()} requires all numeric columns",
+                    "received": invalid,
+                    "suggestion": f"Use numeric columns: {numeric}",
+                },
+            )
+    
+    elif analysis_type == "classification":
+        # Target must be categorical with 2-20 classes, X must contain numeric
+        if target_column and target_column not in categorical:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "error": "incompatible_columns",
+                    "message": f"Classification target must be categorical",
+                    "received": target_column,
+                    "suggestion": f"Use categorical columns: {categorical}",
+                },
+            )
+        if not any(c in numeric for c in requested_columns):
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "error": "incompatible_columns",
+                    "message": f"Classification requires at least one numeric feature",
+                    "suggestion": f"Use numeric columns: {numeric}",
+                },
+            )
+
+
 @router.post("/descriptive", response_model=DescriptiveAnalysisResponse)
 async def descriptive_analysis(
     request: DescriptiveRequest,
@@ -52,8 +160,27 @@ async def regression_analysis(
     """Perform regression analysis."""
     service = AnalysisService(db)
     try:
+        # Load dataset to classify columns
+        df = await service._load_dataset(request.dataset_id)
+        if df is None or df.empty:
+            raise HTTPException(status_code=400, detail="Dataset is empty")
+        
+        # Classify columns
+        columns_info = service.classify_columns(df)
+        
+        # Validate columns
+        all_cols = [request.target_column] + request.feature_columns
+        validate_columns_for_analysis(
+            "regression",
+            columns_info,
+            all_cols,
+            target_column=request.target_column,
+        )
+        
         result = await service.regression_analysis(request)
         return result
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -66,8 +193,21 @@ async def pca_analysis(
     """Perform Principal Component Analysis."""
     service = AnalysisService(db)
     try:
+        # Load dataset to classify columns
+        df = await service._load_dataset(request.dataset_id)
+        if df is None or df.empty:
+            raise HTTPException(status_code=400, detail="Dataset is empty")
+        
+        # Classify columns
+        columns_info = service.classify_columns(df)
+        
+        # Validate columns
+        validate_columns_for_analysis("pca", columns_info, request.columns)
+        
         result = await service.pca_analysis(request)
         return result
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -81,8 +221,27 @@ async def classification_analysis(
     """Perform supervised classification."""
     service = AnalysisService(db)
     try:
+        # Load dataset to classify columns
+        df = await service._load_dataset(request.dataset_id)
+        if df is None or df.empty:
+            raise HTTPException(status_code=400, detail="Dataset is empty")
+        
+        # Classify columns
+        columns_info = service.classify_columns(df)
+        
+        # Validate columns
+        all_cols = [request.target_column] + request.feature_columns
+        validate_columns_for_analysis(
+            "classification",
+            columns_info,
+            all_cols,
+            target_column=request.target_column,
+        )
+        
         result = await service.classification_analysis(request)
         return result
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -95,8 +254,21 @@ async def clustering_analysis(
     """Perform unsupervised clustering."""
     service = AnalysisService(db)
     try:
+        # Load dataset to classify columns
+        df = await service._load_dataset(request.dataset_id)
+        if df is None or df.empty:
+            raise HTTPException(status_code=400, detail="Dataset is empty")
+        
+        # Classify columns
+        columns_info = service.classify_columns(df)
+        
+        # Validate columns
+        validate_columns_for_analysis("clustering", columns_info, request.columns)
+        
         result = await service.clustering_analysis(request)
         return result
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
