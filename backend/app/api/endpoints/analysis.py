@@ -26,7 +26,7 @@ from app.services.gemini_service import (
     interpret_with_gemini,
     PLAN_LIMITS,
 )
-from app.api.endpoints.auth import get_current_user_optional
+from app.core.auth import get_current_user_optional
 
 router = APIRouter()
 
