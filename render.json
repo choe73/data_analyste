@@ -1,6 +1,12 @@
 {
   "buildCommand": "npm --prefix frontend ci && npm --prefix frontend run build",
   "startCommand": "npm --prefix frontend preview",
+  "routes": [
+    {
+      "source": "/*",
+      "destination": "/index.html"
+    }
+  ],
   "envVars": [
     {
       "key": "VITE_API_URL",

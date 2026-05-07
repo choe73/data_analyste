@@ -2,12 +2,22 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import fs from 'fs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
+// Plugin to copy _redirects file to dist
+const copyRedirectsPlugin = {
+  name: 'copy-redirects',
+  writeBundle() {
+    const redirectsContent = '/* /index.html 200\n'
+    fs.writeFileSync(path.join(__dirname, 'dist', '_redirects'), redirectsContent)
+  }
+}
+
 // https://vitejs.dev/config/ - build v2.2
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), copyRedirectsPlugin],
   resolve: {
     alias: {
       '@/lib/api': path.resolve(__dirname, './src/lib/api.ts'),
