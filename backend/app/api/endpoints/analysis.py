@@ -425,7 +425,7 @@ async def unified_preview(
     - If empty, returns all available domains
     """
     from app.models.processed_data import ProcessedData
-    from sqlalchemy import select, and_
+    from sqlalchemy import select
     
     service = AnalysisService(db)
     
