@@ -30,17 +30,35 @@ async def list_datasets(
     for ds in rows:
         # Handle columns_info - could be list or string
         columns = []
+        column_types = {}
         if ds.columns_info:
             if isinstance(ds.columns_info, str):
                 # If it's a string, try to parse it
                 import json
                 try:
                     columns_data = json.loads(ds.columns_info)
-                    columns = [c.get("name", c) if isinstance(c, dict) else c for c in columns_data]
+                    for c in columns_data:
+                        if isinstance(c, dict):
+                            col_name = c.get("name", c)
+                            col_type = c.get("type", "text")
+                            columns.append(col_name)
+                            column_types[col_name] = col_type
+                        else:
+                            columns.append(c)
+                            column_types[c] = "text"
                 except:
                     columns = []
+                    column_types = {}
             elif isinstance(ds.columns_info, list):
-                columns = [c.get("name", c) if isinstance(c, dict) else c for c in ds.columns_info]
+                for c in ds.columns_info:
+                    if isinstance(c, dict):
+                        col_name = c.get("name", c)
+                        col_type = c.get("type", "text")
+                        columns.append(col_name)
+                        column_types[col_name] = col_type
+                    else:
+                        columns.append(c)
+                        column_types[c] = "text"
         
         results.append({
             "id": ds.id,
@@ -51,6 +69,7 @@ async def list_datasets(
             "row_count": ds.row_count or 0,
             "column_count": ds.column_count or 0,
             "columns": columns,
+            "column_types": column_types,
             "created_at": ds.created_at.isoformat() if ds.created_at else None,
         })
 
@@ -87,17 +106,35 @@ async def get_dataset(
     
     # Handle columns_info - could be list or string
     columns = []
+    column_types = {}
     if row.columns_info:
         if isinstance(row.columns_info, str):
             # If it's a string, try to parse it
             import json
             try:
                 columns_data = json.loads(row.columns_info)
-                columns = [c.get("name", c) if isinstance(c, dict) else c for c in columns_data]
+                for c in columns_data:
+                    if isinstance(c, dict):
+                        col_name = c.get("name", c)
+                        col_type = c.get("type", "text")
+                        columns.append(col_name)
+                        column_types[col_name] = col_type
+                    else:
+                        columns.append(c)
+                        column_types[c] = "text"
             except:
                 columns = []
+                column_types = {}
         elif isinstance(row.columns_info, list):
-            columns = [c.get("name", c) if isinstance(c, dict) else c for c in row.columns_info]
+            for c in row.columns_info:
+                if isinstance(c, dict):
+                    col_name = c.get("name", c)
+                    col_type = c.get("type", "text")
+                    columns.append(col_name)
+                    column_types[col_name] = col_type
+                else:
+                    columns.append(c)
+                    column_types[c] = "text"
     
     return {
         "id": row.id,
@@ -108,5 +145,6 @@ async def get_dataset(
         "row_count": row.row_count or 0,
         "column_count": row.column_count or 0,
         "columns": columns,
+        "column_types": column_types,
         "created_at": row.created_at.isoformat() if row.created_at else None,
     }
