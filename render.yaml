@@ -14,10 +14,10 @@ services:
     plan: free
     region: oregon
     
-  - type: web
+  - type: static
     name: datacollect-frontend
-    runtime: docker
-    dockerfilePath: frontend/Dockerfile
+    buildCommand: cd frontend && npm ci --legacy-peer-deps && npm run build
+    staticPublishPath: frontend/dist
     envVars:
       - key: VITE_API_URL
         value: https://datacollect-cameroun-prod.onrender.com
@@ -26,10 +26,10 @@ services:
     plan: free
     region: oregon
 
-  - type: web
+  - type: static
     name: datacollect-frontend-secondary
-    runtime: docker
-    dockerfilePath: frontend/Dockerfile
+    buildCommand: cd frontend && npm ci --legacy-peer-deps && npm run build
+    staticPublishPath: frontend/dist
     envVars:
       - key: VITE_API_URL
         value: https://datacollect-cameroun-prod.onrender.com
