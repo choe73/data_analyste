@@ -39,6 +39,37 @@ class AnalysisService:
     def __init__(self, db: AsyncSession):
         self.db = db
 
+    def _clean_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Automatically clean dataframe: remove nulls, duplicates, outliers."""
+        # Remove columns with >90% nulls
+        df = df.dropna(axis=1, thresh=len(df) * 0.1)
+        
+        # Fill numeric columns with median
+        numeric_cols = df.select_dtypes(include=[np.number]).columns
+        for col in numeric_cols:
+            if df[col].isnull().any():
+                df[col].fillna(df[col].median(), inplace=True)
+        
+        # Fill categorical columns with mode
+        categorical_cols = df.select_dtypes(include=['object']).columns
+        for col in categorical_cols:
+            if df[col].isnull().any():
+                mode_val = df[col].mode()
+                if len(mode_val) > 0:
+                    df[col].fillna(mode_val[0], inplace=True)
+        
+        # Remove exact duplicates
+        df = df.drop_duplicates()
+        
+        # Remove outliers (>5 std from mean) for numeric columns
+        for col in numeric_cols:
+            mean = df[col].mean()
+            std = df[col].std()
+            if std > 0:
+                df = df[np.abs(df[col] - mean) <= 5 * std]
+        
+        return df
+
     def classify_columns(self, df: pd.DataFrame) -> Dict[str, List[str]]:
         """Classify columns by type: numeric, categorical, datetime, unusable."""
         numeric = []
@@ -107,7 +138,7 @@ class AnalysisService:
                         df = pd.DataFrame(imp.data_json)
                         if len(df) > MAX_ROWS:
                             df = df.sample(n=MAX_ROWS, random_state=42)
-                        return df
+                        return self._clean_dataframe(df)
                     except Exception:
                         pass
                 # Fallback: try file on disk
@@ -124,7 +155,7 @@ class AnalysisService:
                                 df = pd.read_json(imp.storage_path)
                             if len(df) > MAX_ROWS:
                                 df = df.sample(n=MAX_ROWS, random_state=42)
-                            return df
+                            return self._clean_dataframe(df)
                         except Exception:
                             pass
             return None
@@ -143,7 +174,8 @@ class AnalysisService:
             import os
             if os.path.exists(ds.file_path):
                 try:
-                    return pd.read_csv(ds.file_path)
+                    df = pd.read_csv(ds.file_path)
+                    return self._clean_dataframe(df)
                 except Exception:
                     pass
 
@@ -203,7 +235,7 @@ class AnalysisService:
                             df['date'] = pd.to_datetime(df['date'], errors='coerce')
                         if len(df) > MAX_ROWS:
                             df = df.sample(n=MAX_ROWS, random_state=42)
-                        return df
+                        return self._clean_dataframe(df)
                 except Exception as e:
                     import traceback
                     print(f"Error loading from ProcessedData: {e}")
