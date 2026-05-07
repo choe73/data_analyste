@@ -167,7 +167,7 @@ function RegressionPanel({ datasetId, columns, onResult }: { datasetId: number; 
           <label className="text-sm font-medium block mb-1">Variable cible (Y)</label>
           <Select value={target} onValueChange={setTarget}>
             <SelectTrigger><SelectValue placeholder="Choisir Y" /></SelectTrigger>
-            <SelectContent>{columns.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+            <SelectContent>{columns.filter(c => c && c.trim() !== '').map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
           </Select>
         </div>
         <div>
@@ -353,7 +353,7 @@ function ClassificationPanel({ datasetId, columns, onResult }: { datasetId: numb
           <label className="text-sm font-medium block mb-1">Variable cible</label>
           <Select value={target} onValueChange={setTarget}>
             <SelectTrigger><SelectValue placeholder="Choisir la cible" /></SelectTrigger>
-            <SelectContent>{columns.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+            <SelectContent>{columns.filter(c => c && c.trim() !== '').map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
           </Select>
         </div>
         <div>
