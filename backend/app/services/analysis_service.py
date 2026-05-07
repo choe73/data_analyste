@@ -182,51 +182,59 @@ class AnalysisService:
         # Load from ProcessedData by domain (matching dataset domain)
         if ds.domain:
             result = await self.db.execute(
-                select(ProcessedData).where(ProcessedData.domain == ds.domain).limit(MAX_ROWS)
+                select(ProcessedData).where(ProcessedData.domain == ds.domain).limit(MAX_ROWS * 10)
             )
             processed_rows = result.scalars().all()
             if processed_rows:
                 try:
-                    # Convert ProcessedData rows to dictionaries
-                    all_data = []
+                    # Step 1: Convert to long format (date, region, indicator, value)
+                    raw_records = []
                     for row in processed_rows:
-                        record = {
-                            "region": row.region,
-                            "indicator": row.indicator,
-                            "date": row.date_value,
-                        }
+                        # Skip rows with missing critical fields
+                        if not row.indicator or row.date_value is None:
+                            continue
                         
-                        # Use indicator name as column name, numeric_value as value
-                        # This creates columns like "GDP", "Population", "Temperature", etc.
-                        if row.indicator and row.numeric_value is not None:
-                            # Normalize indicator name to lowercase, replace spaces with underscore
-                            col_name = str(row.indicator).lower().replace(" ", "_").replace("-", "_")
-                            record[col_name] = float(row.numeric_value)
+                        # Get numeric value (try numeric_value first, then text_value)
+                        val = row.numeric_value
+                        if val is None:
+                            try:
+                                val = float(row.text_value) if row.text_value else np.nan
+                            except (ValueError, TypeError):
+                                val = np.nan
                         
-                        # Also add numeric_value as fallback
-                        if row.numeric_value is not None:
-                            record["value"] = float(row.numeric_value)
+                        # Normalize indicator name: lowercase, replace spaces/dashes/slashes
+                        indicator_name = str(row.indicator).lower().replace(" ", "_").replace("-", "_").replace("/", "_")
                         
-                        # Add text_value if available
-                        if row.text_value:
-                            record["text_value"] = row.text_value
-                        
-                        # Extract meta_info fields if available
-                        if row.meta_info and isinstance(row.meta_info, dict):
-                            for key, val in row.meta_info.items():
-                                if isinstance(val, (int, float)):
-                                    record[key] = val
-                        
-                        all_data.append(record)
+                        raw_records.append({
+                            "date": row.date_value.replace(tzinfo=None) if hasattr(row.date_value, 'replace') else row.date_value,
+                            "region": row.region or "National",
+                            "indicator": indicator_name,
+                            "value": float(val) if val is not None and not pd.isna(val) else np.nan,
+                        })
                     
-                    if all_data:
-                        df = pd.DataFrame(all_data)
-                        # Ensure date column is datetime
-                        if 'date' in df.columns:
-                            df['date'] = pd.to_datetime(df['date'], errors='coerce')
-                        if len(df) > MAX_ROWS:
-                            df = df.sample(n=MAX_ROWS, random_state=42)
-                        return self._clean_dataframe(df)
+                    if raw_records:
+                        # Step 2: Create long format dataframe
+                        df_long = pd.DataFrame(raw_records)
+                        
+                        # Step 3: PIVOT - Convert from long to wide format
+                        # This groups by (date, region) and makes each indicator a column
+                        df_wide = df_long.pivot_table(
+                            index=["date", "region"],
+                            columns="indicator",
+                            values="value",
+                            aggfunc="mean"  # If duplicates, take mean
+                        ).reset_index()
+                        
+                        # Step 4: Flatten column names (remove MultiIndex if present)
+                        if isinstance(df_wide.columns, pd.MultiIndex):
+                            df_wide.columns = ["_".join(col).strip("_") if col[1] else col[0] for col in df_wide.columns.values]
+                        
+                        # Step 5: Sample if too large
+                        if len(df_wide) > MAX_ROWS:
+                            df_wide = df_wide.sample(n=MAX_ROWS, random_state=42)
+                        
+                        # Step 6: Clean and return
+                        return self._clean_dataframe(df_wide)
                 except Exception as e:
                     import traceback
                     print(f"Error loading from ProcessedData: {e}")
