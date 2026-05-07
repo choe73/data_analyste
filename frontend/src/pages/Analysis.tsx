@@ -611,9 +611,13 @@ export function Analysis() {
   // Get numeric and categorical columns from preview
   const numericColumns = preview?.columns?.numeric || []
   const categoricalColumns = preview?.columns?.categorical || []
-  const columns: string[] = allColumns.length > 0 && Object.keys(colTypes).length > 0
-    ? allColumns.filter((c: string) => ['number', 'numeric', 'float', 'int', 'integer'].includes(colTypes[c]))
-    : allColumns
+  
+  // Use numeric columns from preview if available, otherwise filter from dataset
+  const columns: string[] = numericColumns.length > 0 
+    ? numericColumns 
+    : (allColumns.length > 0 && Object.keys(colTypes).length > 0
+        ? allColumns.filter((c: string) => ['number', 'numeric', 'float', 'int', 'integer'].includes(colTypes[c]))
+        : allColumns)
 
   return (
     <div className="space-y-6">

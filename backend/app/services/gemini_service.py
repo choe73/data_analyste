@@ -210,7 +210,7 @@ Reponds UNIQUEMENT en JSON valide (pas de markdown):
   "warnings": ["limite ou mise en garde (si applicable)"]
 }}"""
 
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={settings.GEMINI_API_KEY}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={settings.GEMINI_API_KEY}"
     payload = {
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {"temperature": 0.4, "maxOutputTokens": 1500, "topP": 0.8},
