@@ -539,7 +539,7 @@ function GeminiPanel({ analysisType, analysisData }: { analysisType: string; ana
           <Select value={domain} onValueChange={setDomain}>
             <SelectTrigger className="w-44 h-8 text-xs"><SelectValue placeholder="Domaine (auto)" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Auto-detection</SelectItem>
+              <SelectItem value="auto">Auto-detection</SelectItem>
               {['sante','agriculture','finance','entrepreneuriat','education','environnement'].map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
             </SelectContent>
           </Select>
