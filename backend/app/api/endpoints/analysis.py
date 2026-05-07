@@ -411,3 +411,126 @@ async def interpret_analysis(
         raise HTTPException(status_code=503, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur Gemini: {str(e)}")
+
+
+@router.get("/unified/preview")
+async def unified_preview(
+    domains: str = None,
+    db: AsyncSession = Depends(get_db),
+):
+    """Preview unified data across multiple domains.
+    
+    Query params:
+    - domains: comma-separated list (e.g., "meteo,health,economy")
+    - If empty, returns all available domains
+    """
+    from app.models.processed_data import ProcessedData
+    from sqlalchemy import select, and_
+    
+    service = AnalysisService(db)
+    
+    try:
+        # Parse domains
+        domain_list = []
+        if domains:
+            domain_list = [d.strip() for d in domains.split(",") if d.strip()]
+        
+        # Load data from each domain
+        all_dfs = []
+        domain_info = {}
+        
+        if domain_list:
+            # Load specific domains
+            for domain in domain_list:
+                result = await db.execute(
+                    select(ProcessedData).where(
+                        ProcessedData.domain == domain
+                    ).limit(5000)
+                )
+                rows = result.scalars().all()
+                if rows:
+                    domain_info[domain] = len(rows)
+                    all_dfs.append((domain, rows))
+        else:
+            # Load all domains
+            result = await db.execute(
+                select(ProcessedData.domain).distinct()
+            )
+            domains_in_db = result.scalars().all()
+            
+            for domain in domains_in_db:
+                result = await db.execute(
+                    select(ProcessedData).where(
+                        ProcessedData.domain == domain
+                    ).limit(5000)
+                )
+                rows = result.scalars().all()
+                if rows:
+                    domain_info[domain] = len(rows)
+                    all_dfs.append((domain, rows))
+        
+        if not all_dfs:
+            raise HTTPException(status_code=400, detail="No data found for selected domains")
+        
+        # Convert each domain to wide format and merge
+        merged_df = None
+        for domain, rows in all_dfs:
+            raw_records = []
+            for row in rows:
+                if not row.indicator or row.date_value is None:
+                    continue
+                
+                val = row.numeric_value
+                if val is None:
+                    try:
+                        val = float(row.text_value) if row.text_value else None
+                    except (ValueError, TypeError):
+                        val = None
+                
+                indicator_name = str(row.indicator).lower().replace(" ", "_").replace("-", "_")
+                
+                raw_records.append({
+                    "date": row.date_value.replace(tzinfo=None) if hasattr(row.date_value, 'replace') else row.date_value,
+                    "region": row.region or "National",
+                    f"{domain}_{indicator_name}": float(val) if val is not None else None,
+                })
+            
+            if raw_records:
+                df_long = pd.DataFrame(raw_records)
+                df_wide = df_long.pivot_table(
+                    index=["date", "region"],
+                    columns=None,
+                    values=None,
+                    aggfunc="mean"
+                ).reset_index()
+                
+                # Merge with existing dataframe
+                if merged_df is None:
+                    merged_df = df_wide
+                else:
+                    merged_df = merged_df.merge(
+                        df_wide,
+                        on=["date", "region"],
+                        how="outer"
+                    )
+        
+        if merged_df is None or merged_df.empty:
+            raise HTTPException(status_code=400, detail="Failed to merge domain data")
+        
+        # Classify columns
+        columns_info = service.classify_columns(merged_df)
+        
+        # Get sample
+        sample = merged_df.head(5).where(pd.notna(merged_df), None).to_dict(orient="records")
+        
+        return {
+            "row_count": len(merged_df),
+            "domains": list(domain_info.keys()),
+            "domain_row_counts": domain_info,
+            "columns": columns_info,
+            "sample": sample,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error loading unified data: {str(e)}")
