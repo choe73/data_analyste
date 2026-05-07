@@ -39,6 +39,58 @@ class AnalysisService:
     def __init__(self, db: AsyncSession):
         self.db = db
 
+    def classify_columns(self, df: pd.DataFrame) -> Dict[str, List[str]]:
+        """Classify columns by type: numeric, categorical, datetime, unusable."""
+        numeric = []
+        categorical = []
+        datetime_cols = []
+        unusable = []
+        
+        for col in df.columns:
+            # Skip if more than 90% null
+            if df[col].isnull().sum() / len(df) > 0.9:
+                unusable.append(col)
+                continue
+            
+            # Try datetime
+            if df[col].dtype == 'object':
+                try:
+                    pd.to_datetime(df[col], errors='coerce')
+                    non_null_dates = pd.to_datetime(df[col], errors='coerce').notna().sum()
+                    if non_null_dates > len(df) * 0.5:  # At least 50% valid dates
+                        datetime_cols.append(col)
+                        continue
+                except:
+                    pass
+            
+            # Check numeric
+            if pd.api.types.is_numeric_dtype(df[col]):
+                non_null = df[col].dropna()
+                if len(non_null.unique()) >= 2:
+                    numeric.append(col)
+                else:
+                    unusable.append(col)
+                continue
+            
+            # Check categorical
+            if df[col].dtype == 'object':
+                unique_count = df[col].nunique()
+                if 2 <= unique_count <= 20:
+                    categorical.append(col)
+                else:
+                    unusable.append(col)
+                continue
+            
+            # Default: unusable
+            unusable.append(col)
+        
+        return {
+            "numeric": numeric,
+            "categorical": categorical,
+            "datetime": datetime_cols,
+            "unusable": unusable,
+        }
+
     async def _load_dataset(self, dataset_id: int) -> Optional[pd.DataFrame]:
         """Load dataset - negative IDs = user imports, positive IDs = datasets table."""
         # Negative ID = user import (DataImport table)
