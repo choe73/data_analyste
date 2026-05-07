@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -149,7 +149,7 @@ function DescriptivePanel({ datasetId, columns, onResult }: { datasetId: number;
   )
 }
 
-function RegressionPanel({ datasetId, columns, onResult }: { datasetId: number; columns: string[]; onResult?: (data: any) => void }) {
+function RegressionPanel({ datasetId, columns, onResult, numericColumns = [] }: { datasetId: number; columns: string[]; onResult?: (data: any) => void; numericColumns?: string[] }) {
   const [target, setTarget] = useState('')
   const [features, setFeatures] = useState<string[]>([])
   const [method, setMethod] = useState('linear')
@@ -160,6 +160,7 @@ function RegressionPanel({ datasetId, columns, onResult }: { datasetId: number; 
     onSuccess: (data) => onResult?.(data),
   })
   const res: any = mut.data
+  const targetOptions = numericColumns.length > 0 ? numericColumns : columns.filter(c => c && c.trim() !== '')
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -167,7 +168,7 @@ function RegressionPanel({ datasetId, columns, onResult }: { datasetId: number; 
           <label className="text-sm font-medium block mb-1">Variable cible (Y)</label>
           <Select value={target} onValueChange={setTarget}>
             <SelectTrigger><SelectValue placeholder="Choisir Y" /></SelectTrigger>
-            <SelectContent>{columns.filter(c => c && c.trim() !== '').map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+            <SelectContent>{targetOptions.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
           </Select>
         </div>
         <div>
@@ -246,19 +247,20 @@ function RegressionPanel({ datasetId, columns, onResult }: { datasetId: number; 
   )
 }
 
-function PCAPanel({ datasetId, columns, onResult }: { datasetId: number; columns: string[]; onResult?: (data: any) => void }) {
-  const [selected, setSelected] = useState<string[]>(columns.slice(0, 5))
+function PCAPanel({ datasetId, columns, onResult, numericColumns = [] }: { datasetId: number; columns: string[]; onResult?: (data: any) => void; numericColumns?: string[] }) {
+  const [selected, setSelected] = useState<string[]>((numericColumns.length > 0 ? numericColumns : columns).slice(0, 5))
   const [method, setMethod] = useState('kaiser')
   const mut = useMutation({
     mutationFn: () => apiFetch('/api/v1/analysis/pca', { dataset_id: datasetId, columns: selected, standardize: true, method }),
     onSuccess: (data) => onResult?.(data),
   })
   const res: any = mut.data
+  const selectableColumns = numericColumns.length > 0 ? numericColumns : columns
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2 items-center">
         <span className="text-sm font-medium">Variables:</span>
-        {columns.map(c => (
+        {selectableColumns.map(c => (
           <Badge key={c} variant={selected.includes(c) ? 'default' : 'outline'} className="cursor-pointer"
             onClick={() => setSelected(p => p.includes(c) ? p.filter(x => x !== c) : [...p, c])}>{c}</Badge>
         ))}
@@ -335,7 +337,7 @@ function PCAPanel({ datasetId, columns, onResult }: { datasetId: number; columns
   )
 }
 
-function ClassificationPanel({ datasetId, columns, onResult }: { datasetId: number; columns: string[]; onResult?: (data: any) => void }) {
+function ClassificationPanel({ datasetId, columns, onResult, categoricalColumns = [] }: { datasetId: number; columns: string[]; onResult?: (data: any) => void; categoricalColumns?: string[] }) {
   const [target, setTarget] = useState('')
   const [features, setFeatures] = useState<string[]>([])
   const [algo, setAlgo] = useState('random_forest')
@@ -346,6 +348,7 @@ function ClassificationPanel({ datasetId, columns, onResult }: { datasetId: numb
     onSuccess: (data) => onResult?.(data),
   })
   const res: any = mut.data
+  const targetOptions = categoricalColumns.length > 0 ? categoricalColumns : columns.filter(c => c && c.trim() !== '')
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -353,7 +356,7 @@ function ClassificationPanel({ datasetId, columns, onResult }: { datasetId: numb
           <label className="text-sm font-medium block mb-1">Variable cible</label>
           <Select value={target} onValueChange={setTarget}>
             <SelectTrigger><SelectValue placeholder="Choisir la cible" /></SelectTrigger>
-            <SelectContent>{columns.filter(c => c && c.trim() !== '').map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+            <SelectContent>{targetOptions.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
           </Select>
         </div>
         <div>
@@ -435,8 +438,8 @@ function ClassificationPanel({ datasetId, columns, onResult }: { datasetId: numb
   )
 }
 
-function ClusteringPanel({ datasetId, columns, onResult }: { datasetId: number; columns: string[]; onResult?: (data: any) => void }) {
-  const [selected, setSelected] = useState<string[]>(columns.slice(0, 4))
+function ClusteringPanel({ datasetId, columns, onResult, numericColumns = [] }: { datasetId: number; columns: string[]; onResult?: (data: any) => void; numericColumns?: string[] }) {
+  const [selected, setSelected] = useState<string[]>((numericColumns.length > 0 ? numericColumns : columns).slice(0, 4))
   const [algo, setAlgo] = useState('kmeans')
   const [method, setMethod] = useState('auto')
   const mut = useMutation({
@@ -444,11 +447,12 @@ function ClusteringPanel({ datasetId, columns, onResult }: { datasetId: number; 
     onSuccess: (data) => onResult?.(data),
   })
   const res: any = mut.data
+  const selectableColumns = numericColumns.length > 0 ? numericColumns : columns
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2 items-center">
         <span className="text-sm font-medium">Variables:</span>
-        {columns.map(c => (
+        {selectableColumns.map(c => (
           <Badge key={c} variant={selected.includes(c) ? 'default' : 'outline'} className="cursor-pointer"
             onClick={() => setSelected(p => p.includes(c) ? p.filter(x => x !== c) : [...p, c])}>{c}</Badge>
         ))}
@@ -581,15 +585,32 @@ export function Analysis() {
   const [datasetId, setDatasetId] = useState<number | null>(null)
   const [activeTab, setActiveTab] = useState('descriptive')
   const [lastResult, setLastResult] = useState<any>(null)
+  const [preview, setPreview] = useState<any>(null)
 
   const { data: datasets = [] } = useQuery<Dataset[]>({
     queryKey: ['datasets'],
     queryFn: () => apiFetch('/api/v1/datasets'),
   })
-  // Use columns directly from the dataset — no /stats endpoint needed
+  
+  // Fetch preview when dataset changes
+  useEffect(() => {
+    if (datasetId) {
+      apiFetch(`/api/v1/analysis/preview/${datasetId}`)
+        .then(data => setPreview(data))
+        .catch(() => setPreview(null))
+    } else {
+      setPreview(null)
+    }
+  }, [datasetId])
+  
+  // Use columns from preview if available, otherwise from dataset
   const selectedDataset: any = datasets.find((d: any) => String(d.id) === String(datasetId))
   const colTypes: Record<string, string> = selectedDataset?.column_types || {}
   const allColumns: string[] = selectedDataset?.columns || []
+  
+  // Get numeric and categorical columns from preview
+  const numericColumns = preview?.columns?.numeric || []
+  const categoricalColumns = preview?.columns?.categorical || []
   const columns: string[] = allColumns.length > 0 && Object.keys(colTypes).length > 0
     ? allColumns.filter((c: string) => ['number', 'numeric', 'float', 'int', 'integer'].includes(colTypes[c]))
     : allColumns
@@ -638,6 +659,46 @@ export function Analysis() {
         </Card>
       )}
       {datasetId && allColumns.length > 0 && (
+        <div className="space-y-4">
+          {preview?.incompatible_analyses && Object.keys(preview.incompatible_analyses).length > 0 && (
+            <Card className="border-orange-200 bg-orange-50">
+              <CardContent className="p-4">
+                <p className="text-sm font-medium text-orange-900 mb-2">Analyses non disponibles pour ce dataset:</p>
+                <ul className="text-sm text-orange-800 space-y-1">
+                  {Object.entries(preview.incompatible_analyses).map(([analysis, reason]: [string, any]) => (
+                    <li key={analysis}>• <span className="font-medium">{analysis}:</span> {reason}</li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          )}
+          {preview && (
+            <Card className="border-blue-200 bg-blue-50">
+              <CardContent className="p-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                  <div>
+                    <p className="text-blue-600 font-medium">Lignes</p>
+                    <p className="text-lg font-bold text-blue-900">{preview.row_count?.toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <p className="text-blue-600 font-medium">Colonnes numeriques</p>
+                    <p className="text-lg font-bold text-blue-900">{preview.columns?.numeric?.length || 0}</p>
+                  </div>
+                  <div>
+                    <p className="text-blue-600 font-medium">Colonnes categoriques</p>
+                    <p className="text-lg font-bold text-blue-900">{preview.columns?.categorical?.length || 0}</p>
+                  </div>
+                  <div>
+                    <p className="text-blue-600 font-medium">Analyses compatibles</p>
+                    <p className="text-lg font-bold text-blue-900">{preview.compatible_analyses?.length || 0}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      )}
+      {datasetId && allColumns.length > 0 && (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5">
             <TabsTrigger value="descriptive"><BarChart3 className="w-4 h-4 mr-1" />Descriptif</TabsTrigger>
@@ -654,25 +715,25 @@ export function Analysis() {
           </TabsContent>
           <TabsContent value="regression">
             <Card><CardHeader><CardTitle>Regression lineaire</CardTitle></CardHeader>
-              <CardContent className="space-y-4"><RegressionPanel datasetId={datasetId} columns={columns} onResult={setLastResult} />
+              <CardContent className="space-y-4"><RegressionPanel datasetId={datasetId} columns={columns} onResult={setLastResult} numericColumns={numericColumns} />
                 <GeminiPanel analysisType="regression" analysisData={lastResult} /></CardContent>
             </Card>
           </TabsContent>
           <TabsContent value="pca">
             <Card><CardHeader><CardTitle>Analyse en Composantes Principales (ACP)</CardTitle></CardHeader>
-              <CardContent className="space-y-4"><PCAPanel datasetId={datasetId} columns={columns} onResult={setLastResult} />
+              <CardContent className="space-y-4"><PCAPanel datasetId={datasetId} columns={columns} onResult={setLastResult} numericColumns={numericColumns} />
                 <GeminiPanel analysisType="pca" analysisData={lastResult} /></CardContent>
             </Card>
           </TabsContent>
           <TabsContent value="classification">
             <Card><CardHeader><CardTitle>Classification supervisee</CardTitle></CardHeader>
-              <CardContent className="space-y-4"><ClassificationPanel datasetId={datasetId} columns={allColumns} onResult={setLastResult} />
+              <CardContent className="space-y-4"><ClassificationPanel datasetId={datasetId} columns={allColumns} onResult={setLastResult} categoricalColumns={categoricalColumns} />
                 <GeminiPanel analysisType="classification" analysisData={lastResult} /></CardContent>
             </Card>
           </TabsContent>
           <TabsContent value="clustering">
             <Card><CardHeader><CardTitle>Clustering non supervise</CardTitle></CardHeader>
-              <CardContent className="space-y-4"><ClusteringPanel datasetId={datasetId} columns={columns} onResult={setLastResult} />
+              <CardContent className="space-y-4"><ClusteringPanel datasetId={datasetId} columns={columns} onResult={setLastResult} numericColumns={numericColumns} />
                 <GeminiPanel analysisType="clustering" analysisData={lastResult} /></CardContent>
             </Card>
           </TabsContent>
