@@ -3,6 +3,7 @@
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Dict, List
+import pandas as pd
 
 from app.core.database import get_db
 from app.schemas.analysis import (
@@ -336,8 +337,8 @@ async def preview_dataset(
         else:
             incompatible["clustering"] = f"Requires minimum 2 numeric columns (found {numeric_count})"
         
-        # Get sample (first 5 rows)
-        sample = df.head(5).to_dict(orient="records")
+        # Get sample (first 5 rows) - replace NaN with None for JSON serialization
+        sample = df.head(5).where(pd.notna(df), None).to_dict(orient="records")
         
         return {
             "row_count": len(df),

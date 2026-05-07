@@ -731,7 +731,7 @@ export function Analysis() {
           </TabsContent>
           <TabsContent value="classification">
             <Card><CardHeader><CardTitle>Classification supervisee</CardTitle></CardHeader>
-              <CardContent className="space-y-4"><ClassificationPanel datasetId={datasetId} columns={allColumns} onResult={setLastResult} categoricalColumns={categoricalColumns} />
+              <CardContent className="space-y-4"><ClassificationPanel datasetId={datasetId} columns={columns} onResult={setLastResult} categoricalColumns={categoricalColumns} />
                 <GeminiPanel analysisType="classification" analysisData={lastResult} /></CardContent>
             </Card>
           </TabsContent>
