@@ -286,6 +286,72 @@ async def get_analysis_result(
     return result
 
 
+@router.get("/preview/{dataset_id}")
+async def preview_dataset(
+    dataset_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    """Preview dataset: columns, compatible analyses, sample data."""
+    service = AnalysisService(db)
+    try:
+        # Load dataset
+        df = await service._load_dataset(dataset_id)
+        if df is None or df.empty:
+            raise HTTPException(status_code=400, detail="Dataset is empty")
+        
+        # Classify columns
+        columns_info = service.classify_columns(df)
+        
+        # Determine compatible analyses
+        numeric_count = len(columns_info["numeric"])
+        categorical_count = len(columns_info["categorical"])
+        
+        compatible = []
+        incompatible = {}
+        
+        # Descriptive: always compatible if has data
+        compatible.append("descriptive")
+        
+        # Regression: needs at least 1 numeric
+        if numeric_count >= 1:
+            compatible.append("regression")
+        else:
+            incompatible["regression"] = "Requires at least 1 numeric column"
+        
+        # PCA: needs at least 2 numeric
+        if numeric_count >= 2:
+            compatible.append("pca")
+        else:
+            incompatible["pca"] = f"Requires minimum 2 numeric columns (found {numeric_count})"
+        
+        # Classification: needs at least 1 numeric and 1 categorical
+        if numeric_count >= 1 and categorical_count >= 1:
+            compatible.append("classification")
+        else:
+            incompatible["classification"] = "Requires at least 1 numeric and 1 categorical column"
+        
+        # Clustering: needs at least 2 numeric
+        if numeric_count >= 2:
+            compatible.append("clustering")
+        else:
+            incompatible["clustering"] = f"Requires minimum 2 numeric columns (found {numeric_count})"
+        
+        # Get sample (first 5 rows)
+        sample = df.head(5).to_dict(orient="records")
+        
+        return {
+            "row_count": len(df),
+            "columns": columns_info,
+            "compatible_analyses": compatible,
+            "incompatible_analyses": incompatible,
+            "sample": sample,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
 @router.post("/interpret", response_model=GeminiInterpretResponse)
 async def interpret_analysis(
     request: GeminiInterpretRequest,
