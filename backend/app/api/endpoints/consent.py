@@ -10,7 +10,7 @@ from sqlalchemy import select
 from app.core.database import get_db
 from app.models.user import User, UserConsent
 from app.schemas.user import ConsentStatus, ConsentUpdate
-from app.api.endpoints.auth import get_current_active_user
+from app.core.auth import get_current_user_optional
 from app.core.redis import redis_client
 
 router = APIRouter()
@@ -20,7 +20,7 @@ router = APIRouter()
 @router.get("/status/", response_model=ConsentStatus)
 async def get_consent_status(
     request: Request,
-    current_user: Optional[User] = Depends(get_current_active_user),
+    current_user: Optional[User] = Depends(get_current_user_optional),
     db: AsyncSession = Depends(get_db),
 ) -> Any:
     """Get current consent status for user or session."""
@@ -79,7 +79,7 @@ async def update_consent(
     consent: ConsentUpdate,
     request: Request,
     response: Response,
-    current_user: Optional[User] = Depends(get_current_active_user),
+    current_user: Optional[User] = Depends(get_current_user_optional),
     db: AsyncSession = Depends(get_db),
 ) -> Any:
     """Update consent preferences."""

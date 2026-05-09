@@ -289,9 +289,13 @@ function RegressionPanel({ datasetId, columns, numericColumns, onResult }: {
               <SelectValue placeholder="Choisir Y" />
             </SelectTrigger>
             <SelectContent>
-              {availableColumns.map(c => (
-                <SelectItem key={c} value={c}>{c}</SelectItem>
-              ))}
+              {availableColumns.length > 0 ? (
+                availableColumns.map(c => (
+                  <SelectItem key={c} value={c}>{c}</SelectItem>
+                ))
+              ) : (
+                <div className="p-2 text-sm text-muted-foreground">Aucune colonne disponible</div>
+              )}
             </SelectContent>
           </Select>
         </div>

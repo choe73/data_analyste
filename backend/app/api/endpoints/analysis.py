@@ -298,7 +298,20 @@ async def preview_dataset(
         # Load dataset
         df = await service._load_dataset(dataset_id)
         if df is None or df.empty:
-            raise HTTPException(status_code=400, detail="Dataset is empty")
+            # Return empty preview instead of error
+            return {
+                "row_count": 0,
+                "columns": {"numeric": [], "categorical": [], "datetime": [], "unusable": []},
+                "compatible_analyses": [],
+                "incompatible_analyses": {
+                    "descriptive": "No data available",
+                    "regression": "No data available",
+                    "pca": "No data available",
+                    "classification": "No data available",
+                    "clustering": "No data available",
+                },
+                "sample": [],
+            }
         
         # Classify columns
         columns_info = service.classify_columns(df)
