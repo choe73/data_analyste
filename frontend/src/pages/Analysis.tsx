@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+
 import { BarChart3, LineChart, PieChart, Activity, Loader2, AlertCircle, Brain, TrendingUp } from 'lucide-react'
 import {
   BarChart, Bar, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid,
@@ -74,10 +74,15 @@ function buildHistogram(values: number[], bins: number) {
 function ErrorDisplay({ error }: { error: any }) {
   const message = error?.message || String(error)
   return (
-    <Alert variant="destructive">
-      <AlertCircle className="h-4 w-4" />
-      <AlertDescription>{message}</AlertDescription>
-    </Alert>
+    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+      <div className="flex gap-3">
+        <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+        <div>
+          <p className="text-sm font-medium text-red-900">Erreur</p>
+          <p className="text-sm text-red-700 mt-1">{message}</p>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -627,30 +632,35 @@ export function Analysis() {
       )}
 
       {datasetId && preview && allColumns.length === 0 && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            Aucune colonne détectée. Vérifiez l'import ou sélectionnez un autre dataset.
-          </AlertDescription>
-        </Alert>
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex gap-3">
+            <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-red-900">Aucune colonne détectée</p>
+              <p className="text-sm text-red-700 mt-1">Vérifiez l'import ou sélectionnez un autre dataset.</p>
+            </div>
+          </div>
+        </div>
       )}
 
       {datasetId && preview && allColumns.length > 0 && (
         <div className="space-y-6">
           {preview.incompatible_analyses && Object.keys(preview.incompatible_analyses).length > 0 && (
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                <p className="font-medium mb-2">Analyses non disponibles:</p>
-                <ul className="text-sm space-y-1">
-                  {Object.entries(preview.incompatible_analyses).map(([analysis, reason]: [string, any]) => (
-                    <li key={analysis}>
-                      • <span className="font-medium">{analysis}:</span> {reason}
-                    </li>
-                  ))}
-                </ul>
-              </AlertDescription>
-            </Alert>
+            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+              <div className="flex gap-3">
+                <AlertCircle className="h-5 w-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-orange-900 mb-2">Analyses non disponibles:</p>
+                  <ul className="text-sm text-orange-800 space-y-1">
+                    {Object.entries(preview.incompatible_analyses).map(([analysis, reason]: [string, any]) => (
+                      <li key={analysis}>
+                        • <span className="font-medium">{analysis}:</span> {reason}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
           )}
 
           {preview.row_count > 0 && (
