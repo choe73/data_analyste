@@ -90,8 +90,9 @@ async def check_gemini_quota(user_id: int, is_premium: bool, db: Optional[AsyncS
         plan = "premium" if is_premium else "free"
         limit = PLAN_LIMITS.get(plan, 1)
         return count, max(0, limit - count)
-    except Exception:
-        pass
+    except Exception as e:
+        import logging
+        logging.debug(f"Redis quota check failed: {e}")
 
     # Fallback: DB quota (stored in Subscription model)
     if db:
@@ -118,8 +119,9 @@ async def check_gemini_quota(user_id: int, is_premium: bool, db: Optional[AsyncS
                 used = sub.analyses_used_this_month or 0
                 limit = PLAN_LIMITS.get(plan, 1)
                 return used, max(0, limit - used)
-        except Exception:
-            pass
+        except Exception as e:
+            import logging
+            logging.debug(f"DB quota check failed: {e}")
 
     # No quota info: allow 1 request (free default)
     plan = "premium" if is_premium else "free"
@@ -137,13 +139,15 @@ async def increment_gemini_quota(user_id: int, db: Optional[AsyncSession] = None
         await redis_client.incr(key)
         await redis_client.expire(key, 3600)
         return
-    except Exception:
-        pass
+    except Exception as e:
+        import logging
+        logging.debug(f"Redis quota increment failed: {e}")
 
     # Fallback: DB
     if db:
         try:
             from app.models.user import Subscription
+            from sqlalchemy import select
             result = await db.execute(
                 select(Subscription).where(
                     Subscription.user_id == user_id,
@@ -154,8 +158,9 @@ async def increment_gemini_quota(user_id: int, db: Optional[AsyncSession] = None
             if sub:
                 sub.analyses_used_this_month = (sub.analyses_used_this_month or 0) + 1
                 await db.commit()
-        except Exception:
-            pass
+        except Exception as e:
+            import logging
+            logging.debug(f"DB quota increment failed: {e}")
 
 
 # ─── Main interpretation function ────────────────────────────────────────────
