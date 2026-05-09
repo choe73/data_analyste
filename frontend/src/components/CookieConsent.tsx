@@ -24,7 +24,8 @@ export function CookieConsent() {
   useEffect(() => {
     const checkConsent = async () => {
       try {
-        const res = await fetch('/api/v1/consent/status', { credentials: 'include' })
+        const API = (import.meta.env.VITE_API_URL as string) || ''
+        const res = await fetch(`${API}/api/v1/consent/status`, { credentials: 'include' })
         if (res.ok) {
           const data = await res.json()
           if (data.cookie_consent || data.analytics_consent) {

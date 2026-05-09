@@ -12,7 +12,8 @@ export function useConsent() {
 
   const fetchConsent = useCallback(async () => {
     try {
-      const res = await fetch('/api/v1/consent/status', { credentials: 'include' })
+      const API = (import.meta.env.VITE_API_URL as string) || ''
+      const res = await fetch(`${API}/api/v1/consent/status`, { credentials: 'include' })
       if (res.ok) {
         const data = await res.json()
         setConsent(data)
@@ -25,7 +26,8 @@ export function useConsent() {
   const updateConsent = useCallback(async (payload: ConsentState) => {
     setLoading(true)
     try {
-      const res = await fetch('/api/v1/consent/update', {
+      const API = (import.meta.env.VITE_API_URL as string) || ''
+      const res = await fetch(`${API}/api/v1/consent/update`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
