@@ -444,14 +444,14 @@ function GeminiPanel({ analysisType, analysisData }: {
   analysisData: any
 }) {
   const [question, setQuestion] = useState('')
-  const [domain, setDomain] = useState('')
+  const [domain, setDomain] = useState('auto')
 
   const mut = useMutation({
     mutationFn: () => apiFetch('/api/v1/analysis/interpret', {
       analysis_type: analysisType,
       analysis_data: analysisData,
       user_question: question || undefined,
-      domain_hint: domain || undefined,
+      domain_hint: domain !== 'auto' ? domain : undefined,
     }),
   })
 
@@ -475,7 +475,7 @@ function GeminiPanel({ analysisType, analysisData }: {
               <SelectValue placeholder="Domaine (auto)" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Auto-détection</SelectItem>
+              <SelectItem value="auto">Auto-détection</SelectItem>
               {['sante', 'agriculture', 'finance', 'entrepreneuriat', 'education', 'environnement'].map(d => (
                 <SelectItem key={d} value={d}>{d}</SelectItem>
               ))}

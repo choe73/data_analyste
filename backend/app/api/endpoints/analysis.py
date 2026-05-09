@@ -380,10 +380,8 @@ async def interpret_analysis(
     else:
         user_id = current_user.id
         is_premium = getattr(current_user, 'subscription_type', None) == 'premium'
-        if not is_premium and current_user.subscriptions:
-            active = [s for s in current_user.subscriptions if s.status == "active"]
-            if active and active[0].plan:
-                is_premium = active[0].plan.name in ("standard", "premium")
+        # Don't access lazy-loaded relationships in async context
+        # Just use subscription_type field if available
 
     # Check quota if user is logged in
     if user_id:
