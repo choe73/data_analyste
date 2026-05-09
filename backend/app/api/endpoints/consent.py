@@ -10,7 +10,7 @@ from sqlalchemy import select
 from app.core.database import get_db
 from app.models.user import User, UserConsent
 from app.schemas.user import ConsentStatus, ConsentUpdate
-from app.core.auth import get_current_user_optional
+from app.core.auth import get_current_user_optional, get_current_active_user
 from app.core.redis import redis_client
 
 router = APIRouter()
