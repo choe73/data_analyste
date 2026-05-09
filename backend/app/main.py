@@ -61,11 +61,16 @@ app = FastAPI(
     redoc_url="/redoc",  # Always enable ReDoc
 )
 
-# CORS
+# CORS - Allow credentials for cross-origin requests
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
+    allow_origins=[
+        "https://datacollect-cameroun-frontend.onrender.com",
+        "https://datacollect-cameroun-prod.onrender.com",
+        "http://localhost:3000",
+        "http://localhost:5173",
+    ],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
