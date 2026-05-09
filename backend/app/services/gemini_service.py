@@ -218,9 +218,14 @@ Reponds UNIQUEMENT en JSON valide (pas de markdown):
     }
 
     async with httpx.AsyncClient(timeout=30.0) as client:
-        response = await client.post(url, json=payload)
-        response.raise_for_status()
-        result = response.json()
+        try:
+            response = await client.post(url, json=payload)
+            response.raise_for_status()
+            result = response.json()
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 429:
+                raise ValueError("Quota Gemini epuise. Reessayez plus tard.")
+            raise ValueError(f"Erreur Gemini: {e.response.status_code} {e.response.text}")
 
     candidates = result.get("candidates", [])
     if not candidates:
