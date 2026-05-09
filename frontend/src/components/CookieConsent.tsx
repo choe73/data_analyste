@@ -24,7 +24,7 @@ export function CookieConsent() {
   useEffect(() => {
     const checkConsent = async () => {
       try {
-        const API = (import.meta.env.VITE_API_URL as string) || ''
+        const API = (import.meta.env.VITE_API_URL as string) || 'https://datacollect-cameroun-prod.onrender.com'
         const res = await fetch(`${API}/api/v1/consent/status`, { credentials: 'include' })
         if (res.ok) {
           const data = await res.json()

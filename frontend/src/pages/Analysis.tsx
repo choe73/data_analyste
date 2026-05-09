@@ -595,18 +595,22 @@ export function Analysis() {
           <div className="flex flex-col sm:flex-row gap-4 items-center">
             <span className="text-sm font-medium whitespace-nowrap">Dataset:</span>
             <Select
-              value={datasetId ? String(datasetId) : ''}
-              onValueChange={v => setDatasetId(Number(v))}
+              value={datasetId ? String(datasetId) : 'none'}
+              onValueChange={v => v !== 'none' && setDatasetId(Number(v))}
             >
               <SelectTrigger className="w-full sm:w-[400px]">
                 <SelectValue placeholder="Sélectionner un dataset" />
               </SelectTrigger>
               <SelectContent>
-                {datasets.map((d: Dataset) => (
-                  <SelectItem key={d.id} value={String(d.id)}>
-                    {d.name} — {d.row_count.toLocaleString()} lignes
-                  </SelectItem>
-                ))}
+                {datasets.length === 0 ? (
+                  <div className="p-2 text-sm text-muted-foreground">Aucun dataset disponible</div>
+                ) : (
+                  datasets.map((d: Dataset) => (
+                    <SelectItem key={d.id} value={String(d.id)}>
+                      {d.name} — {d.row_count.toLocaleString()} lignes
+                    </SelectItem>
+                  ))
+                )}
               </SelectContent>
             </Select>
             {preview && (

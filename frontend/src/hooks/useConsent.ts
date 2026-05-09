@@ -12,7 +12,7 @@ export function useConsent() {
 
   const fetchConsent = useCallback(async () => {
     try {
-      const API = (import.meta.env.VITE_API_URL as string) || ''
+      const API = (import.meta.env.VITE_API_URL as string) || 'https://datacollect-cameroun-prod.onrender.com'
       const res = await fetch(`${API}/api/v1/consent/status`, { credentials: 'include' })
       if (res.ok) {
         const data = await res.json()
@@ -26,7 +26,7 @@ export function useConsent() {
   const updateConsent = useCallback(async (payload: ConsentState) => {
     setLoading(true)
     try {
-      const API = (import.meta.env.VITE_API_URL as string) || ''
+      const API = (import.meta.env.VITE_API_URL as string) || 'https://datacollect-cameroun-prod.onrender.com'
       const res = await fetch(`${API}/api/v1/consent/update`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
