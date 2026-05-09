@@ -107,7 +107,8 @@ async def check_gemini_quota(user_id: int, is_premium: bool, db: Optional[AsyncS
             )
             sub = result.scalar_one_or_none()
             if sub:
-                plan = sub.plan
+                # Determine plan from subscription type (don't access lazy relationship)
+                plan = "premium" if sub.plan_id else "free"
                 # Reset monthly if needed
                 today = date.today()
                 if sub.quota_reset_date and sub.quota_reset_date.month != today.month:
